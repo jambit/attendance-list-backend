@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{7B6CCBBF-6009-4EAD-A29D-FF559378C5C9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{01C56303-9B4D-41B8-9D3D-9F97CE516640}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "aspire", "aspire", "{AEEF3CDC-1EE8-44DA-8B82-594EC8A8FF04}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".build", ".build", "{F6FD942C-E3FD-4615-8343-AAF9AA7408FF}"
+	ProjectSection(SolutionItems) = preProject
+		Directory.Packages.props = Directory.Packages.props
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ALB.AppHost", "aspire\ALB.AppHost\ALB.AppHost.csproj", "{CD8383A4-5481-413C-8867-10C5E19884E6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ALB.ServiceDefaults", "aspire\ALB.ServiceDefaults\ALB.ServiceDefaults.csproj", "{1B280A21-9C8F-4996-8903-0EFAA5F890BD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CD8383A4-5481-413C-8867-10C5E19884E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD8383A4-5481-413C-8867-10C5E19884E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD8383A4-5481-413C-8867-10C5E19884E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD8383A4-5481-413C-8867-10C5E19884E6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1B280A21-9C8F-4996-8903-0EFAA5F890BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B280A21-9C8F-4996-8903-0EFAA5F890BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B280A21-9C8F-4996-8903-0EFAA5F890BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B280A21-9C8F-4996-8903-0EFAA5F890BD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{CD8383A4-5481-413C-8867-10C5E19884E6} = {AEEF3CDC-1EE8-44DA-8B82-594EC8A8FF04}
+		{1B280A21-9C8F-4996-8903-0EFAA5F890BD} = {AEEF3CDC-1EE8-44DA-8B82-594EC8A8FF04}
+	EndGlobalSection
+EndGlobal
