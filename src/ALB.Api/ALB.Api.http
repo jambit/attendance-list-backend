@@ -1,0 +1,6 @@
+@ALB.Api_HostAddress = http://localhost:5206
+
+GET {{ALB.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
