@@ -7,8 +7,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\ALB.Api\ALB.Api.csproj" />
       <ProjectReference Include="..\ALB.Domain\ALB.Domain.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
     </ItemGroup>
 
 </Project>
