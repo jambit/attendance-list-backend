@@ -9,11 +9,13 @@
     <ItemGroup>
         <PackageReference Include="Aspire.Npgsql" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi"/>
+        <PackageReference Include="Scalar.AspNetCore" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\..\aspire\ALB.ServiceDefaults\ALB.ServiceDefaults.csproj" />
       <ProjectReference Include="..\ALB.Domain\ALB.Domain.csproj" />
+      <ProjectReference Include="..\ALB.Infrastructure\ALB.Infrastructure.csproj" />
     </ItemGroup>
 
 </Project>
