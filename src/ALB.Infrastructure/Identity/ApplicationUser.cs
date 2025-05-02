@@ -2,7 +2,7 @@
 
 namespace ALB.Infrastructure.Identity;
 
-public class AlbUser : IdentityUser
+public class ApplicationUser : IdentityUser
 {
     
 }

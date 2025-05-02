@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ALB.Infrastructure.Persistence;
 
-public class AlbDbContext : IdentityDbContext<AlbUser>
+public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 {
-    public AlbDbContext(DbContextOptions<AlbDbContext> options) : base(options)
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
     {
         
     }
