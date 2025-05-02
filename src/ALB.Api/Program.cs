@@ -1,6 +1,11 @@
 using ALB.Api.UseCases.ExampleFeatures.Endpoints;
 using ALB.Infrastructure.Extensions;
+using ALB.Infrastructure.Identity;
+using ALB.Infrastructure.Persistence;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,7 +23,33 @@ builder.Services.AddInfrastructure();
 
 builder.Services.AddOpenApi();
 
+builder.Services.AddDbContext<AlbDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("postgresdb")));
+
+builder.Services.AddIdentityCore<AlbUser>(options =>
+{
+    //TODO: Configure Identity options
+})
+.AddRoles<IdentityRole>()
+.AddEntityFrameworkStores<AlbDbContext>()
+.AddDefaultTokenProviders();
+
+builder.Services.AddAuthentication(options =>
+{
+    //TODO: Configure Authentication options
+});
+
+builder.Services.AddAuthorizationBuilder()
+    //TODO: Configure Authorization policies
+    .SetDefaultPolicy(new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .Build());
+
+
 var app = builder.Build();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 // Configure the HTTP request pipeline.
 app.UseExceptionHandler("/Error");
