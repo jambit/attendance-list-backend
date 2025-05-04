@@ -1,0 +1,19 @@
+using ALB.Domain.Enum;
+using ALB.Domain.Identity;
+
+namespace ALB.Domain.Entities;
+
+public class UserChildRelationship 
+{
+    public int Id { get; init; }
+    
+    public Guid UserId { get; init; }
+    public ApplicationUser User { get; init; }
+    
+    public int ChildId { get; init; }
+    
+    public Child Child { get; init; } 
+    
+    public RelationshipType RelationshipType { get; init; } = RelationshipType.Other;
+    public bool HasPickupAuthorization { get; set; } = false;
+}

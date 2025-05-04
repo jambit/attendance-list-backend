@@ -1,6 +1,6 @@
 using ALB.Api.UseCases.ExampleFeatures.Endpoints;
 using ALB.Infrastructure.Extensions;
-using ALB.Infrastructure.Identity;
+using ALB.Domain.Identity;
 using ALB.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -23,8 +23,7 @@ builder.Services.AddInfrastructure();
 
 builder.Services.AddOpenApi();
 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("postgresdb")));
+builder.AddNpgsqlDbContext<ApplicationDbContext>("postgresdb");
 
 builder.Services.AddIdentityCore<ApplicationUser>(options =>
 {
