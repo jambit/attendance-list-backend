@@ -1,6 +1,6 @@
 using ALB.Api.UseCases.ExampleFeatures.Endpoints;
 using ALB.Infrastructure.Extensions;
-using ALB.Infrastructure.Identity;
+using ALB.Domain.Identity;
 using ALB.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -23,8 +23,10 @@ builder.Services.AddInfrastructure();
 
 builder.Services.AddOpenApi();
 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("postgresdb")));
+//TODO: Implement new EmailSender and remove DummyEmailSender
+builder.Services.AddTransient<IEmailSender<ApplicationUser>, DummyEmailSender>();
+
+builder.AddNpgsqlDbContext<ApplicationDbContext>("postgresdb");
 
 builder.Services.AddIdentityCore<ApplicationUser>(options =>
 {
@@ -63,5 +65,6 @@ app.MapScalarApiReference("/api-reference", options =>
 });
 
 app.MapExampleEndpoints();
+app.MapIdentityApi<ApplicationUser>();
 
 app.Run();
