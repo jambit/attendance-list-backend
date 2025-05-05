@@ -2,11 +2,15 @@ using ALB.Api.UseCases.ExampleFeatures.Endpoints;
 using ALB.Infrastructure.Extensions;
 using ALB.Infrastructure.Identity;
 using ALB.Infrastructure.Persistence;
+using FastEndpoints;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
+using FluentValidation;
+
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +24,9 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 });
 
 builder.Services.AddInfrastructure();
+
+//builder.Services.AddFastEndpoints();
+
 
 builder.Services.AddOpenApi();
 
@@ -50,6 +57,7 @@ var app = builder.Build();
 
 app.UseAuthentication();
 app.UseAuthorization();
+//app.UseFastEndpoints();
 
 // Configure the HTTP request pipeline.
 app.UseExceptionHandler("/Error");
