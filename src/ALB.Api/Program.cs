@@ -23,6 +23,9 @@ builder.Services.AddInfrastructure();
 
 builder.Services.AddOpenApi();
 
+//TODO: Implement new EmailSender and remove DummyEmailSender
+builder.Services.AddTransient<IEmailSender<ApplicationUser>, DummyEmailSender>();
+
 builder.AddNpgsqlDbContext<ApplicationDbContext>("postgresdb");
 
 builder.Services.AddIdentityCore<ApplicationUser>(options =>
@@ -62,5 +65,6 @@ app.MapScalarApiReference("/api-reference", options =>
 });
 
 app.MapExampleEndpoints();
+app.MapIdentityApi<ApplicationUser>();
 
 app.Run();

@@ -9,5 +9,5 @@ public class ApplicationRole : IdentityRole
     [MaxLength(200)]
     public required string Description { get; set; }
     
-    public virtual ICollection<UserRole> UserRoles { get; set; }
+    public virtual ICollection<ApplicationUserRole> UserRoles { get; set; }
 }

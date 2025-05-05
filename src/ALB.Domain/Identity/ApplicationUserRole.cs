@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace ALB.Domain.Identity;
 
-public class UserRole : IdentityUserRole<int>
+public class ApplicationUserRole : IdentityUserRole<int>
 {
     public DateTime AssignedAt { get; init; } = DateTime.Now;
     

@@ -49,20 +49,6 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             .HasOne(ucr => ucr.Child)
             .WithMany(c => c.UserChildRelationships)
             .HasForeignKey(ucr => ucr.ChildId);
-        
-        // Configure many-to-many relationship between user and role
-        modelBuilder.Entity<UserRole>()
-            .HasKey(ur => new { ur.UserId, ur.RoleId });
-    
-        modelBuilder.Entity<UserRole>()
-            .HasOne(ur => ur.User)
-            .WithMany(u => u.UserRoles)
-            .HasForeignKey(ur => ur.UserId);
-    
-        modelBuilder.Entity<UserRole>()
-            .HasOne(ur => ur.Role)
-            .WithMany(r => r.UserRoles)
-            .HasForeignKey(ur => ur.RoleId);
             
         // Configure one-to-many relationship between child and attendance
         modelBuilder.Entity<Attendance>()
@@ -75,5 +61,13 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             .HasOne(c => c.Group)
             .WithMany(g => g.Children)
             .HasForeignKey(c => c.GroupId);
+        
+        //Configuration of ApplicationUser
+        modelBuilder.Entity<ApplicationUser>(e =>
+        {
+            e.Property(p => p.CreatedAt)
+                .ValueGeneratedOnAdd()
+                .HasDefaultValueSql("now()");
+        });
     }
 }
