@@ -90,9 +90,10 @@ public class BaseIntegrationTest : IAsyncInitializer, IAsyncDisposable
             var systemUser = new ApplicationUser
             {
                 Email = AdminEmail,
-                UserName = "Admin",
+                UserName = AdminEmail,
                 FirstName = "Admin",
-                LastName = "Admin"
+                LastName = "Admin",
+                EmailConfirmed = true
             };
             
             var createdUser = await _userManager.CreateAsync(systemUser, AdminPassword);

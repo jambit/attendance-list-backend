@@ -1,3 +1,4 @@
+using System.Net;
 using System.Net.Http.Json;
 using ALB.Api.UseCases.ExampleFeatures.Endpoints.Create;
 using Microsoft.AspNetCore.Identity.Data;
@@ -20,9 +21,11 @@ public class UsersEndpointsTests(BaseIntegrationTest baseIntegrationTest)
         
         //var response = await client.PostAsJsonAsync("/examples", new CreateExampleRequest("test"));
         
-        await Assert.That(response).IsNotNull();
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
         // Create new User
+        // => post /users
         // Set his Role
+        // => post /users/roles
         
         // TODO: finish Test => take token and stuff to reach endpoint.
     }

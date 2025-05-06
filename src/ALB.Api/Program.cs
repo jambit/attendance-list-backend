@@ -52,4 +52,9 @@ app.MapScalarApiReference("/api-reference", options =>
 app.MapExampleEndpoints();
 app.MapIdentityApi<ApplicationUser>();
 
+using var serviceScope = app.Services.CreateScope();
+var context = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+// await context.Database.MigrateAsync();
+await context.Database.EnsureCreatedAsync();
+
 app.Run();
