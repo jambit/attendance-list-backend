@@ -5,12 +5,12 @@ namespace ALB.Domain.Entities;
 
 public class UserChildRelationship 
 {
-    public int Id { get; init; }
+    public Guid Id { get; init; }
     
     public Guid UserId { get; init; }
     public ApplicationUser User { get; init; }
     
-    public int ChildId { get; init; }
+    public Guid ChildId { get; init; }
     
     public Child Child { get; init; } 
     
