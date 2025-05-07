@@ -24,6 +24,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ALB.Infrastructure", "src\A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ALB.AppHost", "aspire\ALB.AppHost\ALB.AppHost.csproj", "{A32A193B-B5DC-4A82-B0D6-0C108E2192AF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiIntegrationTests", "tests\ApiIntegrationTests\ApiIntegrationTests\ApiIntegrationTests.csproj", "{D6056638-9053-4041-806E-50CC5AB095FF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -50,6 +52,10 @@ Global
 		{A32A193B-B5DC-4A82-B0D6-0C108E2192AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A32A193B-B5DC-4A82-B0D6-0C108E2192AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A32A193B-B5DC-4A82-B0D6-0C108E2192AF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6056638-9053-4041-806E-50CC5AB095FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6056638-9053-4041-806E-50CC5AB095FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6056638-9053-4041-806E-50CC5AB095FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6056638-9053-4041-806E-50CC5AB095FF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -60,5 +66,6 @@ Global
 		{FF54374F-2110-4601-83BD-A54C218DFBE1} = {7B6CCBBF-6009-4EAD-A29D-FF559378C5C9}
 		{CD496D05-1D56-4038-9AF3-675A6597D822} = {7B6CCBBF-6009-4EAD-A29D-FF559378C5C9}
 		{A32A193B-B5DC-4A82-B0D6-0C108E2192AF} = {AEEF3CDC-1EE8-44DA-8B82-594EC8A8FF04}
+		{D6056638-9053-4041-806E-50CC5AB095FF} = {01C56303-9B4D-41B8-9D3D-9F97CE516640}
 	EndGlobalSection
 EndGlobal

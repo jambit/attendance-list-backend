@@ -4,7 +4,7 @@ namespace ALB.Domain.Entities;
 
 public class Attendance
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
     
     public DateTime Date { get; set; }
     
@@ -14,7 +14,6 @@ public class Attendance
     
     public ChildStatus Status { get; set; } = ChildStatus.Absent;
     
-    public int ChildId { get; set; }
-    
+    public Guid ChildId { get; set; }
     public virtual Child Child { get; set; }
 }

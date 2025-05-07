@@ -1,24 +1,24 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using ALB.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
+using NodaTime;
 
 namespace ALB.Domain.Identity;
 
-public class ApplicationUser : IdentityUser
+public class ApplicationUser : IdentityUser<Guid>
 {
-    [Required]
-    [MaxLength(50)]
-    public string FirstName { get; set; }
+    public string? FirstName { get; set; }
     
-    [Required]
-    [MaxLength(50)]
-    public string LastName { get; set; }
+    public string? LastName { get; set; }
     
-    public DateTime CreatedAt { get; init; }
+    public Instant? CreatedAt { get; init; }
     
     public bool IsActive { get; set; } = true;
     
     public virtual ICollection<UserChildRelationship> UserChildRelationships { get; set; }
-    public virtual ICollection<ApplicationUserRole> UserRoles { get; set; }
     public virtual ICollection<UserGroup> UserGroups { get; set; }
+    public virtual ICollection<ApplicationUserClaim> Claims { get; set; }
+    public virtual ICollection<ApplicationUserLogin> Logins { get; set; }
+    public virtual ICollection<ApplicationUserToken> Tokens { get; set; }
+    public virtual ICollection<ApplicationUserRole> UserRoles { get; set; }
 }

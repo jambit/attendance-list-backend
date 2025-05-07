@@ -1,3 +1,4 @@
+using ALB.Api.Extensions;
 using ALB.Api.UseCases.ExampleFeatures.Endpoints;
 using ALB.Infrastructure.Extensions;
 using ALB.Domain.Identity;
@@ -10,6 +11,9 @@ using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.AddNpgsqlDataSource(connectionName: "postgresdb");
+// builder.AddNpgsqlDbContext<ApplicationDbContext>("postgresdb");
+
 builder.AddServiceDefaults();
 
 // This is needed to make OpenApi forwarding possible behind aspires reverse proxy.
@@ -19,33 +23,14 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
         ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
 });
 
-builder.Services.AddInfrastructure();
+builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services.AddOpenApi();
 
 //TODO: Implement new EmailSender and remove DummyEmailSender
 builder.Services.AddTransient<IEmailSender<ApplicationUser>, DummyEmailSender>();
 
-builder.AddNpgsqlDbContext<ApplicationDbContext>("postgresdb");
-
-builder.Services.AddIdentityCore<ApplicationUser>(options =>
-{
-    //TODO: Configure Identity options
-})
-.AddRoles<IdentityRole>()
-.AddEntityFrameworkStores<ApplicationDbContext>()
-.AddDefaultTokenProviders();
-
-builder.Services.AddAuthentication(options =>
-{
-    //TODO: Configure Authentication options
-});
-
-builder.Services.AddAuthorizationBuilder()
-    //TODO: Configure Authorization policies
-    .SetDefaultPolicy(new AuthorizationPolicyBuilder()
-        .RequireAuthenticatedUser()
-        .Build());
+builder.Services.AddAuthAndIdentityCore();
 
 
 var app = builder.Build();
@@ -66,5 +51,10 @@ app.MapScalarApiReference("/api-reference", options =>
 
 app.MapExampleEndpoints();
 app.MapIdentityApi<ApplicationUser>();
+
+using var serviceScope = app.Services.CreateScope();
+var context = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+// await context.Database.MigrateAsync();
+await context.Database.EnsureCreatedAsync();
 
 app.Run();
