@@ -1,45 +1,74 @@
 using ALB.Domain.Identity;
 using ALB.Domain.Values;
-using Microsoft.AspNetCore.Http.HttpResults;
+using FastEndpoints;
+using FluentValidation;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 
 namespace ALB.Api.UseCases.Users.Endpoints.Create;
 
-internal static class CreateUserEndpoint
+public class CreateUserEndpoint(UserManager<ApplicationUser> userManager) : Endpoint<CreateUserRequest, CreateUserResponse>
 {
-    internal static void MapCreateUserEndpoint(this IEndpointRouteBuilder routeBuilder)
+
+    public override void Configure()
     {
-        routeBuilder.MapPost("/", async Task<Results<Ok<CreateUserResponse>, BadRequest<ProblemDetails>>> (CreateUserRequest request, UserManager<ApplicationUser> userManager) =>
-            {
-                var userToCreate = new ApplicationUser
-                {
-                    Email = request.Email,
-                    UserName = request.Email,
-                    FirstName = request.FirstName,
-                    LastName = request.LastName,
-                    EmailConfirmed = true
-                };
-                
-                var result = await userManager.CreateAsync(userToCreate, request.Password);
+        Post("api/users");
+        Policies(SystemRoles.AdminPolicy);
+    }
 
-                if (!result.Succeeded)
-                {
-                    return TypedResults.Ok(new CreateUserResponse(userToCreate.Id, userToCreate.Email, userToCreate.FirstName, userToCreate.LastName));
-                }
+    public override async Task HandleAsync(CreateUserRequest request, CancellationToken ct)
+    {
+        var user = new ApplicationUser
+        {
+            Email = request.Email,
+            UserName = request.Email,
+            FirstName = request.FirstName,
+            LastName = request.LastName
+        };
+        
+        var result = await userManager.CreateAsync(user, request.Password);
 
-                return TypedResults.BadRequest(new ProblemDetails
-                {
-                    Status = StatusCodes.Status400BadRequest,
-                    Title = "Could not create user.",
-                    Detail = "User could not be created."
-                });
-            })
-            .RequireAuthorization(SystemRoles.AdminPolicy)
-            .WithOpenApi();
+        if (!result.Succeeded)
+        {
+            AddError(result.Errors.First().Description);
+            ThrowIfAnyErrors();
+        }
+
+        await SendAsync(new CreateUserResponse
+        {
+            Id = user.Id,
+            Email = user.Email,
+        },200, ct);
+
+    }
+    
+}
+
+public class CreateUserRequestValidator : Validator<CreateUserRequest>
+{
+    public CreateUserRequestValidator()
+    {
+        RuleFor(x => x.Email)
+            .NotEmpty().WithMessage("Email is required!")
+            .EmailAddress().WithMessage("Must be a valid email.");
+
+        RuleFor(x => x.Password)
+            .NotEmpty().WithMessage("Password is required.")
+            .MinimumLength(8).WithMessage("Password must be at least 6 characters.");
     }
 }
 
-public record CreateUserRequest(string Email, string Password, string? FirstName, string? LastName);
+public class CreateUserRequest
+{
+    public string Email { get; set; }
+    public string Password { get; set; }
+    public string? FirstName { get; set; }
+    public string? LastName { get; set; }
+}
 
-public record CreateUserResponse(Guid Id, string Email, string? FirstName, string? LastName);
+public class CreateUserResponse
+{
+    public Guid Id { get; set; }
+    public string Email { get; set; }
+    public string? FirstName { get; set; }
+    public string? LastName { get; set; }
+}

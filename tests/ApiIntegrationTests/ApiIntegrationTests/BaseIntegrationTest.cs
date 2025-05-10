@@ -1,14 +1,18 @@
+using System.Security.Claims;
+using System.Text.Encodings.Web;
 using ALB.Api;
-using ALB.Api.Extensions;
 using ALB.Domain.Identity;
 using ALB.Domain.Values;
 using ALB.Infrastructure.Persistence;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Testcontainers.PostgreSql;
 using TUnit.Core.Interfaces;
 
@@ -25,10 +29,10 @@ public class BaseIntegrationTest : IAsyncInitializer, IAsyncDisposable
         .WithDatabase("postgres")
         .Build();
 
-    private WebApplicationFactory<IApiAssemblyMarker> _webApplicationFactory = default!;
+    private WebApplicationFactory<IApiAssemblyMarker> _webApplicationFactory = null!;
 
-    private RoleManager<ApplicationRole> _roleManager = default!;
-    private UserManager<ApplicationUser> _userManager = default!;
+    private RoleManager<ApplicationRole> _roleManager = null!;
+    private UserManager<ApplicationUser> _userManager = null!;
     
     private HttpClient GetHttpClient(string token)
     {
@@ -43,8 +47,16 @@ public class BaseIntegrationTest : IAsyncInitializer, IAsyncDisposable
     }
 
     public HttpClient GetAdminClient()
-        => GetHttpClient("Admin");
+        => GetHttpClient(SystemRoles.Admin);
     
+    public HttpClient GetCoAdminClient()
+        => GetHttpClient(SystemRoles.CoAdmin);
+    
+    public HttpClient GetTeamClient()
+        => GetHttpClient(SystemRoles.Team);
+    
+    public HttpClient GetParentClient()
+        => GetHttpClient(SystemRoles.Parent);
     
     public async Task InitializeAsync()
     {
@@ -65,6 +77,7 @@ public class BaseIntegrationTest : IAsyncInitializer, IAsyncDisposable
 
         await SeedDatabase();
     }
+    
     
     private async Task SeedDatabase()
     {
@@ -110,6 +123,46 @@ public class BaseIntegrationTest : IAsyncInitializer, IAsyncDisposable
     }
 }
 
+public class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
+{
+    public TestAuthHandler(IOptionsMonitor<AuthenticationSchemeOptions> options,
+        ILoggerFactory logger, UrlEncoder encoder)
+        : base(options, logger, encoder)
+    {}
+
+    protected override Task<AuthenticateResult> HandleAuthenticateAsync()
+    {
+        var apiKey = Request.Headers["X-Api-Key"].ToString();
+        
+        Console.WriteLine(apiKey);
+
+        var claims = apiKey switch
+        {
+            SystemRoles.Admin => new[]
+            {
+                new Claim(ClaimTypes.Name, "AdminUser"),
+                new Claim(ClaimTypes.Role, "Admin")
+            },
+            SystemRoles.Parent => new[]
+            {
+                new Claim(ClaimTypes.Name, "ParentUser"),
+                new Claim(ClaimTypes.Role, "Parent")
+            },
+            _ => throw new InvalidOperationException("Unknown API Key")
+        };
+        
+        Console.WriteLine(apiKey);
+        
+        var identity = new ClaimsIdentity(claims, "Test");
+        var principal = new ClaimsPrincipal(identity);
+        var ticket = new AuthenticationTicket(principal, "TestScheme");
+
+        var result = AuthenticateResult.Success(ticket);
+
+        return Task.FromResult(result);
+    }
+}
+
 file sealed class TestWebApplicationFactory(string connectionString) : WebApplicationFactory<IApiAssemblyMarker>
 {
     protected override IHost CreateHost(IHostBuilder builder)
@@ -141,8 +194,18 @@ file sealed class TestWebApplicationFactory(string connectionString) : WebApplic
             {
                 opts.UseNpgsql(connectionString, x => x.UseNodaTime());
             });
+            
+            services.AddAuthentication("TestScheme")
+                .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("TestScheme", options => { });
+
+            services.AddAuthorizationBuilder()
+                .AddPolicy(SystemRoles.AdminPolicy, x => x.RequireRole(SystemRoles.Admin))
+                .AddPolicy(SystemRoles.CoAdminPolicy, x => x.RequireRole(SystemRoles.CoAdmin))
+                .AddPolicy(SystemRoles.TeamPolicy, x => x.RequireRole(SystemRoles.Team))
+                .AddPolicy(SystemRoles.ParentPolicy, x => x.RequireRole(SystemRoles.Parent));
         });
 
         return base.CreateHost(builder);
     }
+
 }
