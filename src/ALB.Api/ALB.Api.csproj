@@ -25,10 +25,4 @@
       <ProjectReference Include="..\ALB.Infrastructure\ALB.Infrastructure.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="UseCases\Endpoints\Admin\ApplicationUser\CreateApplicationUser\" />
-      <Folder Include="UseCases\Endpoints\Admin\ApplicationUser\ReadApplicationUser\" />
-      <Folder Include="UseCases\Endpoints\Admin\ApplicationUser\UpdateApplicationUser\" />
-    </ItemGroup>
-
 </Project>
