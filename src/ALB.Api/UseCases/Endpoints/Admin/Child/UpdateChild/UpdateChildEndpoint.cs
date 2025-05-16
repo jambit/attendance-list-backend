@@ -11,8 +11,6 @@ public class UpdateChildEndpoint : Endpoint<UpdateChildRequest, UpdateChildRespo
     
     public override async Task HandleAsync(UpdateChildRequest request, CancellationToken cancellationToken)
     {
-        // Noch keine Implementierung – folgt später
-
         await SendAsync(new UpdateChildResponse
         {
             Message = $"Update endpoint called for child ID: {request.Id}. (Not yet implemented)"
