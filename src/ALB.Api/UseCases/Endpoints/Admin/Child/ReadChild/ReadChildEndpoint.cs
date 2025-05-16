@@ -13,7 +13,7 @@ public class ReadChildEndpoint : Endpoint<ReadChildRequest, ReadChildResponse>
     {
         await SendAsync(new ReadChildResponse
         {
-            Id = request.Id, // Platzhalterwert
+            Id = request.Id,
             Name = "Not implemented",
             DateofBirth = DateTime.MinValue
         }, cancellation: cancellationToken);
