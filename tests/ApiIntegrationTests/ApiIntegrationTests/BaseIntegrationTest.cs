@@ -133,8 +133,6 @@ public class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
         var apiKey = Request.Headers["X-Api-Key"].ToString();
-        
-        Console.WriteLine(apiKey);
 
         var claims = apiKey switch
         {
@@ -150,8 +148,6 @@ public class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions
             },
             _ => throw new InvalidOperationException("Unknown API Key")
         };
-        
-        Console.WriteLine(apiKey);
         
         var identity = new ClaimsIdentity(claims, "Test");
         var principal = new ClaimsPrincipal(identity);
