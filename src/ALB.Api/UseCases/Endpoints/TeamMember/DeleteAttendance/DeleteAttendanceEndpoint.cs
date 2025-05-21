@@ -6,7 +6,7 @@ public class DeleteAttendanceEndpoint : Endpoint<DeleteAttendanceRequest, Delete
 {
     public override void Configure()
     {
-        Delete("/team-member/{id}/attendance");
+        Delete("api/attendance/{attendanceid}");
         AllowAnonymous();
     }
 
