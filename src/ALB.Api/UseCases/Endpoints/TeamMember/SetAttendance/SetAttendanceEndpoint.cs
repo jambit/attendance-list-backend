@@ -6,7 +6,7 @@ public class SetAttendanceEndpoint : Endpoint<SetAttendanceRequest, SetAttendanc
 {
     public override void Configure()
     {
-        Post("/teammember/setattendance");
+        Post("api/attendance");
         AllowAnonymous();
     }
 
