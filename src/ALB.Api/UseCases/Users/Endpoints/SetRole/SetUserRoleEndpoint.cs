@@ -1,35 +1,52 @@
 using ALB.Domain.Identity;
 using ALB.Domain.Values;
+using FastEndpoints;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
+using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
 
 namespace ALB.Api.UseCases.Users.Endpoints.SetRole;
 
-internal static class SetUserRoleEndpoint
+public class SetUserRoleEndpoint(UserManager<ApplicationUser> userManager)
+    : Endpoint<SetUserRoleRequest, SetUserRoleResponse>
 {
-    internal static void MapSetRoleEndpoint(this RouteGroupBuilder routeBuilder)
+    public override void Configure()
     {
-        routeBuilder.MapPost("/roles", async Task<Results<Ok<SetUserRoleResponse>, NotFound<ProblemDetails>>> (SetUserRoleRequest request, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager) =>
-        {
-            var userToAssignRoleTo = userManager.Users.FirstOrDefault(x => x.Id == request.UserId);
+        Post("api/users/roles");
+        Policies(SystemRoles.AdminPolicy);
+    }
+    
+    public override async Task HandleAsync(SetUserRoleRequest request, CancellationToken ct)
+    {
+        
+        var userToAssignRoleTo = userManager.Users.FirstOrDefault(x => x.Id == request.UserId);
 
-            if (userToAssignRoleTo is null)
-                return TypedResults.NotFound(new ProblemDetails
-                    {
-                        Status = StatusCodes.Status404NotFound,
-                        Title = "Could not set role.",
-                        Detail = $"User with id: {request.UserId} does not exist."
-                    });
-            
-            var result = await userManager.AddToRoleAsync(userToAssignRoleTo, request.RoleValue);
-            return TypedResults.Ok(new SetUserRoleResponse(result));
-        })
-            .RequireAuthorization(SystemRoles.AdminPolicy)
-            .WithOpenApi();
+        if (userToAssignRoleTo is null)
+        {
+            await SendAsync(
+                new SetUserRoleResponse
+                {
+                    Result = IdentityResult.Failed(new IdentityError {Description = "User not found."})
+                },
+                404,
+                cancellation: ct);
+            ThrowIfAnyErrors();
+        }
+        
+        await SendAsync(new SetUserRoleResponse
+        {
+            Result = await userManager.AddToRoleAsync(userToAssignRoleTo, request.RoleValue)
+        },200, ct);
     }
 }
 
-public record SetUserRoleRequest(Guid UserId, string RoleValue);
+public class SetUserRoleRequest
+{
+    public Guid UserId { get; set; }
+    public string RoleValue { get; set; }
+}
 
-public record SetUserRoleResponse(IdentityResult Result);
+public class SetUserRoleResponse
+{
+    public IdentityResult Result { get; set; }
+}
