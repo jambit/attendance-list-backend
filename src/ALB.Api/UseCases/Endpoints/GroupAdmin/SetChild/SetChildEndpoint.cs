@@ -7,7 +7,7 @@ public class SetChildEndpoint : Endpoint<SetChildRequest, SetChildResponse>
 {
     public override void Configure()
     {
-        Post("api/groupadmin/setchildren");
+        Put("api/children/{childid}/group/{groupid}");
         AllowAnonymous();
     }
 
