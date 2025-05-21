@@ -8,7 +8,7 @@ public class UpdateChildEndpoint : Endpoint<UpdateChildRequest, UpdateChildRespo
 {
     public override void Configure()
     {
-        Put("/group-admin/update-children");
+        Put ("api/children/{childId}/groups/{groupId}")
         AllowAnonymous();
     }
 
