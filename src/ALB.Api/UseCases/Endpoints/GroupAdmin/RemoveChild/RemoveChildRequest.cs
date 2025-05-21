@@ -1,7 +1,7 @@
 namespace ALB.Api.UseCases.Endpoints.GroupAdmin.RemoveChild;
 
-public class RemoveChildRequest
+public record RemoveChildRequest
 {
-    public string ChildName { get; set; }
-    public string GroupName { get; set; }
+    public Guid ChildId { get; set; }
+   // public string GroupName { get; set; }
 }

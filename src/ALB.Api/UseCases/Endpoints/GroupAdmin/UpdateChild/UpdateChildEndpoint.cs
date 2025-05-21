@@ -8,17 +8,17 @@ public class UpdateChildEndpoint : Endpoint<UpdateChildRequest, UpdateChildRespo
 {
     public override void Configure()
     {
-        Put("/group-admin/update-children");
+        Put("api/children/{childId}/groups/{groupId}");
         AllowAnonymous();
     }
 
     public async override Task HandleAsync(UpdateChildRequest request, CancellationToken cancellationToken)
     {
-        Console.WriteLine($"{request.ChildName} was moved to group {request.GroupName}");
+        Console.WriteLine($"{request.ChildId} was moved to group {request.GroupId}");
 
         await SendAsync(new UpdateChildResponse
         {
-            Message = $"Group {request.GroupName} was successfully moved to group {request.GroupName}"
+            Message = $"Group {request.GroupId} was successfully moved to group {request.GroupId}"
         });
     }
 }

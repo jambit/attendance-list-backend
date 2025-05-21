@@ -6,17 +6,17 @@ public class RemoveChildEndpoint : Endpoint<RemoveChildRequest, RemoveChildRespo
 {
     public override void Configure()
     {
-        Delete("/groupadmin/deletechildren");
+        Delete("api/children/{childid}");
         AllowAnonymous();
     }
 
     public override async Task HandleAsync(RemoveChildRequest request, CancellationToken cancellationToken)
     {
-        Console.WriteLine($"Child {request.ChildName} was deleted from group {request.GroupName}");
+        Console.WriteLine($"Child {request.ChildId} was deleted from group ");
 
         await SendAsync(new RemoveChildResponse
         {
-            Message = $"Child {request.ChildName} was successfully deleted from group {request.GroupName}"
+            Message = $"Child {request.ChildId} was successfully deleted from group "
         });
     }
 }

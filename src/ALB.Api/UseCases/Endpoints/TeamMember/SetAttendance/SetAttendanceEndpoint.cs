@@ -6,17 +6,17 @@ public class SetAttendanceEndpoint : Endpoint<SetAttendanceRequest, SetAttendanc
 {
     public override void Configure()
     {
-        Post("/teammember/setattendance");
+        Post("api/attendance");
         AllowAnonymous();
     }
 
     public override async Task HandleAsync(SetAttendanceRequest request, CancellationToken cancellationToken)
     {
-        Console.WriteLine($"[{request.Time}] {request.ChildName} is {request.Status}");
+        Console.WriteLine($"[{request.Time}] {request.ChildId} is {request.Status}");
 
         await SendAsync(new SetAttendanceResponse
         {
-            Message = $"Attendance for {request.ChildName} at {request.Time} was successfully set to {request.Status}"
+            Message = $"Attendance for {request.ChildId} at {request.Time} was successfully set to {request.Status}"
         });
     }
 }

@@ -1,8 +1,8 @@
 namespace ALB.Api.UseCases.Endpoints.TeamMember.SetAttendance;
 
-public class SetAttendanceRequest
+public record SetAttendanceRequest
 {
-    public string ChildName { get; set; }
+    public Guid ChildId { get; set; }
     public string Status { get; set; }
     public DateTime Time { get; set; }
 

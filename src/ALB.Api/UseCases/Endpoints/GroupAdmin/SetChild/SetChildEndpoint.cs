@@ -7,17 +7,17 @@ public class SetChildEndpoint : Endpoint<SetChildRequest, SetChildResponse>
 {
     public override void Configure()
     {
-        Post("api/groupadmin/setchildren");
+        Post("api/children/{childid}/group/{groupid}");
         AllowAnonymous();
     }
 
     public override async Task HandleAsync(SetChildRequest request, CancellationToken cancellationToken)
     {
-        Console.WriteLine($"{request.GroupName} was set to group {request.GroupName}");
+        Console.WriteLine($"{request.ChildId} was set to group {request.GroupId}");
 
         await SendAsync(new SetChildResponse()
         {
-            Message = $"Group {request.GroupName} was successfully set to group {request.GroupName}"
+            Message = $"Group {request.ChildId} was successfully set to group {request.GroupId}"
         });
     }
 }

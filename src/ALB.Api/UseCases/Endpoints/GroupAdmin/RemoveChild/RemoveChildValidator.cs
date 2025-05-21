@@ -7,11 +7,10 @@ public class RemoveChildValidator : Validator<RemoveChildRequest>
 {
     public RemoveChildValidator()
     {
-        RuleFor(x => x.ChildName)
+        RuleFor(x => x.ChildId)
             .NotEmpty().WithMessage("Name of Child cannot be empty");
 
-        RuleFor(x => x.GroupName)
-            .NotEmpty().WithMessage("Group name cannot be empty");
+       
     }
 
 }

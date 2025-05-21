@@ -7,10 +7,10 @@ public class SetChildValidator : Validator<SetChildRequest>
 {
     public SetChildValidator()
     {
-        RuleFor(x => x.ChildName)
+        RuleFor(x => x.ChildId)
             .NotEmpty().WithMessage("Name of Child cannot be empty");
 
-        RuleFor(x => x.GroupName)
+        RuleFor(x => x.GroupId)
             .NotEmpty().WithMessage("Group name cannot be empty");
     }
 }

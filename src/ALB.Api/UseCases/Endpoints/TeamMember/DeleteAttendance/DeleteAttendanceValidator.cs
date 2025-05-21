@@ -7,7 +7,7 @@ public class DeleteAttendanceValidator : Validator<DeleteAttendanceRequest>
 {
     public DeleteAttendanceValidator()
     {
-        RuleFor(x => x.ChildName)
+        RuleFor(x => x.ChildId)
             .NotEmpty().WithMessage("Name of child cannot be empty.");
 
         RuleFor(x => x.Date)

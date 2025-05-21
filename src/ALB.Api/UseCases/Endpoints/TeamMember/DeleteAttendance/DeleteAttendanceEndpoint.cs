@@ -6,17 +6,17 @@ public class DeleteAttendanceEndpoint : Endpoint<DeleteAttendanceRequest, Delete
 {
     public override void Configure()
     {
-        Delete("/team-member/{id}/attendance");
+        Delete("api/attendance/{attendanceid}");
         AllowAnonymous();
     }
 
     public async Task HandleAsync(DeleteAttendanceRequest request, CancellationToken cancellationToken)
     {
-        Console.WriteLine($"Attendance for {request.ChildName} at {request.Date} was deleted.");
+        Console.WriteLine($"Attendance for {request.ChildId} at {request.Date} was deleted.");
 
         await SendAsync(new DeleteAttendanceResponse()
         {
-            Message = $"Attendance for {request.ChildName} at {request.Date} was successfully deleted.",
+            Message = $"Attendance for {request.ChildId} at {request.Date} was successfully deleted.",
         });
     }
 }
