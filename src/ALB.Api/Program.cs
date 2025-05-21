@@ -52,6 +52,7 @@ app.MapScalarApiReference("/api-reference", options =>
 app.MapExampleEndpoints();
 app.MapIdentityApi<ApplicationUser>();
 
+// TODO: add migrations when out of dev cycle
 using var serviceScope = app.Services.CreateScope();
 var context = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 // await context.Database.MigrateAsync();
