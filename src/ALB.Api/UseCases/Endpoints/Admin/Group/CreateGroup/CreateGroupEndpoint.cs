@@ -2,19 +2,18 @@ using FastEndpoints;
 
 namespace ALB.Api.UseCases.Endpoints.Admin.Group.CreateGroup;
 
-public class CreateGroupEndpoint : Endpoint<CreateGroupRequest, CreateGroupResponse>
+public class CreateGroupEndpoint : EndpointWithoutRequest<CreateGroupResponse>
 {
     public override void Configure()
     {
-        Post("/admin/group/create");
+        Post("/api/groups");
     }
 
-    public override async Task HandleAsync(CreateGroupRequest request, CancellationToken cancellationToken)
+    public override async Task HandleAsync(CancellationToken cancellationToken) 
     {
-        await SendAsync(new CreateGroupResponse
-        {
-            Id = Guid.Empty,
-            Message = "Endpoint is not yet implemented.",
-        }, cancellation: cancellationToken);
+        await SendAsync(
+            new CreateGroupResponse(Guid.Empty, "Endpoint is not yet implemented."),
+            cancellation: cancellationToken
+        );
     }
 }

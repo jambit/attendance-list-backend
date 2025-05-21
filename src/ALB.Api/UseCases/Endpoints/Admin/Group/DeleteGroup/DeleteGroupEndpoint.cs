@@ -2,18 +2,18 @@ using FastEndpoints;
 
 namespace ALB.Api.UseCases.Endpoints.Admin.Group.DeleteGroup;
 
-public class DeleteGroupEndpoint : Endpoint<DeleteGroupRequest, DeleteGroupResponse>
+public class DeleteGroupEndpoint : EndpointWithoutRequest<DeleteGroupResponse>
 {
     public override void Configure()
     {
-        Delete("/admin/groups/delete");
+        Delete("/api/groups/{groupId:Guid}");
     }
 
-    public override async Task HandleAsync(DeleteGroupRequest request, CancellationToken cancellationToken)
+    public override async Task HandleAsync(CancellationToken cancellationToken)
     {
-        await SendAsync(new DeleteGroupResponse
-        {
-            Message = $"Delete endpoint called for group ID: {request.Id}. (Not yet implemented)"
-        }, cancellation: cancellationToken);
+        var GroupId = Route<Guid>("groupId");
+        
+        await SendAsync(new DeleteGroupResponse($"Deleted Endpoint for groop Id: {GroupId}"),
+            cancellation: cancellationToken);
     }
 }

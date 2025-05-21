@@ -2,14 +2,14 @@ using FastEndpoints;
 
 namespace ALB.Api.UseCases.Endpoints.Admin.ApplicationUser.CreateApplicationUser;
 
-public class CreateApplicationUserEndpoint : Endpoint<CreateApplicationUserRequest, CreateApplicationUserResponse>
+public class CreateApplicationUserEndpoint : EndpointWithoutRequest<CreateApplicationUserResponse>
 {
     public override void Configure()
     {
-        Post("/admin/application-user/create-application-user");
+        Post("/api/users");
     }
 
-    public override async Task HandleAsync(CreateApplicationUserRequest request, CancellationToken cancellationToken)
+    public override async Task HandleAsync(CancellationToken cancellationToken)
     {
         await SendAsync(new CreateApplicationUserResponse
         {

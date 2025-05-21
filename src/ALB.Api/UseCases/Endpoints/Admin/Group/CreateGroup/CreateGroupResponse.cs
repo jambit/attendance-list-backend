@@ -1,7 +1,3 @@
 namespace ALB.Api.UseCases.Endpoints.Admin.Group.CreateGroup;
 
-public class CreateGroupResponse
-{
-    public Guid Id { get; set; }
-    public string Message { get; set; }
-}
+public record CreateGroupResponse(Guid Id, string Message);

@@ -2,14 +2,14 @@ using FastEndpoints;
 
 namespace ALB.Api.UseCases.Endpoints.Admin.Child.CreateChild;
 
-public class CreateChildEndpoint : Endpoint<CreateChildRequest, CreateChildResponse>
+public class CreateChildEndpoint : EndpointWithoutRequest<CreateChildResponse>
 {
     public override void Configure()
     {
-        Post("/admin/child/create-children");
+        Post("/api/children");
     }
 
-    public override async Task HandleAsync(CreateChildRequest request, CancellationToken cancellationToken)
+    public override async Task HandleAsync(CancellationToken cancellationToken)
     {
         await SendAsync(new CreateChildResponse
         {

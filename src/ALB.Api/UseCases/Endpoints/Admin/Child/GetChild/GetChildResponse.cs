@@ -1,6 +1,6 @@
-namespace ALB.Api.UseCases.Endpoints.Admin.Child.ReadChild;
+namespace ALB.Api.UseCases.Endpoints.Admin.Child.GetChild;
 
-public class ReadChildResponse
+public class GetChildResponse
 {
     public string Name { get; set; }
     public DateTime DateofBirth { get; set; }
