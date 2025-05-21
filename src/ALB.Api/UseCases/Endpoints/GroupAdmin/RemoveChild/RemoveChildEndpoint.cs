@@ -6,7 +6,7 @@ public class RemoveChildEndpoint : Endpoint<RemoveChildRequest, RemoveChildRespo
 {
     public override void Configure()
     {
-        Delete("/groupadmin/deletechildren");
+        Delete("api/children/{childid}");
         AllowAnonymous();
     }
 
