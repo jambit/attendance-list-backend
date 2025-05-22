@@ -1,0 +1,24 @@
+
+using FastEndpoints;
+
+
+namespace ALB.Api.UseCases.Endpoints.GroupAdmin.UpdateChild;
+
+public class UpdateChildEndpoint : Endpoint<UpdateChildRequest, UpdateChildResponse>
+{
+    public override void Configure()
+    {
+        Put("api/children/{childId}/groups/{groupId}");
+        AllowAnonymous();
+    }
+
+    public async override Task HandleAsync(UpdateChildRequest request, CancellationToken cancellationToken)
+    {
+        Console.WriteLine($"{request.ChildId} was moved to group {request.GroupId}");
+
+        await SendAsync(new UpdateChildResponse
+        {
+            Message = $"Group {request.GroupId} was successfully moved to group {request.GroupId}"
+        });
+    }
+}
