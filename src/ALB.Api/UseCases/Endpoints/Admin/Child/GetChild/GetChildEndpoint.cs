@@ -7,20 +7,15 @@ public class GetChildEndpoint : EndpointWithoutRequest<GetChildResponse>
 {
     public override void Configure()
     {
-        Get("/api/child/{id:guid}");
+        Get("/api/children/{id:guid}");
     }
 
     public override async Task HandleAsync(CancellationToken cancellationToken)
     {
-        
-        var id = Route<Guid>("id", request);
-        
-        
-        await SendAsync(new GetChildResponse
-        {
-            Id = id,
-            Name = "Not implemented",
-            DateofBirth = DateTime.MinValue
-        }, cancellation: cancellationToken);
+
+        var id = Route<Guid>("id");
+
+        await SendAsync(new GetChildResponse("Not implemented yet"),
+            cancellation: cancellationToken);
     }
 }

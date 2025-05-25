@@ -6,7 +6,7 @@ public class DeleteChildEndpoint : EndpointWithoutRequest<DeleteChildResponse>
 {
     public override void Configure()
     {
-        Delete("/api/child/{id:Guid}");
+        Delete("/api/children/{id:Guid}");
     }
 
     public override async Task HandleAsync(CancellationToken cancellationToken)
@@ -14,9 +14,7 @@ public class DeleteChildEndpoint : EndpointWithoutRequest<DeleteChildResponse>
         var id = Route<Guid>("id");
         
         
-        await SendAsync(new DeleteChildResponse
-        {
-            Message = $"Delete endpoint called for child ID: {id}. (Not yet implemented)"
-        }, cancellation: cancellationToken);
+        await SendAsync(new DeleteChildResponse($"Deleted child with ID: {id}"),
+        cancellation: cancellationToken);
     }
 }

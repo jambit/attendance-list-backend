@@ -1,3 +1,3 @@
 namespace ALB.Api.UseCases.Endpoints.Admin.Group.UpdateGroup;
 
-public record PutGroupResponse(string Message);
+public record UpdateGroupRequest(string GroupName);

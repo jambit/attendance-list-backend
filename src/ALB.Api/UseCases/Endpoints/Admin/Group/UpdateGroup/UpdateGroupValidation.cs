@@ -3,9 +3,9 @@ using FluentValidation;
 
 namespace ALB.Api.UseCases.Endpoints.Admin.Group.UpdateGroup;
 
-public class PutGroupValidation : Validator<PutGroupRequest>
+public class UpdateGroupValidation : Validator<UpdateGroupRequest>
 {
-    public PutGroupValidation()
+    public UpdateGroupValidation()
     {
         RuleFor(x => x.GroupName)
             .NotEmpty().WithMessage("Group Name is Required");

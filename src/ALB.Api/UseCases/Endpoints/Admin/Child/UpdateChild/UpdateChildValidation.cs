@@ -7,7 +7,7 @@ public class UpdateChildValidation: Validator<UpdateChildRequest>
 {
     public UpdateChildValidation()
     {
-        RuleFor(x => x.Id)
-            .NotEmpty().WithMessage("Id is required");
+        RuleFor(x => x.ChildName)
+            .NotEmpty().WithMessage("Name is required");
     }
 }

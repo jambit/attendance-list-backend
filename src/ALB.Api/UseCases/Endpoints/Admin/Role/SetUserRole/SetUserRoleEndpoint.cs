@@ -2,18 +2,16 @@ using FastEndpoints;
 
 namespace ALB.Api.UseCases.Endpoints.Admin.Role.SetUserRole;
 
-public class SetUserRoleEndpoint : Endpoint<SetUserRoleRequest, SetUserRoleResponse>
+public class SetUserRoleEndpoint : EndpointWithoutRequest<SetUserRoleResponse>
 {
     public override void Configure()
     {
-        Post("/admin/role/set-user-role");
+        Post("/api/users/{id:Guid}/roles/set");
     }
 
-    public override async Task HandleAsync(SetUserRoleRequest request, CancellationToken cancellationToken)
+    public override async Task HandleAsync(CancellationToken cancellationToken)
     {
-        await SendAsync(new SetUserRoleResponse
-        {
-            Message = "not implemented",
-        }, cancellation: cancellationToken);
+        await SendAsync(new SetUserRoleResponse("Set Role to User"),
+            cancellation: cancellationToken);
     }
 }

@@ -12,10 +12,8 @@ public class GetUserEndpoint : EndpointWithoutRequest<GetUserResponse>
     public override async Task HandleAsync(CancellationToken cancellationToken)
     {
         var id = Route<Guid>("id");
-            
-        await SendAsync(new GetUserResponse
-        {
-            Message = "not implemented",
-        }, cancellation: cancellationToken);
+
+        await SendAsync(new GetUserResponse("not implemented yet"),
+            cancellation: cancellationToken);
     }
 }
