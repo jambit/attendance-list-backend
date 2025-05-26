@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
+using FastEndpoints;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,11 +36,14 @@ builder.Services.AddFastEndpoints();
 
 builder.Services.AddAuthAndIdentityCore();
 
+builder.Services.AddFastEndpoints();
+
 
 var app = builder.Build();
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseFastEndpoints();
 
 // Configure the HTTP request pipeline.
 app.UseExceptionHandler("/Error");
