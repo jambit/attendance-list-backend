@@ -3,6 +3,7 @@ using ALB.Api.UseCases.ExampleFeatures.Endpoints;
 using ALB.Infrastructure.Extensions;
 using ALB.Domain.Identity;
 using ALB.Infrastructure.Persistence;
+using FastEndpoints;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
@@ -30,6 +31,8 @@ builder.Services.AddOpenApi();
 //TODO: Implement new EmailSender and remove DummyEmailSender
 builder.Services.AddTransient<IEmailSender<ApplicationUser>, DummyEmailSender>();
 
+builder.Services.AddFastEndpoints();
+
 builder.Services.AddAuthAndIdentityCore();
 
 
@@ -49,7 +52,7 @@ app.MapScalarApiReference("/api-reference", options =>
         .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient);
 });
 
-app.MapExampleEndpoints();
+app.UseFastEndpoints();
 app.MapIdentityApi<ApplicationUser>();
 
 // TODO: add migrations when out of dev cycle
