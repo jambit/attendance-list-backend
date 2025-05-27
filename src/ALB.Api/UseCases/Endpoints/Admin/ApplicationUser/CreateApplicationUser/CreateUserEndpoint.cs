@@ -6,7 +6,8 @@ public class CreateUserEndpoint : Endpoint<CreateUserRequest, CreateUserResponse
 {
     public override void Configure()
     {
-        Post("/api/users");
+        //TODO route is a duplicate - added number 2 in this case
+        Post("api/users2");
     }
 
     public override async Task HandleAsync(CreateUserRequest request, CancellationToken cancellationToken)
