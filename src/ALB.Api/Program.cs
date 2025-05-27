@@ -2,6 +2,7 @@ using ALB.Api.Extensions;
 using ALB.Api.UseCases.ExampleFeatures.Endpoints;
 using ALB.Infrastructure.Extensions;
 using ALB.Domain.Identity;
+using ALB.Infrastructure.Authentication;
 using ALB.Infrastructure.Persistence;
 using FastEndpoints;
 using Microsoft.AspNetCore.Authorization;
@@ -53,7 +54,21 @@ app.MapScalarApiReference("/api-reference", options =>
 });
 
 app.UseFastEndpoints();
-app.MapIdentityApi<ApplicationUser>();
+app.MapIdentityApiFilterable<ApplicationUser>(new IdentityApiEndpointRouteBuilderOptions()
+{
+    ExcludeLoginPost = false,
+    ExcludeRefreshPost = false,
+    ExcludeConfirmEmailGet = false,
+    ExcludeResendConfirmationEmailPost = false,
+    ExcludeForgotPasswordPost = false,
+    ExcludeResetPasswordPost = false,
+    ExcludeRegisterPost = true,
+    // Excluding ManageGroup hides 2FAPost, InfoGet and InfoPost
+    ExcludeManageGroup = true,
+    Exclude2FaPost = true,
+    ExcludeInfoGet = true,
+    ExcludeInfoPost = true,
+});
 
 // TODO: add migrations when out of dev cycle
 using var serviceScope = app.Services.CreateScope();
