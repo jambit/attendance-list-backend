@@ -1,3 +1,0 @@
-namespace ALB.Api.UseCases.Endpoints.Admin.Child.CreateChild;
-
-public record CreateChildResponse(Guid Id, string Message);
