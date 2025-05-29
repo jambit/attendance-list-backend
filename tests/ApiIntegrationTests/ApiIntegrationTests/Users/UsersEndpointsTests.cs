@@ -1,7 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
-using ALB.Api.UseCases.Users.Endpoints.Create;
-using ALB.Api.UseCases.Users.Endpoints.SetRole;
+using ALB.Api.UseCases.Endpoints.Users;
+using ALB.Api.UseCases.Endpoints.Users.Roles;
 using ALB.Domain.Values;
 
 namespace ApiIntegrationTests.Users;
@@ -19,12 +19,12 @@ public class UsersEndpointsTests(BaseIntegrationTest baseIntegrationTest)
     {
         var counter = Interlocked.Increment(ref _userCounter);
         
-        return new CreateUserRequest{
-            Email = $"user{counter}@test.com",
-            Password = "SuperSecurePassword123!",
-            FirstName = "Max",
-            LastName = "Mustermann",
-        };
+        return new CreateUserRequest(
+            Email: $"user{counter}@test.com",
+            Password: "SuperSecurePassword123!",
+            FirstName: "Max",
+            LastName: "Mustermann"
+            );
     }
     
     [Test]
@@ -70,13 +70,12 @@ public class UsersEndpointsTests(BaseIntegrationTest baseIntegrationTest)
         var createdUser = await response.Content.ReadFromJsonAsync<CreateUserResponse>();
         var userId = createdUser.Id;
     
-        var setRoleRequest = new SetUserRoleRequest
-        {
-            UserId = userId,
-            RoleValue = SystemRoles.Parent
-        };
+        var setRoleRequest = new AddUserRoleRequest
+        (
+            Role: SystemRoles.Parent
+        );
     
-        response = await AdminClient.PostAsJsonAsync("api/users/roles", setRoleRequest);
+        response = await AdminClient.PostAsJsonAsync($"api/users/{userId}/roles", setRoleRequest);
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
     }
 
@@ -90,13 +89,12 @@ public class UsersEndpointsTests(BaseIntegrationTest baseIntegrationTest)
         var createdUser = await response.Content.ReadFromJsonAsync<CreateUserResponse>();
         var userId = createdUser.Id;
     
-        var setRoleRequest = new SetUserRoleRequest
-        {
-            UserId = userId,
-            RoleValue = SystemRoles.Parent
-        };
+        var setRoleRequest = new AddUserRoleRequest
+        (
+            Role: SystemRoles.Parent
+        );
     
-        response = await ParentClient.PostAsJsonAsync("api/users/roles", setRoleRequest);
+        response = await ParentClient.PostAsJsonAsync($"api/users/{userId}/roles", setRoleRequest);
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Forbidden);
     }
 }

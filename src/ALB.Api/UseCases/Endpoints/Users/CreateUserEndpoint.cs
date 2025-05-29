@@ -4,14 +4,14 @@ using FastEndpoints;
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 
-namespace ALB.Api.UseCases.Users.Endpoints.Create;
+namespace ALB.Api.UseCases.Endpoints.Users;
 
 public class CreateUserEndpoint(UserManager<ApplicationUser> userManager) : Endpoint<CreateUserRequest, CreateUserResponse>
 {
 
     public override void Configure()
     {
-        Post("api/users");
+        Post("/api/users");
         Policies(SystemRoles.AdminPolicy);
     }
 
@@ -36,11 +36,8 @@ public class CreateUserEndpoint(UserManager<ApplicationUser> userManager) : Endp
             ThrowIfAnyErrors();
         }
 
-        await SendAsync(new CreateUserResponse
-        {
-            Id = user.Id,
-            Email = user.Email,
-        },200, ct);
+        await SendAsync(new CreateUserResponse(Id: user.Id, Email: user.Email, null, null),
+            200, ct);
 
     }
     
@@ -64,18 +61,6 @@ public class CreateUserRequestValidator : Validator<CreateUserRequest>
     }
 }
 
-public class CreateUserRequest
-{
-    public string Email { get; set; }
-    public string Password { get; set; }
-    public string? FirstName { get; set; }
-    public string? LastName { get; set; }
-}
+public record CreateUserRequest(string Email, string Password, string? FirstName, string? LastName);
 
-public class CreateUserResponse
-{
-    public Guid Id { get; set; }
-    public string Email { get; set; }
-    public string? FirstName { get; set; }
-    public string? LastName { get; set; }
-}
+public record CreateUserResponse(Guid Id, string Email, string? FirstName, string? LastName);
