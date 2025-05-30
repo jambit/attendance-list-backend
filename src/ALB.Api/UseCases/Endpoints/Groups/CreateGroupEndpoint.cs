@@ -1,22 +1,38 @@
 using ALB.Domain.Values;
 using FastEndpoints;
+using ALB.Infrastructure.Persistence.Adapters.Admin;
+using ALB.Domain.Entities;
+using Group = ALB.Domain.Entities.Group;
+
 
 namespace ALB.Api.UseCases.Endpoints.Groups;
 
 public class CreateGroupEndpoint : EndpointWithoutRequest<CreateGroupResponse>
 {
+    private readonly IGroupAdapter _groupAdapter;
+
+    public CreateGroupEndpoint(IGroupAdapter groupAdapter)
+    {
+        _groupAdapter = groupAdapter;
+    }
+    
     public override void Configure()
     {
         Post("/api/groups");
         Policies(SystemRoles.AdminPolicy);
     }
 
-    public override async Task HandleAsync(CancellationToken cancellationToken) 
+    public override async Task HandleAsync(CreateGroupRequest request, CancellationToken cancellationToken) 
     {
-        await SendAsync(
-            new CreateGroupResponse(Guid.Empty, "Endpoint is not yet implemented."),
-            cancellation: cancellationToken
-        );
+        var group = new Group
+        {
+            Id = Guid.NewGuid(),
+            Name = request.GroupName
+        };
+
+        var createdGroup = await _groupAdapter.CreateAsync(group);
+
+        await SendAsync(new CreateGroupResponse(createdGroup.Id, "Group created successfully."), cancellation: cancellationToken);
     }
 }
 
