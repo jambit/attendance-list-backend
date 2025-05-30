@@ -1,4 +1,5 @@
 using ALB.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace ALB.Infrastructure.Persistence.Adapters.Admin;
 
@@ -37,4 +38,46 @@ public class GroupAdapter : IGroupAdapter
             await dbContext.SaveChangesAsync();
         }
     }
+    
+    public async Task AddChildrenToGroupAsync(Guid groupId, IEnumerable<Guid> childIds, CancellationToken ct)
+    {
+        var group = await dbContext.Groups
+            .Include(g => g.Children)
+            .FirstOrDefaultAsync(g => g.Id == groupId, ct);
+
+        if (group == null) throw new Exception("Group not found");
+
+        var children = await dbContext.Children
+            .Where(c => childIds.Contains(c.Id))
+            .ToListAsync(ct);
+
+        foreach (var child in children)
+        {
+            if (!group.Children.Contains(child))
+                group.Children.Add(child);
+        }
+
+        await dbContext.SaveChangesAsync(ct);
+    }
+
+    public async Task RemoveChildrenFromGroupAsync(Guid groupId, IEnumerable<Guid> childIds, CancellationToken ct)
+    {
+        var group = await dbContext.Groups
+            .Include(g => g.Children)
+            .FirstOrDefaultAsync(g => g.Id == groupId, ct);
+
+        if (group == null) throw new Exception("Group not found");
+
+        var childrenToRemove = group.Children
+            .Where(c => childIds.Contains(c.Id))
+            .ToList();
+
+        foreach (var child in childrenToRemove)
+        {
+            group.Children.Remove(child);
+        }
+
+        await dbContext.SaveChangesAsync(ct);
+    }
+
 }
