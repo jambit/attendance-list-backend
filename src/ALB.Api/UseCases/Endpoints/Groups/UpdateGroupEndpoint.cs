@@ -1,10 +1,18 @@
 using ALB.Domain.Values;
 using FastEndpoints;
+using ALB.Infrastructure.Persistence.Adapters.Admin; 
 
 namespace ALB.Api.UseCases.Endpoints.Groups;
 
 public class UpdateGroupEndpoint : Endpoint<UpdateGroupRequest, UpdateGroupResponse>
 {
+    private readonly IGroupAdapter _groupAdapter;
+
+    public UpdateGroupEndpoint(IGroupAdapter groupAdapter)
+    {
+        _groupAdapter = groupAdapter;
+    }
+    
     public override void Configure()
     {
         Put("/api/groups/{groupId:guid}");
@@ -13,15 +21,27 @@ public class UpdateGroupEndpoint : Endpoint<UpdateGroupRequest, UpdateGroupRespo
 
     public override async Task HandleAsync(UpdateGroupRequest request, CancellationToken cancellationToken)
     {
-        var GroupId = Route<Guid>("groupId");
-        
+        var groupId = Route<Guid>("groupId");
+
+        var existingGroup = await _groupAdapter.GetByIdAsync(groupId);
+
+        if (existingGroup is null)
+        {
+            await SendNotFoundAsync(cancellationToken);
+            return;
+        }
+
+        existingGroup.Name = request.GroupName;
+
+        await _groupAdapter.UpdateAsync(existingGroup);
+
         await SendAsync(
-            new UpdateGroupResponse($"updated group with groupID: {GroupId}"),
+            new UpdateGroupResponse($"Updated group '{existingGroup.Name}' with ID: {existingGroup.Id}"),
             cancellation: cancellationToken
         );
     }
 }
 
-public record UpdateGroupRequest(string GroupName);
+public record UpdateGroupRequest(Guid groupId, string GroupName);
 
 public record UpdateGroupResponse(string Message);

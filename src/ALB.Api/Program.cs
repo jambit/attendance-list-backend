@@ -6,6 +6,7 @@ using FastEndpoints;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Scalar.AspNetCore;
+using ALB.Infrastructure.Persistence.Adapters.Admin;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +23,11 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 });
 
 builder.Services.AddInfrastructure(builder.Configuration);
+
+builder.Services.AddScoped<IUserAdapter, UserAdapter>();
+builder.Services.AddScoped<IChildAdapter, ChildAdapter>();
+builder.Services.AddScoped<IGroupAdapter, GroupAdapter>();
+builder.Services.AddScoped<IUserRoleAdapter, UserRoleAdapter>();
 
 builder.Services.AddOpenApi();
 
