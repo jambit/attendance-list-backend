@@ -1,14 +1,11 @@
 using ALB.Api.Extensions;
-using ALB.Api.UseCases.ExampleFeatures.Endpoints;
-using ALB.Infrastructure.Extensions;
 using ALB.Domain.Identity;
 using ALB.Infrastructure.Authentication;
+using ALB.Infrastructure.Extensions;
 using ALB.Infrastructure.Persistence;
 using FastEndpoints;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
