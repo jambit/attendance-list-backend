@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Scalar.AspNetCore;
 using ALB.Infrastructure.Persistence.Adapters.Admin;
+using ALB.Infrastructure.Persistence.Adapters.TeamMember;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,6 +29,8 @@ builder.Services.AddScoped<IUserAdapter, UserAdapter>();
 builder.Services.AddScoped<IChildAdapter, ChildAdapter>();
 builder.Services.AddScoped<IGroupAdapter, GroupAdapter>();
 builder.Services.AddScoped<IUserRoleAdapter, UserRoleAdapter>();
+builder.Services.AddScoped<IAttendanceAdapter, AttendanceAdapter>();
+
 
 builder.Services.AddOpenApi();
 
