@@ -1,8 +1,8 @@
 using ALB.Domain.Identity;
 
-namespace ALB.Infrastructure.Persistence.Adapters.Admin;
+namespace ALB.Infrastructure.Persistence.Repositories.Admin;
 
-public interface IUserAdapter
+public interface IUserRepository
 {
     Task<ApplicationUser>CreateAsync(ApplicationUser user);
     Task<ApplicationUser?> GetByIdAsync(Guid id);

@@ -1,13 +1,13 @@
 using ALB.Domain.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace ALB.Infrastructure.Persistence.Adapters.Admin;
+namespace ALB.Infrastructure.Persistence.Repositories.Admin;
 
-public class UserAdapter : IUserAdapter
+public class UserRepository : IUserRepository
 {
     private readonly ApplicationDbContext dbContext;
 
-    public UserAdapter(ApplicationDbContext dbContext)
+    public UserRepository(ApplicationDbContext dbContext)
     {
         this.dbContext = dbContext;
     }

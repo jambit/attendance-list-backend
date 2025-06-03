@@ -1,12 +1,11 @@
-using ALB.Domain.Identity;
 using ALB.Domain.Values;
 using FastEndpoints;
 using Microsoft.AspNetCore.Identity;
-using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
+using ALB.Infrastructure.Persistence.Repositories.Admin;
 
 namespace ALB.Api.UseCases.Endpoints.Users.Roles;
 
-public class AddUserRoleEndpoint(UserManager<ApplicationUser> userManager)
+public class AddUserRoleEndpoint(IUserRoleRepository userRoleRepository)
     : Endpoint<AddUserRoleRequest, AddUserRoleResponse>
 {
     public override void Configure()
@@ -17,23 +16,20 @@ public class AddUserRoleEndpoint(UserManager<ApplicationUser> userManager)
     
     public override async Task HandleAsync(AddUserRoleRequest request, CancellationToken ct)
     {
-        
         var userId = Route<Guid>("userId");
-        
-        var userToAssignRoleTo = await userManager.FindByIdAsync(userId.ToString());
 
-        if (userToAssignRoleTo is null)
+        try
         {
-            await SendAsync(
-                new AddUserRoleResponse(Result: IdentityResult.Failed(new IdentityError {Description = "User not found."})),
-                404,
-                cancellation: ct);
-            return;
+            await userRoleRepository.AssignRoleToUserAsync(userId, request.Role);
+            await SendAsync(new AddUserRoleResponse(IdentityResult.Success), cancellation: ct);
         }
-        
-        await SendAsync(
-            new AddUserRoleResponse(Result: await userManager.AddToRoleAsync(userToAssignRoleTo, request.Role)),
-            200, ct);
+        catch (Exception ex)
+        {
+            AddError(ex.Message);
+            await SendErrorsAsync(500, ct);
+        }
+
+
     }
 }
 

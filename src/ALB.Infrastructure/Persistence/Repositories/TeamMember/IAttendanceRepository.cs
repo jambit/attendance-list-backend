@@ -1,8 +1,8 @@
 using ALB.Domain.Enum;
 
-namespace ALB.Infrastructure.Persistence.Adapters.TeamMember;
+namespace ALB.Infrastructure.Persistence.Repositories.TeamMember;
 
-public interface IAttendanceAdapter
+public interface IAttendanceRepository
 {
     
         Task CreateOrUpdateAsync(Guid childId, DateTime date, DateTime? arrivalAt, DateTime? departureAt, ChildStatus status, CancellationToken ct);

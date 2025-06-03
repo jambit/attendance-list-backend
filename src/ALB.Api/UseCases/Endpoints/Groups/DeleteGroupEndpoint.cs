@@ -1,16 +1,16 @@
 using ALB.Domain.Values;
 using FastEndpoints;
-using ALB.Infrastructure.Persistence.Adapters.Admin;
+using ALB.Infrastructure.Persistence.Repositories.Admin;
 
 namespace ALB.Api.UseCases.Endpoints.Groups;
 
 public class DeleteGroupEndpoint : Endpoint<DeleteGroupRequest, DeleteGroupResponse>
 {
-    private readonly IGroupAdapter _groupAdapter;
+    private readonly IGroupRepository _groupRepository;
 
-    public DeleteGroupEndpoint(IGroupAdapter groupAdapter)
+    public DeleteGroupEndpoint(IGroupRepository groupRepository)
     {
-        _groupAdapter = groupAdapter;
+        _groupRepository = groupRepository;
     }
     public override void Configure()
     {
@@ -20,7 +20,7 @@ public class DeleteGroupEndpoint : Endpoint<DeleteGroupRequest, DeleteGroupRespo
 
     public override async Task HandleAsync(DeleteGroupRequest request, CancellationToken cancellationToken)
     {
-        await _groupAdapter.DeleteAsync(request.GroupId);
+        await _groupRepository.DeleteAsync(request.GroupId);
 
         await SendAsync(new DeleteGroupResponse($"Deleted Group with Id: {request.GroupId}"),
             cancellation: cancellationToken);

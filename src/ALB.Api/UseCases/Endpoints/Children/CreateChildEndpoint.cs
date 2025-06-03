@@ -1,17 +1,17 @@
 using ALB.Domain.Values;
 using FastEndpoints;
-using ALB.Infrastructure.Persistence.Adapters.Admin;
+using ALB.Infrastructure.Persistence.Repositories.Admin;
 using ALB.Domain.Entities;
 
 namespace ALB.Api.UseCases.Endpoints.Children;
 
 public class CreateChildEndpoint : Endpoint<CreateChildRequest, CreateChildResponse>
 {
-    private readonly IChildAdapter _childAdapter;
+    private readonly IChildRepository _childRepository;
     
-    public CreateChildEndpoint(IChildAdapter childAdapter)
+    public CreateChildEndpoint(IChildRepository childRepository)
     {
-        _childAdapter = childAdapter;
+        _childRepository = childRepository;
     }
     public override void Configure()
     {
@@ -31,7 +31,7 @@ public class CreateChildEndpoint : Endpoint<CreateChildRequest, CreateChildRespo
             
         };
 
-        var createdChild = await _childAdapter.CreateAsync(child);
+        var createdChild = await _childRepository.CreateAsync(child);
 
         var response = new CreateChildResponse(createdChild.Id, $"Created child {createdChild.FirstName} {createdChild.LastName}");
 

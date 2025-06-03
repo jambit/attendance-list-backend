@@ -2,13 +2,13 @@ using ALB.Domain.Entities;
 using ALB.Domain.Enum;
 using Microsoft.EntityFrameworkCore;
 
-namespace ALB.Infrastructure.Persistence.Adapters.TeamMember;
+namespace ALB.Infrastructure.Persistence.Repositories.TeamMember;
 
-public class AttendanceAdapter : IAttendanceAdapter
+public class AttendanceRepository : IAttendanceRepository
 {
     private readonly ApplicationDbContext dbContext;
 
-    public AttendanceAdapter(ApplicationDbContext dbContext)
+    public AttendanceRepository(ApplicationDbContext dbContext)
     {
         this.dbContext = dbContext;
     }

@@ -2,13 +2,13 @@ using ALB.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 
-namespace ALB.Infrastructure.Persistence.Adapters.Admin;
+namespace ALB.Infrastructure.Persistence.Repositories.Admin;
     
-public class ChildAdapter : IChildAdapter
+public class ChildRepository : IChildRepository
     {
         private readonly ApplicationDbContext dbContext;
 
-        public ChildAdapter(ApplicationDbContext dbContext)
+        public ChildRepository(ApplicationDbContext dbContext)
         {
             this.dbContext = dbContext;
         }

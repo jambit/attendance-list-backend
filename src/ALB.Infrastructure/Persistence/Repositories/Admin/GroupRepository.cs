@@ -1,13 +1,13 @@
 using ALB.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace ALB.Infrastructure.Persistence.Adapters.Admin;
+namespace ALB.Infrastructure.Persistence.Repositories.Admin;
 
-public class GroupAdapter : IGroupAdapter
+public class GroupRepository : IGroupRepository
 {
     private readonly ApplicationDbContext dbContext;
 
-    public GroupAdapter(ApplicationDbContext dbContext)
+    public GroupRepository(ApplicationDbContext dbContext)
     {
         this.dbContext = dbContext;
     }

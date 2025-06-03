@@ -1,6 +1,6 @@
 using ALB.Domain.Values;
 using FastEndpoints;
-using ALB.Infrastructure.Persistence.Adapters.Admin;
+using ALB.Infrastructure.Persistence.Repositories.Admin;
 using Group = ALB.Domain.Entities.Group;
 
 
@@ -8,11 +8,11 @@ namespace ALB.Api.UseCases.Endpoints.Groups;
 
 public class CreateGroupEndpoint : Endpoint<CreateGroupRequest, CreateGroupResponse>
 {
-    private readonly IGroupAdapter _groupAdapter;
+    private readonly IGroupRepository _groupRepository;
 
-    public CreateGroupEndpoint(IGroupAdapter groupAdapter)
+    public CreateGroupEndpoint(IGroupRepository groupRepository)
     {
-        _groupAdapter = groupAdapter;
+        _groupRepository = groupRepository;
     }
 
     public override void Configure()
@@ -29,7 +29,7 @@ public class CreateGroupEndpoint : Endpoint<CreateGroupRequest, CreateGroupRespo
             Name = request.GroupName
         };
 
-        var createdGroup = await _groupAdapter.CreateAsync(group);
+        var createdGroup = await _groupRepository.CreateAsync(group);
 
         await SendAsync(
             new CreateGroupResponse(createdGroup.Id, "Group created successfully."),

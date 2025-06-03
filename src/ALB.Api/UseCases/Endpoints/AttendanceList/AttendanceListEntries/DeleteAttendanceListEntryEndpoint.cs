@@ -1,15 +1,15 @@
-using ALB.Infrastructure.Persistence.Adapters.TeamMember;
+using ALB.Infrastructure.Persistence.Repositories.TeamMember;
 using FastEndpoints;
 
 namespace ALB.Api.UseCases.Endpoints.AttendanceList.AttendanceListEntries;
 
 public class DeleteAttendanceListEntryEndpoint : Endpoint<DeleteAttendanceListEntryRequest, DeleteAttendanceListEntryResponse>
 {
-    private readonly IAttendanceAdapter adapter;
+    private readonly IAttendanceRepository _repository;
 
-    public DeleteAttendanceListEntryEndpoint(IAttendanceAdapter adapter)
+    public DeleteAttendanceListEntryEndpoint(IAttendanceRepository repository)
     {
-        this.adapter = adapter;
+        this._repository = repository;
     }
 
     public override void Configure()
@@ -22,7 +22,7 @@ public class DeleteAttendanceListEntryEndpoint : Endpoint<DeleteAttendanceListEn
     {
         var childId = Guid.Parse(request.ChildId);
 
-        await adapter.DeleteAsync(childId, request.Date, ct);
+        await _repository.DeleteAsync(childId, request.Date, ct);
 
         await SendAsync(new DeleteAttendanceListEntryResponse(
             $"Attendance for {request.ChildId} at {request.Date} was successfully deleted."));

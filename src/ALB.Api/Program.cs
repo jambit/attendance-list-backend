@@ -6,8 +6,8 @@ using FastEndpoints;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Scalar.AspNetCore;
-using ALB.Infrastructure.Persistence.Adapters.Admin;
-using ALB.Infrastructure.Persistence.Adapters.TeamMember;
+using ALB.Infrastructure.Persistence.Repositories.Admin;
+using ALB.Infrastructure.Persistence.Repositories.TeamMember;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,11 +25,11 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 
 builder.Services.AddInfrastructure(builder.Configuration);
 
-builder.Services.AddScoped<IUserAdapter, UserAdapter>();
-builder.Services.AddScoped<IChildAdapter, ChildAdapter>();
-builder.Services.AddScoped<IGroupAdapter, GroupAdapter>();
-builder.Services.AddScoped<IUserRoleAdapter, UserRoleAdapter>();
-builder.Services.AddScoped<IAttendanceAdapter, AttendanceAdapter>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IChildRepository, ChildRepository>();
+builder.Services.AddScoped<IGroupRepository, GroupRepository>();
+builder.Services.AddScoped<IUserRoleRepository, UserRoleRepository>();
+builder.Services.AddScoped<IAttendanceRepository, AttendanceRepository>();
 
 
 builder.Services.AddOpenApi();

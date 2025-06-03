@@ -1,16 +1,16 @@
 using ALB.Domain.Values;
 using FastEndpoints;
-using ALB.Infrastructure.Persistence.Adapters.Admin; 
+using ALB.Infrastructure.Persistence.Repositories.Admin; 
 
 namespace ALB.Api.UseCases.Endpoints.Groups;
 
 public class UpdateGroupEndpoint : Endpoint<UpdateGroupRequest, UpdateGroupResponse>
 {
-    private readonly IGroupAdapter _groupAdapter;
+    private readonly IGroupRepository _groupRepository;
 
-    public UpdateGroupEndpoint(IGroupAdapter groupAdapter)
+    public UpdateGroupEndpoint(IGroupRepository groupRepository)
     {
-        _groupAdapter = groupAdapter;
+        _groupRepository = groupRepository;
     }
     
     public override void Configure()
@@ -23,7 +23,7 @@ public class UpdateGroupEndpoint : Endpoint<UpdateGroupRequest, UpdateGroupRespo
     {
         var groupId = Route<Guid>("groupId");
 
-        var existingGroup = await _groupAdapter.GetByIdAsync(groupId);
+        var existingGroup = await _groupRepository.GetByIdAsync(groupId);
 
         if (existingGroup is null)
         {
@@ -33,7 +33,7 @@ public class UpdateGroupEndpoint : Endpoint<UpdateGroupRequest, UpdateGroupRespo
 
         existingGroup.Name = request.GroupName;
 
-        await _groupAdapter.UpdateAsync(existingGroup);
+        await _groupRepository.UpdateAsync(existingGroup);
 
         await SendAsync(
             new UpdateGroupResponse($"Updated group '{existingGroup.Name}' with ID: {existingGroup.Id}"),

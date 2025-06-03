@@ -1,8 +1,8 @@
 using ALB.Domain.Entities;
 
-namespace ALB.Infrastructure.Persistence.Adapters.Admin;
+namespace ALB.Infrastructure.Persistence.Repositories.Admin;
 
-public interface IChildAdapter
+public interface IChildRepository
 {
     Task<Child>CreateAsync(Child child);
     Task<Child?> GetByIdAsync(Guid id);

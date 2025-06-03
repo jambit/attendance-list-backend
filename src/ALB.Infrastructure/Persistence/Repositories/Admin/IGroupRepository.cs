@@ -1,8 +1,8 @@
 using ALB.Domain.Entities;
 
-namespace ALB.Infrastructure.Persistence.Adapters.Admin;
+namespace ALB.Infrastructure.Persistence.Repositories.Admin;
 
-public interface IGroupAdapter
+public interface IGroupRepository
 {
     Task<Group> CreateAsync(Group group);
     Task<Group?> GetByIdAsync(Guid id);

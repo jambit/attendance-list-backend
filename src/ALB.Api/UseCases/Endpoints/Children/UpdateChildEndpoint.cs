@@ -1,16 +1,16 @@
 using ALB.Domain.Values;
 using FastEndpoints;
-using ALB.Infrastructure.Persistence.Adapters.Admin;
+using ALB.Infrastructure.Persistence.Repositories.Admin;
 
 namespace ALB.Api.UseCases.Endpoints.Children;
 
 public class UpdateChildEndpoint : Endpoint<UpdateChildRequest, UpdateChildResponse>
 {
-    private readonly IChildAdapter _childAdapter;
+    private readonly IChildRepository _childRepository;
 
-    public UpdateChildEndpoint(IChildAdapter childAdapter)
+    public UpdateChildEndpoint(IChildRepository childRepository)
     {
-        _childAdapter = childAdapter;
+        _childRepository = childRepository;
     }
     public override void Configure()
     {
@@ -22,7 +22,7 @@ public class UpdateChildEndpoint : Endpoint<UpdateChildRequest, UpdateChildRespo
     {
         var childId = Route<Guid>("childId");
         
-        var existingChild = await _childAdapter.GetByIdAsync(childId);
+        var existingChild = await _childRepository.GetByIdAsync(childId);
         if (existingChild == null)
         {
             AddError($"Child with ID {childId} not found.");
@@ -31,7 +31,7 @@ public class UpdateChildEndpoint : Endpoint<UpdateChildRequest, UpdateChildRespo
         
         existingChild.FirstName = request.ChildFirstName;
         
-        await _childAdapter.UpdateAsync(existingChild);
+        await _childRepository.UpdateAsync(existingChild);
 
         await SendAsync(new UpdateChildResponse($"Updated child with ID: {childId}"),
             cancellation: cancellationToken);

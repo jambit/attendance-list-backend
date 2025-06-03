@@ -1,16 +1,16 @@
 using ALB.Domain.Enum;
-using ALB.Infrastructure.Persistence.Adapters.TeamMember;
+using ALB.Infrastructure.Persistence.Repositories.TeamMember;
 using FastEndpoints;
 
 namespace ALB.Api.UseCases.Endpoints.AttendanceList.AttendanceListEntries;
 
 public class CreateAttendanceListEntryEndpoint : Endpoint<CreateAttendanceListEntryRequest, CreateAttendanceListEntryResponse>
 {
-    private readonly IAttendanceAdapter adapter;
+    private readonly IAttendanceRepository _repository;
 
-    public CreateAttendanceListEntryEndpoint(IAttendanceAdapter adapter)
+    public CreateAttendanceListEntryEndpoint(IAttendanceRepository repository)
     {
-        this.adapter = adapter;
+        this._repository = repository;
     }
 
     public override void Configure()
@@ -25,7 +25,7 @@ public class CreateAttendanceListEntryEndpoint : Endpoint<CreateAttendanceListEn
         var time = DateTime.Parse(request.Time);
         var status = Enum.Parse<ChildStatus>(request.Status);
 
-        await adapter.CreateOrUpdateAsync(childId, time.Date, time, null, status, ct);
+        await _repository.CreateOrUpdateAsync(childId, time.Date, time, null, status, ct);
 
         await SendAsync(new CreateAttendanceListEntryResponse(
             $"Attendance for {request.ChildId} at {request.Time} was successfully set to {request.Status}"));
