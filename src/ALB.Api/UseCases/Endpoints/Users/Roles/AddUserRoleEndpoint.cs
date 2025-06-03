@@ -5,9 +5,15 @@ using ALB.Infrastructure.Persistence.Repositories.Admin;
 
 namespace ALB.Api.UseCases.Endpoints.Users.Roles;
 
-public class AddUserRoleEndpoint(IUserRoleRepository userRoleRepository)
-    : Endpoint<AddUserRoleRequest, AddUserRoleResponse>
+public class AddUserRoleEndpoint : Endpoint<AddUserRoleRequest, AddUserRoleResponse>
 {
+    private readonly IUserRoleRepository _userRoleRepository;
+
+    public AddUserRoleEndpoint(IUserRoleRepository userRoleRepository)
+    {
+        _userRoleRepository = userRoleRepository;
+    }
+
     public override void Configure()
     {
         Post("/api/users/{userId:guid}/roles");
@@ -20,16 +26,17 @@ public class AddUserRoleEndpoint(IUserRoleRepository userRoleRepository)
 
         try
         {
-            await userRoleRepository.AssignRoleToUserAsync(userId, request.Role);
-            await SendAsync(new AddUserRoleResponse(IdentityResult.Success), cancellation: ct);
+            await _userRoleRepository.AssignRoleToUserAsync(userId, request.Role);
+
+            await SendAsync(
+                new AddUserRoleResponse(IdentityResult.Success),
+                cancellation: ct);
         }
         catch (Exception ex)
         {
             AddError(ex.Message);
-            await SendErrorsAsync(500, ct);
+            await SendErrorsAsync(400, ct);
         }
-
-
     }
 }
 
