@@ -27,7 +27,7 @@ public class RemoveUserRoleEndpoint(IUserRoleRepository userRoleRepository, Role
                 return;
             }
 
-            await userRoleRepository.RemoveRoleFromUserAsync(userId, role.Id);
+            await userRoleRepository.RemoveRoleFromUserAsync(userId, role.Name);
 
             await SendAsync(new RemoveUserRoleResponse("Removed user role successfully."), cancellation: ct);
         }
