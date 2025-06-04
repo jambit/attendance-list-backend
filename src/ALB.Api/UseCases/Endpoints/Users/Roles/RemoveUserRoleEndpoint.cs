@@ -1,3 +1,4 @@
+using ALB.Domain.Identity;
 using ALB.Domain.Values;
 using FastEndpoints;
 using Microsoft.AspNetCore.Identity;
