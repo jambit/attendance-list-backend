@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using ALB.Infrastructure.Persistence.Repositories.Admin;
 namespace ALB.Api.UseCases.Endpoints.Users.Roles;
 
-public class RemoveUserRoleEndpoint(IUserRoleRepository userRoleRepository, RoleManager<IdentityRole> roleManager)
+public class RemoveUserRoleEndpoint(IUserRoleRepository userRoleRepository, RoleManager<ApplicationRole> roleManager)
     : Endpoint<RemoveUserRoleRequest, RemoveUserRoleResponse>
 {
     public override void Configure()
