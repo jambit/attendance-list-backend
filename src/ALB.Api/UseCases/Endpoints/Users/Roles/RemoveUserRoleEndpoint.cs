@@ -1,10 +1,12 @@
+using ALB.Domain.Identity;
 using ALB.Domain.Values;
 using FastEndpoints;
 using Microsoft.AspNetCore.Identity;
-
+using ALB.Infrastructure.Persistence.Repositories.Admin;
 namespace ALB.Api.UseCases.Endpoints.Users.Roles;
 
-public class RemoveUserRoleEndpoint : EndpointWithoutRequest<RemoveUserRoleResponse>
+public class RemoveUserRoleEndpoint(IUserRoleRepository userRoleRepository, RoleManager<ApplicationRole> roleManager)
+    : Endpoint<RemoveUserRoleRequest, RemoveUserRoleResponse>
 {
     public override void Configure()
     {
@@ -12,10 +14,29 @@ public class RemoveUserRoleEndpoint : EndpointWithoutRequest<RemoveUserRoleRespo
         Policies(SystemRoles.AdminPolicy);
     }
 
-    public override async Task HandleAsync(CancellationToken cancellationToken)
+    public override async Task HandleAsync(RemoveUserRoleRequest request, CancellationToken ct)
     {
-        await SendAsync(new RemoveUserRoleResponse("Removed User Role"),
-            cancellation: cancellationToken);
+        var userId = Route<Guid>("userId");
+
+        try
+        {
+            var role = await roleManager.FindByNameAsync(request.Role);
+            if (role is null)
+            {
+                AddError("Role not found.");
+                await SendErrorsAsync(404, ct);
+                return;
+            }
+
+            await userRoleRepository.RemoveRoleFromUserAsync(userId, role.Name);
+
+            await SendAsync(new RemoveUserRoleResponse("Removed user role successfully."), cancellation: ct);
+        }
+        catch (Exception ex)
+        {
+            AddError(ex.Message);
+            await SendErrorsAsync(500, ct);
+        }
     }
 }
 
