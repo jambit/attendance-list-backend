@@ -46,6 +46,11 @@ public class BaseIntegrationTest : IAsyncInitializer, IAsyncDisposable
         return client;
     }
 
+    public IServiceScope GetScope()
+    {
+        return _webApplicationFactory.Services.CreateScope();
+    }
+
     public HttpClient GetAdminClient()
         => GetHttpClient(SystemRoles.Admin);
     
@@ -74,46 +79,6 @@ public class BaseIntegrationTest : IAsyncInitializer, IAsyncDisposable
         
         _roleManager = serviceScope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
         _userManager = serviceScope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-
-        await SeedDatabase();
-    }
-    
-    
-    private async Task SeedDatabase()
-    {
-        string[] roleNames = [SystemRoles.Admin, SystemRoles.CoAdmin, SystemRoles.Team, SystemRoles.Parent];
-
-        foreach (var roleName in roleNames)
-        {
-            var roleExist = await _roleManager.RoleExistsAsync(roleName);
-            if (!roleExist)
-            {
-                await _roleManager.CreateAsync(new ApplicationRole
-                {
-                    Name = roleName,
-                    Description = $"Role to assign {roleName} permissions"
-                });
-            }
-        }
-        
-        var user = await _userManager.FindByEmailAsync(AdminEmail);
-
-        if (user is null)
-        {
-            var systemUser = new ApplicationUser
-            {
-                Email = AdminEmail,
-                UserName = AdminEmail,
-                FirstName = "Admin",
-                LastName = "Admin",
-                EmailConfirmed = true
-            };
-            
-            var createdUser = await _userManager.CreateAsync(systemUser, AdminPassword);
-            
-            if (createdUser.Succeeded)
-                await _userManager.AddToRoleAsync(systemUser, SystemRoles.Admin);
-        }
     }
     
     public async ValueTask DisposeAsync()
