@@ -16,6 +16,7 @@ public class ApplicationUser : IdentityUser<Guid>
     public bool IsActive { get; set; } = true;
     
     public virtual ICollection<UserChildRelationship> UserChildRelationships { get; set; }
+    public virtual ICollection<AbsenceDay> AbsenceDays { get; set; }
     public virtual ICollection<UserGroup> UserGroups { get; set; }
     public virtual ICollection<ApplicationUserClaim> Claims { get; set; }
     public virtual ICollection<ApplicationUserLogin> Logins { get; set; }

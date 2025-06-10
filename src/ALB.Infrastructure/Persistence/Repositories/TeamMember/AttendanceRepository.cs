@@ -13,7 +13,7 @@ public class AttendanceRepository(ApplicationDbContext dbContext) : IAttendanceR
 
         if (attendance is null)
         {
-            attendance = new Attendance
+            attendance = new AttendanceListEntry
             {
                 Id = Guid.NewGuid(),
                 ChildId = childId,

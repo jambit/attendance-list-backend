@@ -1,6 +1,4 @@
 using ALB.Infrastructure.Persistence;
-using ALB.Infrastructure.Persistence.Examples;
-using ALB.Infrastructure.Persistence.Examples.Adapters;
 using ALB.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -12,11 +10,6 @@ public static class InfrastructureExtension
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        // Caution, DbContexts arent added this way!
-        services.AddSingleton<ExamplesDbContext>();
-        
-        services.AddScoped<IExamplesAdapter, ExamplesAdapter>();
-
         services.AddHostedService<PowerUserSeederService>();
 
         services.AddDbContextPool<ApplicationDbContext>(options =>

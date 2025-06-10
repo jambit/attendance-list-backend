@@ -9,8 +9,6 @@ public class UserGroup
     public Guid UserId { get; init; }
     public ApplicationUser User { get; init; }
     
-    public Guid GroupId { get; init; } // <==
+    public Guid GroupId { get; init; }
     public Group Group { get; init; }
-    
-    public bool IsGroupAdmin { get; set; } = false;
 }
