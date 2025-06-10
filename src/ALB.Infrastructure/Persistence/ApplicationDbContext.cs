@@ -16,7 +16,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     
     public DbSet<Group> Groups { get; set; }
     public DbSet<Child> Children { get; set; }
-    public DbSet<Attendance> Attendances { get; set; }
+    public DbSet<AttendanceListEntry> Attendances { get; set; }
     public DbSet<UserGroup> UserGroups { get; set; }
     public DbSet<UserChildRelationship> UserChildRelationships { get; set; }
     
@@ -50,7 +50,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
                 .HasForeignKey(ucr => ucr.ChildId);
         });
         
-        modelBuilder.Entity<Attendance>(e =>
+        modelBuilder.Entity<AttendanceListEntry>(e =>
         {
             e.HasKey(a => a.Id);
             e.Property(p => p.Id).ValueGeneratedOnAdd().HasValueGenerator<UuiDv7Generator>();

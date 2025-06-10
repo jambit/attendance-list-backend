@@ -20,7 +20,7 @@ public class AttendanceRepository : IAttendanceRepository
 
         if (attendance is null)
         {
-            attendance = new Attendance
+            attendance = new AttendanceListEntry
             {
                 Id = Guid.NewGuid(),
                 ChildId = childId,
