@@ -15,19 +15,14 @@ public class CreateAttendanceListEntryEndpoint(IAttendanceRepository repository)
 
     public override async Task HandleAsync(CreateAttendanceListEntryRequest request, CancellationToken ct)
     {
-        var childId = Guid.Parse(request.ChildId);
-        var time = DateTime.Parse(request.Time);
-        var status = Enum.Parse<ChildStatus>(request.Status);
-
-        await repository.CreateOrUpdateAsync(childId, time.Date, time, null, status, ct);
+        await repository.CreateAsync(request.ChildId, DateOnly.FromDateTime(request.Date), TimeOnly.FromDateTime(request.ArrivalAt), TimeOnly.FromDateTime(request.DepartureAt), request.Status, ct);
 
         await SendAsync(new CreateAttendanceListEntryResponse(
-            $"Attendance for {request.ChildId} at {request.Time} was successfully set to {request.Status}"));
+            $"Attendance for {request.ChildId} at {DateOnly.FromDateTime(request.Date)} was successfully set to {request.Status}"));
     }
 }
 
 
-
-public record CreateAttendanceListEntryRequest(string ChildId, string Time, string Status);
+public record CreateAttendanceListEntryRequest(Guid ChildId, DateTime Date, DateTime ArrivalAt, DateTime DepartureAt, AttendanceStatus Status);
 
 public record CreateAttendanceListEntryResponse(string Message);

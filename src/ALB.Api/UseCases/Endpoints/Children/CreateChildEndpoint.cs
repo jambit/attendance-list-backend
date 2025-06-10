@@ -21,8 +21,7 @@ public class CreateChildEndpoint(IChildRepository childRepository) : Endpoint<Cr
             Id = Guid.NewGuid(),
             FirstName = request.ChildFirstName,
             LastName = request.ChildLastName,
-            DateOfBirth = request.ChildDateOfBirth,
-            
+            DateOfBirth = DateOnly.FromDateTime(request.ChildDateOfBirth),
         };
 
         var createdChild = await childRepository.CreateAsync(child);

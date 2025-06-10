@@ -11,9 +11,5 @@ public class UserChildRelationship
     public ApplicationUser User { get; init; }
     
     public Guid ChildId { get; init; }
-    
     public Child Child { get; init; } 
-    
-    public RelationshipType RelationshipType { get; init; } = RelationshipType.Other;
-    public bool HasPickupAuthorization { get; set; } = false;
 }
