@@ -6,15 +6,8 @@ using Group = ALB.Domain.Entities.Group;
 
 namespace ALB.Api.UseCases.Endpoints.Groups;
 
-public class CreateGroupEndpoint : Endpoint<CreateGroupRequest, CreateGroupResponse>
+public class CreateGroupEndpoint(IGroupRepository groupRepository) : Endpoint<CreateGroupRequest, CreateGroupResponse>
 {
-    private readonly IGroupRepository _groupRepository;
-
-    public CreateGroupEndpoint(IGroupRepository groupRepository)
-    {
-        _groupRepository = groupRepository;
-    }
-
     public override void Configure()
     {
         Post("/api/groups");
@@ -29,7 +22,7 @@ public class CreateGroupEndpoint : Endpoint<CreateGroupRequest, CreateGroupRespo
             Name = request.GroupName
         };
 
-        var createdGroup = await _groupRepository.CreateAsync(group);
+        var createdGroup = await groupRepository.CreateAsync(group);
 
         await SendAsync(
             new CreateGroupResponse(createdGroup.Id, "Group created successfully."),

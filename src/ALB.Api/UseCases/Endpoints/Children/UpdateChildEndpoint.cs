@@ -4,14 +4,8 @@ using ALB.Infrastructure.Persistence.Repositories.Admin;
 
 namespace ALB.Api.UseCases.Endpoints.Children;
 
-public class UpdateChildEndpoint : Endpoint<UpdateChildRequest, UpdateChildResponse>
+public class UpdateChildEndpoint(IChildRepository childRepository) : Endpoint<UpdateChildRequest, UpdateChildResponse>
 {
-    private readonly IChildRepository _childRepository;
-
-    public UpdateChildEndpoint(IChildRepository childRepository)
-    {
-        _childRepository = childRepository;
-    }
     public override void Configure()
     {
         Put("/api/children/{childId:guid}");
@@ -22,7 +16,7 @@ public class UpdateChildEndpoint : Endpoint<UpdateChildRequest, UpdateChildRespo
     {
         var childId = Route<Guid>("childId");
         
-        var existingChild = await _childRepository.GetByIdAsync(childId);
+        var existingChild = await childRepository.GetByIdAsync(childId);
         if (existingChild == null)
         {
             AddError($"Child with ID {childId} not found.");
@@ -31,7 +25,7 @@ public class UpdateChildEndpoint : Endpoint<UpdateChildRequest, UpdateChildRespo
         
         existingChild.FirstName = request.ChildFirstName;
         
-        await _childRepository.UpdateAsync(existingChild);
+        await childRepository.UpdateAsync(existingChild);
 
         await SendAsync(new UpdateChildResponse($"Updated child with ID: {childId}"),
             cancellation: cancellationToken);

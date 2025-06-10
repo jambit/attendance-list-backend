@@ -3,15 +3,9 @@ using FastEndpoints;
 
 namespace ALB.Api.UseCases.Endpoints.Groups.Children;
 
-public class RemoveChildrenFromGroupEndpoint : Endpoint<RemoveChildFromGroupRequest, RemoveChildFromGroupResponse>
+public class RemoveChildrenFromGroupEndpoint(IGroupRepository repository)
+    : Endpoint<RemoveChildFromGroupRequest, RemoveChildFromGroupResponse>
 {
-    private readonly IGroupRepository _repository;
-
-    public RemoveChildrenFromGroupEndpoint(IGroupRepository repository)
-    {
-        this._repository = repository;
-    }
-
     public override void Configure()
     {
         Delete("/api/groups/{groupId:guid}/children");
@@ -23,7 +17,7 @@ public class RemoveChildrenFromGroupEndpoint : Endpoint<RemoveChildFromGroupRequ
         var groupId = Route<Guid>("groupId");
         var childIds = request.ChildIds.Split(',').Select(Guid.Parse);
 
-        await _repository.RemoveChildrenFromGroupAsync(groupId, childIds, ct);
+        await repository.RemoveChildrenFromGroupAsync(groupId, childIds, ct);
 
         await SendAsync(new RemoveChildFromGroupResponse("Removed Children from Group"));
     }

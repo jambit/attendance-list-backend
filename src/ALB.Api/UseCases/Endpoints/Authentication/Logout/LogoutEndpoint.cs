@@ -18,19 +18,13 @@ public class LogoutEndpoint(SignInManager<ApplicationUser> signInManager) : Endp
         {
             await signInManager.SignOutAsync();
             
-            await SendOkAsync(new LogoutResponse 
-            { 
-                Message = "Successfully logged out",
-                LoggedOutAt = DateTime.UtcNow
-            }, ct);
+            await SendOkAsync(new LogoutResponse("Successfully logged out", DateTime.UtcNow), ct);
         }
         else
         {
-            await SendOkAsync(new LogoutResponse 
-            { 
-                Message = "User was not logged in",
-                LoggedOutAt = DateTime.UtcNow
-            }, ct);
+            await SendOkAsync(new LogoutResponse("User was not logged in", DateTime.UtcNow), ct);
         }
     }
 }
+
+public record LogoutResponse(string Message, DateTime LoggedOutAt);

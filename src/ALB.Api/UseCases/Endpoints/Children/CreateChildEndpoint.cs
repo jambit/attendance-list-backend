@@ -5,14 +5,8 @@ using ALB.Domain.Entities;
 
 namespace ALB.Api.UseCases.Endpoints.Children;
 
-public class CreateChildEndpoint : Endpoint<CreateChildRequest, CreateChildResponse>
+public class CreateChildEndpoint(IChildRepository childRepository) : Endpoint<CreateChildRequest, CreateChildResponse>
 {
-    private readonly IChildRepository _childRepository;
-    
-    public CreateChildEndpoint(IChildRepository childRepository)
-    {
-        _childRepository = childRepository;
-    }
     public override void Configure()
     {
         Post("/api/children");
@@ -31,7 +25,7 @@ public class CreateChildEndpoint : Endpoint<CreateChildRequest, CreateChildRespo
             
         };
 
-        var createdChild = await _childRepository.CreateAsync(child);
+        var createdChild = await childRepository.CreateAsync(child);
 
         var response = new CreateChildResponse(createdChild.Id, $"Created child {createdChild.FirstName} {createdChild.LastName}");
 
