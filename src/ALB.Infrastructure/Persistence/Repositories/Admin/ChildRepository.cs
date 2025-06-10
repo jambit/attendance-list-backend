@@ -4,16 +4,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ALB.Infrastructure.Persistence.Repositories.Admin;
     
-public class ChildRepository : IChildRepository
-    {
-        private readonly ApplicationDbContext dbContext;
-
-        public ChildRepository(ApplicationDbContext dbContext)
-        {
-            this.dbContext = dbContext;
-        }
-
-        public async Task<Child> CreateAsync(Child child)
+public class ChildRepository(ApplicationDbContext dbContext) : IChildRepository
+{
+    public async Task<Child> CreateAsync(Child child)
         {
             dbContext.Children.Add(child);
             await dbContext.SaveChangesAsync();

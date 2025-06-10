@@ -5,15 +5,8 @@ using ALB.Domain.Entities;
 
 namespace ALB.Api.UseCases.Endpoints.Children;
 
-public class GetChildEndpoint : EndpointWithoutRequest<GetChildResponse>
+public class GetChildEndpoint(IChildRepository childRepository) : EndpointWithoutRequest<GetChildResponse>
 {
-    private readonly IChildRepository _childRepository;
-
-    public GetChildEndpoint(IChildRepository childRepository)
-    {
-        _childRepository = childRepository;
-    }
-
     public override void Configure()
     {
         Get("/api/children/{childId:guid}");
@@ -24,7 +17,7 @@ public class GetChildEndpoint : EndpointWithoutRequest<GetChildResponse>
     {
         var childId = Route<Guid>("childId");
 
-        var child = await _childRepository.GetByIdAsync(childId);
+        var child = await childRepository.GetByIdAsync(childId);
 
         if (child is null)
         {

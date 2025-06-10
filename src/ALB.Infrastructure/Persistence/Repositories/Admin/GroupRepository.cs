@@ -3,15 +3,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ALB.Infrastructure.Persistence.Repositories.Admin;
 
-public class GroupRepository : IGroupRepository
+public class GroupRepository(ApplicationDbContext dbContext) : IGroupRepository
 {
-    private readonly ApplicationDbContext dbContext;
-
-    public GroupRepository(ApplicationDbContext dbContext)
-    {
-        this.dbContext = dbContext;
-    }
-
     public async Task<Group> CreateAsync(Group group)
     {
         dbContext.Groups.Add(group);

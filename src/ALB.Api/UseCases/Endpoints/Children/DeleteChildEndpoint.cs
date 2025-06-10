@@ -4,15 +4,8 @@ using ALB.Infrastructure.Persistence.Repositories.Admin;
 
 namespace ALB.Api.UseCases.Endpoints.Children;
 
-public class DeleteChildEndpoint : EndpointWithoutRequest<DeleteChildResponse>
+public class DeleteChildEndpoint(IChildRepository childRepository) : EndpointWithoutRequest<DeleteChildResponse>
 {
-    private readonly IChildRepository _childRepository;
-
-    public DeleteChildEndpoint(IChildRepository childRepository)
-    {
-        _childRepository = childRepository;
-    }
-
     public override void Configure()
     {
         Delete("/api/children/{childId:guid}");
@@ -23,7 +16,7 @@ public class DeleteChildEndpoint : EndpointWithoutRequest<DeleteChildResponse>
     {
         var childId = Route<Guid>("childId");
 
-        var child = await _childRepository.GetByIdAsync(childId);
+        var child = await childRepository.GetByIdAsync(childId);
 
         if (child is null)
         {
@@ -31,7 +24,7 @@ public class DeleteChildEndpoint : EndpointWithoutRequest<DeleteChildResponse>
             return;
         }
 
-        await _childRepository.DeleteAsync(childId);
+        await childRepository.DeleteAsync(childId);
 
         await SendAsync(new DeleteChildResponse("Child successfully deleted"), cancellation: ct);
     }

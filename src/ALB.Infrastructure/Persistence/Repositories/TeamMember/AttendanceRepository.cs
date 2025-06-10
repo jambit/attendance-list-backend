@@ -4,15 +4,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ALB.Infrastructure.Persistence.Repositories.TeamMember;
 
-public class AttendanceRepository : IAttendanceRepository
+public class AttendanceRepository(ApplicationDbContext dbContext) : IAttendanceRepository
 {
-    private readonly ApplicationDbContext dbContext;
-
-    public AttendanceRepository(ApplicationDbContext dbContext)
-    {
-        this.dbContext = dbContext;
-    }
-
     public async Task CreateOrUpdateAsync(Guid childId, DateTime date, DateTime? arrivalAt, DateTime? departureAt, ChildStatus status, CancellationToken ct)
     {
         var attendance = await dbContext.Attendances
