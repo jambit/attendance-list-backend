@@ -15,12 +15,12 @@ public class Child
     [MaxLength(50)]
     public required string LastName { get; set; }
     
-    public DateTime DateOfBirth { get; set; }
+    public DateOnly DateOfBirth { get; set; }
     
     public Guid GroupId { get; set; }
     
     public virtual Group Group { get; set; }
-    public virtual ICollection<AttendanceListEntry> Attendances { get; set; }
+    public virtual ICollection<AttendanceListEntry> AttendanceListEntries { get; set; }
     public virtual ICollection<UserChildRelationship> UserChildRelationships { get; set; }
     public virtual ICollection<AbsenceDay> AbsenceDays { get; set; }
 }

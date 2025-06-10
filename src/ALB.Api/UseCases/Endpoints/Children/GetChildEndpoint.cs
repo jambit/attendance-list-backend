@@ -1,3 +1,4 @@
+using ALB.Api.Extensions;
 using ALB.Domain.Values;
 using FastEndpoints;
 using ALB.Infrastructure.Persistence.Repositories.Admin;
@@ -29,7 +30,7 @@ public class GetChildEndpoint(IChildRepository childRepository) : EndpointWithou
             child.Id,
             child.FirstName,
             child.LastName,
-            child.DateOfBirth
+            DateOnlyExtensions.ToDateTime(child.DateOfBirth)
         );
 
         await SendAsync(response, cancellation: ct);

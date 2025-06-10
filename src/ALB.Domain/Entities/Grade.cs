@@ -7,7 +7,7 @@ public class Grade
     public Guid GroupId { get; set; }
     public virtual Group Group { get; set; }
     
-    public virtual ICollection<AttendanceList> AttendanceBooks { get; set; } = new List<AttendanceList>();
+    public virtual ICollection<AttendanceList> AttendanceLists { get; set; } = new List<AttendanceList>();
     
     public Guid LevelId { get; set; }
     public virtual Level Level { get; set; }
