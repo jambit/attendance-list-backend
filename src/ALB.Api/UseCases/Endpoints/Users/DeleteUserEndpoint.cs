@@ -4,15 +4,8 @@ using ALB.Infrastructure.Persistence.Repositories.Admin;
 
 namespace ALB.Api.UseCases.Endpoints.Users;
 
-public class DeleteUserEndpoint : EndpointWithoutRequest<DeleteUserResponse>
+public class DeleteUserEndpoint(IUserRepository userRepository) : EndpointWithoutRequest<DeleteUserResponse>
 {
-    private readonly IUserRepository _userRepository;
-
-    public DeleteUserEndpoint(IUserRepository userRepository)
-    {
-        _userRepository = userRepository;
-    }
-
     public override void Configure()
     {
         Delete("/api/users/{userId:guid}");
@@ -23,7 +16,7 @@ public class DeleteUserEndpoint : EndpointWithoutRequest<DeleteUserResponse>
     {
         var userId = Route<Guid>("userId");
 
-        var user = await _userRepository.GetByIdAsync(userId);
+        var user = await userRepository.GetByIdAsync(userId);
 
         if (user is null)
         {
@@ -31,7 +24,7 @@ public class DeleteUserEndpoint : EndpointWithoutRequest<DeleteUserResponse>
             return;
         }
 
-        await _userRepository.DeleteAsync(userId);
+        await userRepository.DeleteAsync(userId);
 
         await SendAsync(new DeleteUserResponse("User successfully deleted"), cancellation: ct);
     }

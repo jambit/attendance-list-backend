@@ -4,15 +4,9 @@ using FastEndpoints;
 
 namespace ALB.Api.UseCases.Endpoints.AttendanceList.AttendanceListEntries;
 
-public class CreateAttendanceListEntryEndpoint : Endpoint<CreateAttendanceListEntryRequest, CreateAttendanceListEntryResponse>
+public class CreateAttendanceListEntryEndpoint(IAttendanceRepository repository)
+    : Endpoint<CreateAttendanceListEntryRequest, CreateAttendanceListEntryResponse>
 {
-    private readonly IAttendanceRepository _repository;
-
-    public CreateAttendanceListEntryEndpoint(IAttendanceRepository repository)
-    {
-        this._repository = repository;
-    }
-
     public override void Configure()
     {
         Post("/api/attendance-lists/entries");
@@ -25,7 +19,7 @@ public class CreateAttendanceListEntryEndpoint : Endpoint<CreateAttendanceListEn
         var time = DateTime.Parse(request.Time);
         var status = Enum.Parse<ChildStatus>(request.Status);
 
-        await _repository.CreateOrUpdateAsync(childId, time.Date, time, null, status, ct);
+        await repository.CreateOrUpdateAsync(childId, time.Date, time, null, status, ct);
 
         await SendAsync(new CreateAttendanceListEntryResponse(
             $"Attendance for {request.ChildId} at {request.Time} was successfully set to {request.Status}"));

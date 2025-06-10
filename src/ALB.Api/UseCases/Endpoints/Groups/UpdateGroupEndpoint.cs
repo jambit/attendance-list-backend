@@ -4,15 +4,8 @@ using ALB.Infrastructure.Persistence.Repositories.Admin;
 
 namespace ALB.Api.UseCases.Endpoints.Groups;
 
-public class UpdateGroupEndpoint : Endpoint<UpdateGroupRequest, UpdateGroupResponse>
+public class UpdateGroupEndpoint(IGroupRepository groupRepository) : Endpoint<UpdateGroupRequest, UpdateGroupResponse>
 {
-    private readonly IGroupRepository _groupRepository;
-
-    public UpdateGroupEndpoint(IGroupRepository groupRepository)
-    {
-        _groupRepository = groupRepository;
-    }
-    
     public override void Configure()
     {
         Put("/api/groups/{groupId:guid}");
@@ -23,7 +16,7 @@ public class UpdateGroupEndpoint : Endpoint<UpdateGroupRequest, UpdateGroupRespo
     {
         var groupId = Route<Guid>("groupId");
 
-        var existingGroup = await _groupRepository.GetByIdAsync(groupId);
+        var existingGroup = await groupRepository.GetByIdAsync(groupId);
 
         if (existingGroup is null)
         {
@@ -33,7 +26,7 @@ public class UpdateGroupEndpoint : Endpoint<UpdateGroupRequest, UpdateGroupRespo
 
         existingGroup.Name = request.GroupName;
 
-        await _groupRepository.UpdateAsync(existingGroup);
+        await groupRepository.UpdateAsync(existingGroup);
 
         await SendAsync(
             new UpdateGroupResponse($"Updated group '{existingGroup.Name}' with ID: {existingGroup.Id}"),

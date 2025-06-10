@@ -3,15 +3,9 @@ using FastEndpoints;
 
 namespace ALB.Api.UseCases.Endpoints.Groups.Children;
 
-public class AddChildrenToGroupEndpoint : Endpoint<AddChildToGroupRequest, AddChildToGroupResponse>
+public class AddChildrenToGroupEndpoint(IGroupRepository repository)
+    : Endpoint<AddChildToGroupRequest, AddChildToGroupResponse>
 {
-    private readonly IGroupRepository _repository;
-
-    public AddChildrenToGroupEndpoint(IGroupRepository repository)
-    {
-        this._repository = repository;
-    }
-
     public override void Configure()
     {
         Post("/api/groups/{groupId:guid}/children");
@@ -23,7 +17,7 @@ public class AddChildrenToGroupEndpoint : Endpoint<AddChildToGroupRequest, AddCh
         var groupId = Guid.Parse(request.GroupId);
         var childIds = request.ChildIds.Split(',').Select(Guid.Parse);
 
-        await _repository.AddChildrenToGroupAsync(groupId, childIds, ct);
+        await repository.AddChildrenToGroupAsync(groupId, childIds, ct);
 
         await SendAsync(new AddChildToGroupResponse(
             $"Children {request.ChildIds} were successfully added to group {request.GroupId}"));
