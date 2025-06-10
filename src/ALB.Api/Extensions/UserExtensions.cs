@@ -12,7 +12,6 @@ public static class UserExtensions
             user.Email,
             user.FirstName,
             user.LastName,
-            user.EmailConfirmed,
             user.PhoneNumber
         );
     }

@@ -5,6 +5,5 @@ public record UserDto(
     string? Email,
     string? FirstName,
     string? LastName,
-    bool EmailConfirmed,
     string? PhoneNumber
 );
