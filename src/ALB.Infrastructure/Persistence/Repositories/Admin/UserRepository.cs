@@ -3,15 +3,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ALB.Infrastructure.Persistence.Repositories.Admin;
 
-public class UserRepository : IUserRepository
+public class UserRepository(ApplicationDbContext dbContext) : IUserRepository
 {
-    private readonly ApplicationDbContext dbContext;
-
-    public UserRepository(ApplicationDbContext dbContext)
-    {
-        this.dbContext = dbContext;
-    }
-    
     public async Task<ApplicationUser> CreateAsync(ApplicationUser user)
     {
         dbContext.Users.Add(user);

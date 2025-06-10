@@ -5,17 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ALB.Infrastructure.Persistence.Repositories.Admin;
 
-public class UserRoleRepository : IUserRoleRepository
+public class UserRoleRepository(ApplicationDbContext dbContext, UserManager<ApplicationUser> userManager)
+    : IUserRoleRepository
 {
-    private readonly ApplicationDbContext dbContext;
-    private readonly UserManager<ApplicationUser> userManager;
-
-    public UserRoleRepository(ApplicationDbContext dbContext, UserManager<ApplicationUser> userManager)
-    {
-        this.dbContext = dbContext;
-        this.userManager = userManager;
-    }
-
     public async Task AssignRoleToUserAsync(Guid userId, string roleName)
     {
         var user = await userManager.FindByIdAsync(userId.ToString());
