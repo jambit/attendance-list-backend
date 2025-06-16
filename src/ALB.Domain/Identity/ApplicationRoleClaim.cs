@@ -4,5 +4,5 @@ namespace ALB.Domain.Identity;
 
 public class ApplicationRoleClaim : IdentityRoleClaim<Guid>
 {
-    public virtual ApplicationRole Role { get; set; }
+    public ApplicationRole Role { get; set; } = null!;
 }

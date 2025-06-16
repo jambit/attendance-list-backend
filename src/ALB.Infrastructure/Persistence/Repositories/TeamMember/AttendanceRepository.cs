@@ -21,7 +21,7 @@ public class AttendanceRepository(ApplicationDbContext dbContext) : IAttendanceR
                 Date = date,
                 ArrivalAt = arrivalAt,
                 DepartureAt = departureAt,
-                Status = status
+                AttendanceStatus = status
             };
 
             dbContext.Attendances.Add(attendance);
@@ -40,7 +40,7 @@ public class AttendanceRepository(ApplicationDbContext dbContext) : IAttendanceR
         {
             attendance.ArrivalAt = arrivalAt;
             attendance.DepartureAt = departureAt;
-            attendance.Status = status;
+            attendance.AttendanceStatus = status;
             dbContext.Attendances.Update(attendance);
             
             await dbContext.SaveChangesAsync(ct);

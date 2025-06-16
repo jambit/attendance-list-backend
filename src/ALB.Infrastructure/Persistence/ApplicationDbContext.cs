@@ -1,4 +1,5 @@
 ﻿using ALB.Domain.Entities;
+using ALB.Domain.Enum;
 using ALB.Domain.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -17,10 +18,11 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     public DbSet<AbsenceDay> AbsenceDays { get; set; }
     public DbSet<AttendanceList> AttendanceLists { get; set; }
     public DbSet<AttendanceListEntry> Attendances { get; set; }
+    public DbSet<AttendanceListWriter> AttendanceListWriters { get; set; }
     public DbSet<Child> Children { get; set; }
-    public DbSet<Grade> Grades { get; set; }
+    public DbSet<Cohort> Grades { get; set; }
     public DbSet<Group> Groups { get; set; }
-    public DbSet<Level> Levels { get; set; }
+    public DbSet<Grade> Levels { get; set; }
     public DbSet<UserChildRelationship> UserChildRelationships { get; set; }
     public DbSet<UserGroup> UserGroups { get; set; }
     
@@ -36,9 +38,18 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
             e.HasOne(ad => ad.Child)
                 .WithMany(c => c.AbsenceDays)
                 .HasForeignKey(ad => ad.ChildId);
+            
+            e.HasOne(ad => ad.AbsenceStatus)
+                .WithMany(c => c.AbsenceDays)
+                .HasForeignKey(ad => ad.AbsenceStatusId);
     
             e.Property(ad => ad.Date)
                 .HasColumnType("date");
+        });
+        
+        modelBuilder.Entity<AbsenceStatus>(e =>
+        {
+            e.HasKey(a => a.Id);
         });
         
         modelBuilder.Entity<AttendanceList>(e =>
@@ -47,12 +58,33 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
             e.Property(p => p.Id).ValueGeneratedOnAdd().HasValueGenerator<UuiDv7Generator>();
             
             e.HasMany(al => al.Writers)
-                .WithOne(u => u.AttendanceList)
-                .HasForeignKey(u => u.AttendanceListId);
+                .WithOne(alw => alw.AttendanceList)
+                .HasForeignKey(alw => alw.AttendanceListId);
     
-            e.HasOne(al => al.Grade)
+            e.HasOne(al => al.Cohort)
                 .WithMany(g => g.AttendanceLists)
-                .HasForeignKey(al => al.GradeId);
+                .HasForeignKey(al => al.CohortId);
+        });
+        
+        modelBuilder.Entity<AttendanceListWriter>(e =>
+        {
+            e.HasKey(alw => new { alw.UserId, alw.AttendanceListId });
+            
+            e.HasOne(alw => alw.User)
+                .WithMany(u => u.WriterAssignments)
+                .HasForeignKey(alw => alw.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            e.HasOne(alw => alw.AttendanceList)
+                .WithMany(al => al.Writers)
+                .HasForeignKey(alw => alw.AttendanceListId)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            e.Property(alw => alw.AssignedAt)
+                .ValueGeneratedOnAdd()
+                .HasDefaultValueSql("now()");
+            
+            e.HasIndex(alw => alw.AttendanceListId);
         });
         
         modelBuilder.Entity<AttendanceListEntry>(e =>
@@ -68,13 +100,20 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
                 .WithMany(al => al.AttendanceListEntries)
                 .HasForeignKey(ale => ale.AttendanceListId);
     
-            //Todo AttendanceStatus
+            e.HasOne(ale => ale.AttendanceStatus)
+                .WithMany(c => c.AttendanceListEntries)
+                .HasForeignKey(ale => ale.AttendanceStatusId);
             
             e.Property(ale => ale.Date).HasColumnType("date");
             e.Property(ale => ale.ArrivalAt).HasColumnType("time");
             e.Property(ale => ale.DepartureAt).HasColumnType("time");
         });
-        
+
+        modelBuilder.Entity<AttendanceStatus>(e =>
+        {
+            e.HasKey(a => a.Id);
+        });
+
         modelBuilder.Entity<Child>(e =>
         {
             e.HasKey(c => c.Id);
@@ -108,22 +147,22 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
                 .HasColumnType("date");
         });
         
-        modelBuilder.Entity<Grade>(e =>
+        modelBuilder.Entity<Cohort>(e =>
         {
             e.HasKey(g => g.Id);
             e.Property(p => p.Id).ValueGeneratedOnAdd().HasValueGenerator<UuiDv7Generator>();
             
             e.HasOne(g => g.Group)
-                .WithMany(gr => gr.Grades)  
+                .WithMany(gr => gr.Cohorts)  
                 .HasForeignKey(g => g.GroupId);
-            
-            e.HasOne(g => g.Level)
-                .WithMany(l => l.Grades)    
-                .HasForeignKey(g => g.LevelId);
+
+            e.HasOne(x => x.Grade)
+                .WithOne(x => x.Cohort)
+                .HasForeignKey<Cohort>(x => x.GradeId);
             
             e.HasMany(g => g.AttendanceLists)
-                .WithOne(al => al.Grade)
-                .HasForeignKey(al => al.GradeId);
+                .WithOne(al => al.Cohort)
+                .HasForeignKey(al => al.CohortId);
             
             e.Property(g => g.CreationYear)
                 .IsRequired();
@@ -136,7 +175,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
             
             e.HasOne(g => g.ResponsibleUser)
                 .WithMany(u => u.ResponsibleGroups)
-                .HasForeignKey("ResponsibleUserId");
+                .HasForeignKey(g => g.ResponsibleUserId);
             
             e.HasMany(g => g.Children)
                 .WithOne(c => c.Group)
@@ -146,11 +185,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
                 .WithOne(ug => ug.Group)
                 .HasForeignKey(ug => ug.GroupId);
             
-            e.HasMany(g => g.Supervisors)
-                .WithMany(u => u.SupervisedGroups)  
-                .UsingEntity("GroupSupervisors");
-            
-            e.HasMany(g => g.Grades)
+            e.HasMany(g => g.Cohorts)
                 .WithOne(gr => gr.Group)
                 .HasForeignKey(gr => gr.GroupId);
             
@@ -159,14 +194,10 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
                 .HasMaxLength(50);
         });
         
-        modelBuilder.Entity<Level>(e =>
+        modelBuilder.Entity<Grade>(e =>
         {
             e.HasKey(l => l.Id);
             e.Property(p => p.Id).ValueGeneratedOnAdd().HasValueGenerator<UuiDv7Generator>();
-            
-            e.HasMany(l => l.Grades)
-                .WithOne(g => g.Level)
-                .HasForeignKey(g => g.LevelId);
             
             e.Property(l => l.Description)
                 .IsRequired()
@@ -175,28 +206,39 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
         
         modelBuilder.Entity<UserGroup>(e =>
         {
-            e.HasKey(ug => ug.Id);
-            e.Property(p => p.Id).ValueGeneratedOnAdd().HasValueGenerator<UuiDv7Generator>();
+            e.HasKey(ug => new { ug.UserId, ug.GroupId });
             
             e.HasOne(ug => ug.User)
                 .WithMany(u => u.UserGroups)
-                .HasForeignKey(ug => ug.UserId);
-            
+                .HasForeignKey(ug => ug.UserId)
+                .OnDelete(DeleteBehavior.Restrict); 
+    
             e.HasOne(ug => ug.Group)
                 .WithMany(g => g.UserGroups)
-                .HasForeignKey(ug => ug.GroupId);
+                .HasForeignKey(ug => ug.GroupId)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            e.Property(ug => ug.IsSupervisor)
+                .HasDefaultValue(false);
+            
+            e.HasIndex(ug => ug.GroupId);
         });
-        
+
         modelBuilder.Entity<UserChildRelationship>(e =>
         {
-            e.HasKey(ucr => ucr.Id);
-            e.Property(p => p.Id).ValueGeneratedOnAdd().HasValueGenerator<UuiDv7Generator>();
+            e.HasKey(ucr => new { ucr.UserId, ucr.ChildId });
+            
             e.HasOne(ucr => ucr.User)
                 .WithMany(u => u.UserChildRelationships)
-                .HasForeignKey(ucr => ucr.UserId);
+                .HasForeignKey(ucr => ucr.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+        
             e.HasOne(ucr => ucr.Child)
                 .WithMany(c => c.UserChildRelationships)
-                .HasForeignKey(ucr => ucr.ChildId);
+                .HasForeignKey(ucr => ucr.ChildId)
+                .OnDelete(DeleteBehavior.Restrict);
+            
+            e.HasIndex(ucr => ucr.ChildId);
         });
         
         //Configuration of ApplicationUser
@@ -210,6 +252,11 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
             b.Property(p => p.CreatedAt)
                 .ValueGeneratedOnAdd()
                 .HasDefaultValueSql("now()");
+            
+            b.HasMany(u => u.WriterAssignments)
+                .WithOne(alw => alw.User)
+                .HasForeignKey(alw => alw.UserId);
+            
             // Each User can have many UserClaims
             b.HasMany(e => e.Claims)
                 .WithOne(e => e.User)
@@ -249,6 +296,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
                 .WithOne(e => e.Role)
                 .HasForeignKey(rc => rc.RoleId)
                 .IsRequired();
+            
+            b.Property(p => p.Description).HasMaxLength(200).IsRequired();
         });
         
         modelBuilder.Entity<ApplicationUserClaim>(b =>
