@@ -1,6 +1,6 @@
 using ALB.Domain.Entities;
 
-namespace ALB.Infrastructure.Persistence.Repositories.Admin;
+namespace ALB.Domain.Repositories;
 
 public interface IChildRepository
 {

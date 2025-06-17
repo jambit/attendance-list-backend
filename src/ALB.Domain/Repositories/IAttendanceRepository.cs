@@ -1,6 +1,6 @@
 using ALB.Domain.Enum;
 
-namespace ALB.Infrastructure.Persistence.Repositories.TeamMember;
+namespace ALB.Domain.Repositories;
 
 public interface IAttendanceRepository
 {

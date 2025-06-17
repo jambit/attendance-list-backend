@@ -1,4 +1,4 @@
-using ALB.Infrastructure.Persistence.Repositories.Admin;
+using ALB.Domain.Repositories;
 using FastEndpoints;
 
 namespace ALB.Api.UseCases.Endpoints.Groups.Children;

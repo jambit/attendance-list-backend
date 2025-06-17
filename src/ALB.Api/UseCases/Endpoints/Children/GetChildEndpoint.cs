@@ -3,6 +3,7 @@ using ALB.Domain.Values;
 using FastEndpoints;
 using ALB.Infrastructure.Persistence.Repositories.Admin;
 using ALB.Domain.Entities;
+using ALB.Domain.Repositories;
 
 namespace ALB.Api.UseCases.Endpoints.Children;
 
