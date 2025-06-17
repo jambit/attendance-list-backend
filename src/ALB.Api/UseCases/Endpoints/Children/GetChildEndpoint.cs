@@ -1,7 +1,7 @@
 using ALB.Api.Extensions;
 using ALB.Domain.Values;
 using FastEndpoints;
-using ALB.Infrastructure.Persistence.Repositories.Admin;
+using ALB.Infrastructure.Persistence.Repositories;
 using ALB.Domain.Entities;
 using ALB.Domain.Repositories;
 

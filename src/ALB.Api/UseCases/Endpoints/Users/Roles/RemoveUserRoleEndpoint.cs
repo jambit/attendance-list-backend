@@ -2,7 +2,7 @@ using ALB.Domain.Identity;
 using ALB.Domain.Values;
 using FastEndpoints;
 using Microsoft.AspNetCore.Identity;
-using ALB.Infrastructure.Persistence.Repositories.Admin;
+using ALB.Domain.Repositories;
 namespace ALB.Api.UseCases.Endpoints.Users.Roles;
 
 public class RemoveUserRoleEndpoint(IUserRoleRepository userRoleRepository, RoleManager<ApplicationRole> roleManager)
