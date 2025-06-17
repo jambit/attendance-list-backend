@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Scalar.AspNetCore;
 using ALB.Infrastructure.Persistence.Repositories.Admin;
 using ALB.Infrastructure.Persistence.Repositories.TeamMember;
+using ALB.Domain.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,6 +32,7 @@ builder.Services.AddScoped<IChildRepository, ChildRepository>();
 builder.Services.AddScoped<IGroupRepository, GroupRepository>();
 builder.Services.AddScoped<IUserRoleRepository, UserRoleRepository>();
 builder.Services.AddScoped<IAttendanceRepository, AttendanceRepository>();
+
 
 
 builder.Services.AddOpenApi();
