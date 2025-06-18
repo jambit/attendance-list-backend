@@ -4,5 +4,5 @@ namespace ALB.Domain.Identity;
 
 public class ApplicationUserToken: IdentityUserToken<Guid>
 {
-    public virtual ApplicationUser User { get; set; }
+    public ApplicationUser User { get; set; } = null!;
 }

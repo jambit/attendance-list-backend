@@ -4,13 +4,10 @@ namespace ALB.Domain.Entities;
 
 public class UserGroup
 {
-    public Guid Id { get; init; }
+    public Guid UserId { get; set; }
+    public Guid GroupId { get; set; }
+    public bool IsSupervisor { get; set; }
     
-    public Guid UserId { get; init; }
-    public ApplicationUser User { get; init; }
-    
-    public Guid GroupId { get; init; } // <==
-    public Group Group { get; init; }
-    
-    public bool IsGroupAdmin { get; set; } = false;
+    public ApplicationUser User { get; set; } = null!;
+    public Group Group { get; set; } = null!;
 }
