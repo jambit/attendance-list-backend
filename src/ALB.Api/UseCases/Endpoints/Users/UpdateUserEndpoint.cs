@@ -1,6 +1,6 @@
 using ALB.Domain.Values;
 using FastEndpoints;
-using ALB.Infrastructure.Persistence.Repositories.Admin;
+using ALB.Domain.Repositories;
 
 namespace ALB.Api.UseCases.Endpoints.Users;
 

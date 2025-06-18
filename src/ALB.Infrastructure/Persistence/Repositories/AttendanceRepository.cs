@@ -1,8 +1,9 @@
 using ALB.Domain.Entities;
 using ALB.Domain.Enum;
 using Microsoft.EntityFrameworkCore;
+using ALB.Domain.Repositories;
 
-namespace ALB.Infrastructure.Persistence.Repositories.TeamMember;
+namespace ALB.Infrastructure.Persistence.Repositories;
 
 public class AttendanceRepository(ApplicationDbContext dbContext) : IAttendanceRepository
 {

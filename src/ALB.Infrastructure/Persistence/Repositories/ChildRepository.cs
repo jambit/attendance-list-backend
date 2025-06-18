@@ -1,8 +1,9 @@
 using ALB.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using ALB.Domain.Repositories;
 
 
-namespace ALB.Infrastructure.Persistence.Repositories.Admin;
+namespace ALB.Infrastructure.Persistence.Repositories;
     
 public class ChildRepository(ApplicationDbContext dbContext) : IChildRepository
 {

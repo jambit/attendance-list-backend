@@ -1,7 +1,8 @@
 using ALB.Domain.Identity;
 using Microsoft.EntityFrameworkCore;
+using ALB.Domain.Repositories;
 
-namespace ALB.Infrastructure.Persistence.Repositories.Admin;
+namespace ALB.Infrastructure.Persistence.Repositories;
 
 public class UserRepository(ApplicationDbContext dbContext) : IUserRepository
 {

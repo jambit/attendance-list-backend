@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace ALB.Infrastructure.Persistence.Repositories.Admin;
+namespace ALB.Domain.Repositories;
 
 public interface IUserRoleRepository
 {

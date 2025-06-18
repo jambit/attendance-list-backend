@@ -1,4 +1,4 @@
-using ALB.Infrastructure.Persistence.Repositories.TeamMember;
+using ALB.Domain.Repositories;
 using FastEndpoints;
 
 namespace ALB.Api.UseCases.Endpoints.AttendanceList.AttendanceListEntries;
