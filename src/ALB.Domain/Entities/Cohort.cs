@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace ALB.Domain.Entities;
 
 public class Cohort
@@ -9,5 +11,6 @@ public class Cohort
     
     public Grade Grade { get; set; } = null!;
     public Group Group { get; set; } = null!;
+    [JsonIgnore]
     public ICollection<AttendanceList> AttendanceLists { get; set; } = new List<AttendanceList>();
 }
