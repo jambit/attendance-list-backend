@@ -39,4 +39,11 @@ public class ChildRepository(ApplicationDbContext dbContext) : IChildRepository
                 await dbContext.SaveChangesAsync();
             }
         }
+        
+        public async Task<IEnumerable<Child>> GetByCohortAsync(Guid cohortId)
+        {
+            return await dbContext.Children
+                .Where(child => child.Group.Cohorts.Any(c => c.Id == cohortId))
+                .ToListAsync();
+        }
     }

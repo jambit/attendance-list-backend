@@ -6,4 +6,5 @@ public interface IAbsenceDayRepository
 {
     Task AddAsync(AbsenceDay absenceDay);
     Task<bool> ExistsAsync(Guid childId, DateOnly date);
+    Task<IEnumerable<AbsenceDay>> GetByDateAsync(DateOnly date);
 }
