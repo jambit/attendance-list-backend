@@ -51,6 +51,12 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
         modelBuilder.Entity<AbsenceStatus>(e =>
         {
             e.HasKey(a => a.Id);
+            e.Property(a => a.Id).ValueGeneratedNever(); 
+            
+            e.HasData(
+                new AbsenceStatus { Id = 1, Name = "Sick" },
+                new AbsenceStatus { Id = 2, Name = "Holiday" }
+            );
         });
         
         modelBuilder.Entity<AttendanceList>(e =>
@@ -119,6 +125,13 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
         modelBuilder.Entity<AttendanceStatus>(e =>
         {
             e.HasKey(a => a.Id);
+            e.Property(a => a.Id).ValueGeneratedNever(); 
+
+            e.HasData(
+                new AttendanceStatus { Id = 1, Name = "Present" },
+                new AttendanceStatus { Id = 2, Name = "Excused" },
+                new AttendanceStatus { Id = 3, Name = "Late" }
+            );
         });
 
         modelBuilder.Entity<Child>(e =>
