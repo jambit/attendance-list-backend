@@ -38,18 +38,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
             e.HasOne(ad => ad.Child)
                 .WithMany(c => c.AbsenceDays)
                 .HasForeignKey(ad => ad.ChildId);
-            
-            e.HasOne(ad => ad.AbsenceStatus)
-                .WithMany(c => c.AbsenceDays)
-                .HasForeignKey(ad => ad.AbsenceStatusId);
     
             e.Property(ad => ad.Date)
                 .HasColumnType("date");
-        });
-        
-        modelBuilder.Entity<AbsenceStatus>(e =>
-        {
-            e.HasKey(a => a.Id);
         });
         
         modelBuilder.Entity<AttendanceList>(e =>
@@ -99,20 +90,19 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
             e.HasOne(ale => ale.AttendanceList)
                 .WithMany(al => al.AttendanceListEntries)
                 .HasForeignKey(ale => ale.AttendanceListId);
-    
-            e.HasOne(ale => ale.AttendanceStatus)
-                .WithMany(c => c.AttendanceListEntries)
-                .HasForeignKey(ale => ale.AttendanceStatusId);
+            
+            
+            e.Property(ale => ale.AttendanceStatus)
+                .HasColumnName("AttendanceStatus")
+                .HasConversion<string>()  
+                .HasColumnType("AttendanceStatus");
             
             e.Property(ale => ale.Date).HasColumnType("date");
             e.Property(ale => ale.ArrivalAt).HasColumnType("time");
             e.Property(ale => ale.DepartureAt).HasColumnType("time");
         });
 
-        modelBuilder.Entity<AttendanceStatus>(e =>
-        {
-            e.HasKey(a => a.Id);
-        });
+        
 
         modelBuilder.Entity<Child>(e =>
         {
@@ -309,5 +299,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
         {
             b.Property(p => p.Id).ValueGeneratedOnAdd().HasValueGenerator<UuiDv7Generator>();
         });
+        
+        modelBuilder.HasPostgresEnum<AbsenceStatus>();
+        modelBuilder.HasPostgresEnum<AttendanceStatus>();
+        
     }
 }
