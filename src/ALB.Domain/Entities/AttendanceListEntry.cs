@@ -13,6 +13,6 @@ public class AttendanceListEntry
     public Guid ChildId { get; set; }
     
     public AttendanceList AttendanceList { get; set; } = null!;
-    public AttendanceStatus AttendanceStatus { get; set; } = null!;
+    public AttendanceStatus AttendanceStatus { get; set; }
     public Child Child { get; set; } = null!;
 }

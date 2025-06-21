@@ -11,5 +11,5 @@ public class AbsenceDay
 
     
     public Child Child { get; set; } = null!;
-    public AbsenceStatus AbsenceStatus { get; set; } = null!;
+    public AbsenceStatus AbsenceStatus { get; set; } 
 }
