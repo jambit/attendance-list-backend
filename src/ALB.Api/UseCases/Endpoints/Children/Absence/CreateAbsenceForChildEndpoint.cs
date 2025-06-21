@@ -1,6 +1,7 @@
 using ALB.Domain.Entities;
 using ALB.Domain.Repositories;
 using FastEndpoints;
+using NodaTime;
 
 namespace ALB.Api.UseCases.Endpoints.Children.Absence;
 
@@ -16,7 +17,7 @@ public class CreateAbsenceForChildEndpoint(IAbsenceDayRepository absenceRepo) : 
     {
         var childId = Route<Guid>("ChildId");
 
-        var alreadyExists = await absenceRepo.ExistsAsync(childId, DateOnly.FromDateTime(request.Date));
+        var alreadyExists = await absenceRepo.ExistsAsync(childId, LocalDate.FromDateTime(request.Date));
         
         if (alreadyExists)
         {
@@ -28,7 +29,7 @@ public class CreateAbsenceForChildEndpoint(IAbsenceDayRepository absenceRepo) : 
         {
             Id = Guid.NewGuid(),
             ChildId = childId,
-            Date = DateOnly.FromDateTime(request.Date),
+            Date = LocalDate.FromDateTime(request.Date),
             AbsenceStatusId = request.AbsenceStatusId,
         };
 
@@ -37,9 +38,6 @@ public class CreateAbsenceForChildEndpoint(IAbsenceDayRepository absenceRepo) : 
         await SendAsync(new CreateAbsenceResponse(absence.Id, "Absence registered successfully."), cancellation: ct);
     }
 }
-
-
-
 
 public record CreateAbsenceRequest(DateTime Date, int AbsenceStatusId);
 
