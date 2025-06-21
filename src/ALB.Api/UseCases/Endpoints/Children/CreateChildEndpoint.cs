@@ -2,6 +2,7 @@ using ALB.Domain.Values;
 using FastEndpoints;
 using ALB.Domain.Entities;
 using ALB.Domain.Repositories;
+using NodaTime;
 
 namespace ALB.Api.UseCases.Endpoints.Children;
 
@@ -21,7 +22,7 @@ public class CreateChildEndpoint(IChildRepository childRepository) : Endpoint<Cr
             Id = Guid.NewGuid(),
             FirstName = request.ChildFirstName,
             LastName = request.ChildLastName,
-            DateOfBirth = DateOnly.FromDateTime(request.ChildDateOfBirth),
+            DateOfBirth = LocalDate.FromDateTime(request.ChildDateOfBirth),
         };
 
         var createdChild = await childRepository.CreateAsync(child);

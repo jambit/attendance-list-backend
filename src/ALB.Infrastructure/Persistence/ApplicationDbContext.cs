@@ -3,6 +3,7 @@ using ALB.Domain.Enum;
 using ALB.Domain.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using NodaTime;
 
 namespace ALB.Infrastructure.Persistence;
 
@@ -64,6 +65,12 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
             e.HasOne(al => al.Cohort)
                 .WithMany(g => g.AttendanceLists)
                 .HasForeignKey(al => al.CohortId);
+                
+            e.Property(al => al.ValidationPeriod)
+                .HasConversion(
+                    v => new { Start = v.Start, End = v.End },
+                    v => new DateInterval(v.Start, v.End))
+                .HasColumnType("jsonb");
         });
         
         modelBuilder.Entity<AttendanceListWriter>(e =>

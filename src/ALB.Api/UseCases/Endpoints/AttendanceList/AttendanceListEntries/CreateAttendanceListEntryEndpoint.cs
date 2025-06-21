@@ -1,6 +1,8 @@
 using ALB.Domain.Enum;
 using ALB.Domain.Repositories;
 using FastEndpoints;
+using NodaTime;
+using ALB.Api.Extensions;
 
 namespace ALB.Api.UseCases.Endpoints.AttendanceList.AttendanceListEntries;
 
@@ -15,10 +17,10 @@ public class CreateAttendanceListEntryEndpoint(IAttendanceRepository repository)
 
     public override async Task HandleAsync(CreateAttendanceListEntryRequest request, CancellationToken ct)
     {
-        await repository.CreateAsync(request.ChildId, DateOnly.FromDateTime(request.Date), TimeOnly.FromDateTime(request.ArrivalAt), TimeOnly.FromDateTime(request.DepartureAt), request.Status, ct);
+        await repository.CreateAsync(request.ChildId, LocalDate.FromDateTime(request.Date), request.ArrivalAt.ToNodaLocalTime(), request.DepartureAt.ToNodaLocalTime(), request.Status, ct);
 
         await SendAsync(new CreateAttendanceListEntryResponse(
-            $"Attendance for {request.ChildId} at {DateOnly.FromDateTime(request.Date)} was successfully set to {request.Status}"));
+            $"Attendance for {request.ChildId} at {LocalDate.FromDateTime(request.Date)} was successfully set to {request.Status}"));
     }
 }
 

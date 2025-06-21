@@ -3,6 +3,7 @@ using ALB.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Npgsql;
 
 namespace ALB.Infrastructure.Extensions;
 
@@ -12,10 +13,13 @@ public static class InfrastructureExtension
     {
         services.AddHostedService<PowerUserSeederService>();
 
-        services.AddDbContextPool<ApplicationDbContext>(options =>
+        services.AddDbContextPool<ApplicationDbContext>((serviceProvider, options) =>
         {
-            options.UseNpgsql(configuration.GetConnectionString("postgresdb"), x => x.UseNodaTime());
+            var dataSource = serviceProvider.GetRequiredService<NpgsqlDataSource>();
+            options.UseNpgsql(dataSource, npgsqlOptions => 
+                npgsqlOptions.UseNodaTime());
         });
+        
         return services;
     }
 }

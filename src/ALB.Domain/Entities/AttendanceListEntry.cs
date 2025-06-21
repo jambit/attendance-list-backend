@@ -1,13 +1,14 @@
 using ALB.Domain.Enum;
+using NodaTime;
 
 namespace ALB.Domain.Entities;
 
 public class AttendanceListEntry
 {
     public Guid Id { get; set; }
-    public DateOnly Date { get; set; }
-    public TimeOnly? ArrivalAt { get; set; }
-    public TimeOnly? DepartureAt { get; set; }
+    public LocalDate Date { get; set; }
+    public LocalTime? ArrivalAt { get; set; }
+    public LocalTime? DepartureAt { get; set; }
     public Guid AttendanceListId { get; set; }
     public int AttendanceStatusId { get; set; }
     public Guid ChildId { get; set; }

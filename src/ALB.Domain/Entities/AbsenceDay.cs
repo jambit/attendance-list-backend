@@ -1,11 +1,12 @@
 using ALB.Domain.Enum;
+using NodaTime;
 
 namespace ALB.Domain.Entities;
 
 public class AbsenceDay
 {
     public Guid Id { get; set; }
-    public DateOnly Date { get; set; }
+    public LocalDate Date { get; set; }
     public Guid ChildId { get; set; }
     public int AbsenceStatusId { get; set; }
 

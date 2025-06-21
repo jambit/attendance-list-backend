@@ -2,6 +2,7 @@ using ALB.Domain.Entities;
 using ALB.Domain.Repositories;
 using ALB.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using NodaTime;
 
 namespace ALB.Infrastructure.Persistence.Repositories;
 
@@ -20,7 +21,7 @@ public class AbsenceDayRepository : IAbsenceDayRepository
         await _dbContext.SaveChangesAsync();
     }
 
-    public async Task<bool> ExistsAsync(Guid childId, DateOnly date)
+    public async Task<bool> ExistsAsync(Guid childId, LocalDate date)
     {
         return await _dbContext.AbsenceDays
             .AnyAsync(a => a.ChildId == childId && a.Date == date);

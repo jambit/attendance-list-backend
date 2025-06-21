@@ -2,12 +2,13 @@ using ALB.Domain.Entities;
 using ALB.Domain.Enum;
 using Microsoft.EntityFrameworkCore;
 using ALB.Domain.Repositories;
+using NodaTime;
 
 namespace ALB.Infrastructure.Persistence.Repositories;
 
 public class AttendanceRepository(ApplicationDbContext dbContext) : IAttendanceRepository
 {
-    public async Task CreateAsync(Guid childId, DateOnly date, TimeOnly? arrivalAt, TimeOnly? departureAt,
+    public async Task CreateAsync(Guid childId, LocalDate date, LocalTime? arrivalAt, LocalTime? departureAt,
         AttendanceStatus status, CancellationToken ct)
     {
         var attendance = await dbContext.Attendances
@@ -31,7 +32,7 @@ public class AttendanceRepository(ApplicationDbContext dbContext) : IAttendanceR
         }
     }
 
-    public async Task UpdateAsync(Guid childId, DateOnly date, TimeOnly? arrivalAt, TimeOnly? departureAt,
+    public async Task UpdateAsync(Guid childId, LocalDate date, LocalTime? arrivalAt, LocalTime? departureAt,
         AttendanceStatus status, CancellationToken ct)
     {
         var attendance = await dbContext.Attendances
@@ -48,7 +49,7 @@ public class AttendanceRepository(ApplicationDbContext dbContext) : IAttendanceR
         }
     }
 
-    public async Task DeleteAsync(Guid childId, DateOnly date, CancellationToken ct)
+    public async Task DeleteAsync(Guid childId, LocalDate date, CancellationToken ct)
     {
         var attendance = await dbContext.Attendances
             .FirstOrDefaultAsync(a => a.ChildId == childId && a.Date == date, ct);
