@@ -32,9 +32,7 @@ builder.Services.AddScoped<IGroupRepository, GroupRepository>();
 builder.Services.AddScoped<IUserRoleRepository, UserRoleRepository>();
 builder.Services.AddScoped<IAttendanceRepository, AttendanceRepository>();
 builder.Services.AddScoped<IAbsenceDayRepository, AbsenceDayRepository>();
-
-
-
+builder.Services.AddScoped<ICohortRepository, CohortRepository>();
 
 builder.Services.AddOpenApi();
 
