@@ -5,8 +5,8 @@ namespace ALB.Domain.Enum;
 
 public class AbsenceStatus
 {
-    public string Name { get; set; } = "";
     public int Id { get; set; }
     [JsonIgnore]
+    public required string Name { get; set; }
     public ICollection<AbsenceDay> AbsenceDays { get; set; } = new List<AbsenceDay>();
 }
