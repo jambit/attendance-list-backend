@@ -5,12 +5,18 @@ using ALB.Domain.Repositories;
 
 namespace ALB.Infrastructure.Persistence.Repositories;
 
-public class AttendanceRepository(ApplicationDbContext dbContext) : IAttendanceRepository
+public class AttendanceRepository : IAttendanceRepository
 {
+    private readonly ApplicationDbContext _dbContext;
+
+    public AttendanceRepository(ApplicationDbContext dbContext)
+    {
+        _dbContext = dbContext;
+    }
     public async Task CreateAsync(Guid childId, DateOnly date, TimeOnly? arrivalAt, TimeOnly? departureAt,
         AttendanceStatus status, CancellationToken ct)
     {
-        var attendance = await dbContext.Attendances
+        var attendance = await _dbContext.Attendances
             .FirstOrDefaultAsync(a => a.ChildId == childId && a.Date == date, ct);
 
         if (attendance is null)
@@ -25,16 +31,16 @@ public class AttendanceRepository(ApplicationDbContext dbContext) : IAttendanceR
                 AttendanceStatus = status
             };
 
-            dbContext.Attendances.Add(attendance);
+            _dbContext.Attendances.Add(attendance);
             
-            await dbContext.SaveChangesAsync(ct);
+            await _dbContext.SaveChangesAsync(ct);
         }
     }
 
     public async Task UpdateAsync(Guid childId, DateOnly date, TimeOnly? arrivalAt, TimeOnly? departureAt,
         AttendanceStatus status, CancellationToken ct)
     {
-        var attendance = await dbContext.Attendances
+        var attendance = await _dbContext.Attendances
             .FirstOrDefaultAsync(a => a.ChildId == childId && a.Date == date, ct);
 
         if (attendance is not null)
@@ -42,21 +48,30 @@ public class AttendanceRepository(ApplicationDbContext dbContext) : IAttendanceR
             attendance.ArrivalAt = arrivalAt;
             attendance.DepartureAt = departureAt;
             attendance.AttendanceStatus = status;
-            dbContext.Attendances.Update(attendance);
+            _dbContext.Attendances.Update(attendance);
             
-            await dbContext.SaveChangesAsync(ct);
+            await _dbContext.SaveChangesAsync(ct);
         }
     }
 
     public async Task DeleteAsync(Guid childId, DateOnly date, CancellationToken ct)
     {
-        var attendance = await dbContext.Attendances
+        var attendance = await _dbContext.Attendances
             .FirstOrDefaultAsync(a => a.ChildId == childId && a.Date == date, ct);
 
         if (attendance is null)
             throw new Exception("Attendance not found");
 
-        dbContext.Attendances.Remove(attendance);
-        await dbContext.SaveChangesAsync(ct);
+        _dbContext.Attendances.Remove(attendance);
+        await _dbContext.SaveChangesAsync(ct);
     }
+    
+    public async Task<AttendanceList> GetAttendanceListByIdAsync(Guid id)
+    {
+        return await _dbContext.AttendanceLists
+            .Include(al => al.Cohort)
+            .FirstOrDefaultAsync(al => al.Id == id);
+    }
+
+
 }

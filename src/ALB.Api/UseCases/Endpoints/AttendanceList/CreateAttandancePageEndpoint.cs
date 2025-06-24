@@ -19,7 +19,8 @@ public class GetAttendancePageEndpoint(
 
     public override async Task HandleAsync(GetAttendancePageRequest request, CancellationToken ct)
     {
-        var attendanceList = await attendanceListRepo.GetByIdAsync(request.AttendanceListId);
+        var attendanceList = await attendanceListRepo.GetAttendanceListByIdAsync(request.AttendanceListId);
+        
         if (attendanceList == null)
         {
             await SendNotFoundAsync(ct);
@@ -44,4 +45,3 @@ public class GetAttendancePageEndpoint(
 public record GetAttendancePageRequest(Guid AttendanceListId, DateOnly Date);
 public record AttendancePageChildDto(Guid ChildId, string FirstName, string LastName, string Status);
 public record GetAttendancePageResponse(List<AttendancePageChildDto> Children);
-
