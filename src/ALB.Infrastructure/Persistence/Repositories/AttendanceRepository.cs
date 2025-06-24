@@ -60,4 +60,11 @@ public class AttendanceRepository(ApplicationDbContext dbContext) : IAttendanceR
         dbContext.Attendances.Remove(attendance);
         await dbContext.SaveChangesAsync(ct);
     }
+    
+    public async Task<AttendanceList> GetAttendanceListByIdAsync(Guid id)
+    {
+        return await dbContext.AttendanceLists
+            .Include(al => al.Cohort)
+            .FirstOrDefaultAsync(al => al.Id == id);
+    }
 }
