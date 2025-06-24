@@ -2,6 +2,7 @@ using FastEndpoints;
 using ALB.Domain.Repositories;
 using ALB.Domain.Entities;
 using ALB.Domain.Values;
+using NodaTime;
 
 namespace ALB.Api.UseCases.Endpoints.AttendanceLists;
 
@@ -29,12 +30,12 @@ public class GetAttendancePageEndpoint(
         
         var children = await childRepo.GetByCohortAsync(attendanceList.CohortId);
         
-        var absences = await absenceRepo.GetByDateAsync(request.Date);
+        var absences = await absenceRepo.GetByDateAsync(request.date);
         
         var dtos = children.Select(child =>
         {
             var absence = absences.FirstOrDefault(a => a.ChildId == child.Id);
-            var status = absence?.AbsenceStatus; // absenceStatus noch nicht definiert
+            var status = absence?.AbsenceStatus.Name;
             return new AttendancePageChildDto(child.Id, child.FirstName, child.LastName, status);
         }).ToList();
 
@@ -42,6 +43,6 @@ public class GetAttendancePageEndpoint(
     }
 }
 
-public record GetAttendancePageRequest(Guid AttendanceListId, DateOnly Date);
+public record GetAttendancePageRequest(Guid AttendanceListId, LocalDate date);
 public record AttendancePageChildDto(Guid ChildId, string FirstName, string LastName, string Status);
 public record GetAttendancePageResponse(List<AttendancePageChildDto> Children);

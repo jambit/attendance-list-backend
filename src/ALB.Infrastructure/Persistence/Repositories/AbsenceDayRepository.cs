@@ -27,7 +27,7 @@ public class AbsenceDayRepository : IAbsenceDayRepository
             .AnyAsync(a => a.ChildId == childId && a.Date == date);
     }
     
-    public async Task<IEnumerable<AbsenceDay>> GetByDateAsync(DateOnly date)
+    public async Task<IEnumerable<AbsenceDay>> GetByDateAsync(LocalDate date)
     {
         return await _dbContext.AbsenceDays
             .Where(a => a.Date == date)
