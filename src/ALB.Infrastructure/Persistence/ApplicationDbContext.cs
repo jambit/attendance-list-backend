@@ -3,6 +3,7 @@ using ALB.Domain.Enum;
 using ALB.Domain.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using NodaTime;
 
 namespace ALB.Infrastructure.Persistence;
 
@@ -50,6 +51,15 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
         modelBuilder.Entity<AbsenceStatus>(e =>
         {
             e.HasKey(a => a.Id);
+            
+            e.Property(a => a.Name)
+                .IsRequired()
+                .HasMaxLength(50);
+            
+            e.HasData(
+                new AbsenceStatus { Id = 1, Name = "Sick" },
+                new AbsenceStatus { Id = 2, Name = "Holiday" }
+            );
         });
         
         modelBuilder.Entity<AttendanceList>(e =>
@@ -64,6 +74,12 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
             e.HasOne(al => al.Cohort)
                 .WithMany(g => g.AttendanceLists)
                 .HasForeignKey(al => al.CohortId);
+                
+            e.Property(al => al.ValidationPeriod)
+                .HasConversion(
+                    v => new { Start = v.Start, End = v.End },
+                    v => new DateInterval(v.Start, v.End))
+                .HasColumnType("jsonb");
         });
         
         modelBuilder.Entity<AttendanceListWriter>(e =>
@@ -112,6 +128,17 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
         modelBuilder.Entity<AttendanceStatus>(e =>
         {
             e.HasKey(a => a.Id);
+            
+            e.Property(a => a.Name)
+                .IsRequired()
+                .HasMaxLength(50);
+
+            e.HasData(
+                new AttendanceStatus { Id = 1, Name = "Present" },
+                new AttendanceStatus { Id = 2, Name = "Excused" },
+                new AttendanceStatus { Id = 3, Name = "Late" }
+            );
+            
         });
 
         modelBuilder.Entity<Child>(e =>
