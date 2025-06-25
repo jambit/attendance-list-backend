@@ -15,7 +15,10 @@ public static class IdentityCoreExtensions
             .AddPolicy(SystemRoles.TeamPolicy, x => x.RequireRole(SystemRoles.Team))
             .AddPolicy(SystemRoles.ParentPolicy, x => x.RequireRole(SystemRoles.Parent));
 
-        services.AddAuthentication()
+        services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = IdentityConstants.BearerScheme;
+            })
             .AddCookie(IdentityConstants.ApplicationScheme)
             .AddBearerToken(IdentityConstants.BearerScheme);
         

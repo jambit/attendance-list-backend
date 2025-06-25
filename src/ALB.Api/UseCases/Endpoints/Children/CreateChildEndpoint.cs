@@ -19,10 +19,10 @@ public class CreateChildEndpoint(IChildRepository childRepository) : Endpoint<Cr
     {
         var child = new Child
         {
-            Id = Guid.NewGuid(),
-            FirstName = request.ChildFirstName,
-            LastName = request.ChildLastName,
+            FirstName = request.FirstName,
+            LastName = request.LastName,
             DateOfBirth = LocalDate.FromDateTime(request.ChildDateOfBirth),
+            GroupId = request.GroupId,
         };
 
         var createdChild = await childRepository.CreateAsync(child);
@@ -33,6 +33,6 @@ public class CreateChildEndpoint(IChildRepository childRepository) : Endpoint<Cr
     }
 }
 
-public record CreateChildRequest(string ChildFirstName, string ChildLastName, DateTime ChildDateOfBirth);
+public record CreateChildRequest(string FirstName, string LastName, DateTime ChildDateOfBirth, Guid GroupId);
 
 public record CreateChildResponse(Guid Id, string Message);

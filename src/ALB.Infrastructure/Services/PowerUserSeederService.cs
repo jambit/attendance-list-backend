@@ -3,6 +3,7 @@ using ALB.Domain.Values;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using NodaTime;
 
 namespace ALB.Infrastructure.Services;
 
@@ -44,7 +45,8 @@ public class PowerUserSeederService(IServiceProvider serviceProvider) : IHostedS
                 UserName = AdminEmail,
                 FirstName = "Admin",
                 LastName = "Admin",
-                EmailConfirmed = true
+                EmailConfirmed = true,
+                CreatedAt = SystemClock.Instance.GetCurrentInstant()
             };
             
             var createdUser = await userManager.CreateAsync(systemUser, AdminPassword);

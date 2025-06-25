@@ -19,7 +19,8 @@ public class CreateGroupEndpoint(IGroupRepository groupRepository) : Endpoint<Cr
         var group = new Group
         {
             Id = Guid.NewGuid(),
-            Name = request.GroupName
+            Name = request.GroupName,
+            ResponsibleUserId = request.ResponsibleUserId
         };
 
         var createdGroup = await groupRepository.CreateAsync(group);
@@ -31,6 +32,6 @@ public class CreateGroupEndpoint(IGroupRepository groupRepository) : Endpoint<Cr
     }
 }
 
-public record CreateGroupRequest(string GroupName);
+public record CreateGroupRequest(string GroupName, Guid ResponsibleUserId);
 
 public record CreateGroupResponse(Guid Id, string Message);

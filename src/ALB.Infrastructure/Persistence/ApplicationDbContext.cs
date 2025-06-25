@@ -18,12 +18,13 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     
     public DbSet<AbsenceDay> AbsenceDays { get; set; }
     public DbSet<AttendanceList> AttendanceLists { get; set; }
-    public DbSet<AttendanceListEntry> Attendances { get; set; }
+    public DbSet<AttendanceListEntry> AttendanceListEntries { get; set; }
     public DbSet<AttendanceListWriter> AttendanceListWriters { get; set; }
+    public DbSet<AttendanceStatus> AttendanceStatus { get; set; }
     public DbSet<Child> Children { get; set; }
-    public DbSet<Cohort> Grades { get; set; }
+    public DbSet<Cohort> Cohorts { get; set; }
     public DbSet<Group> Groups { get; set; }
-    public DbSet<Grade> Levels { get; set; }
+    public DbSet<Grade> Grades { get; set; }
     public DbSet<UserChildRelationship> UserChildRelationships { get; set; }
     public DbSet<UserGroup> UserGroups { get; set; }
     
@@ -34,7 +35,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
         modelBuilder.Entity<AbsenceDay>(e =>
         {
             e.HasKey(ad => ad.Id);
-            e.Property(p => p.Id).ValueGeneratedOnAdd().HasValueGenerator<UuiDv7Generator>();
+            e.Property(ad => ad.Id).ValueGeneratedOnAdd().HasValueGenerator<UuiDv7Generator>();
     
             e.HasOne(ad => ad.Child)
                 .WithMany(c => c.AbsenceDays)
@@ -45,18 +46,21 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
                 .HasForeignKey(ad => ad.AbsenceStatusId);
     
             e.Property(ad => ad.Date)
-                .HasColumnType("date");
+                .HasColumnType("date")
+                .HasConversion(
+                    v => v.ToDateOnly(),
+                    v => LocalDate.FromDateOnly(v));
         });
         
         modelBuilder.Entity<AbsenceStatus>(e =>
         {
             e.HasKey(a => a.Id);
-            
+
             e.Property(a => a.Name)
                 .IsRequired()
                 .HasMaxLength(50);
             
-            e.HasData(
+                e.HasData(
                 new AbsenceStatus { Id = 1, Name = "Sick" },
                 new AbsenceStatus { Id = 2, Name = "Holiday" }
             );
@@ -97,8 +101,10 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
                 .OnDelete(DeleteBehavior.Restrict);
             
             e.Property(alw => alw.AssignedAt)
-                .ValueGeneratedOnAdd()
-                .HasDefaultValueSql("now()");
+                .HasColumnType("timestamp with time zone")
+                .HasConversion(
+                    v => v.ToDateTimeUtc(),
+                    v => Instant.FromDateTimeUtc(v));
             
             e.HasIndex(alw => alw.AttendanceListId);
         });
@@ -120,25 +126,37 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
                 .WithMany(c => c.AttendanceListEntries)
                 .HasForeignKey(ale => ale.AttendanceStatusId);
             
-            e.Property(ale => ale.Date).HasColumnType("date");
-            e.Property(ale => ale.ArrivalAt).HasColumnType("time");
-            e.Property(ale => ale.DepartureAt).HasColumnType("time");
+            e.Property(ale => ale.Date)
+                .HasColumnType("date")
+                .HasConversion(
+                    v => v.ToDateOnly(),
+                    v => LocalDate.FromDateOnly(v));
+            e.Property(ale => ale.ArrivalAt)
+                .HasColumnType("time")
+                .HasConversion(
+                    v => v.HasValue ? v.Value.ToTimeOnly() : (TimeOnly?)null,
+                    v => v.HasValue ? LocalTime.FromTimeOnly(v.Value) : null);
+            e.Property(ale => ale.DepartureAt)
+                .HasColumnType("time")
+                .HasConversion(
+                    v => v.HasValue ? v.Value.ToTimeOnly() : (TimeOnly?)null,
+                    v => v.HasValue ? LocalTime.FromTimeOnly(v.Value) : null);
         });
 
         modelBuilder.Entity<AttendanceStatus>(e =>
         {
             e.HasKey(a => a.Id);
-            
+
             e.Property(a => a.Name)
                 .IsRequired()
                 .HasMaxLength(50);
-
-            e.HasData(
+            
+                e.HasData(
                 new AttendanceStatus { Id = 1, Name = "Present" },
                 new AttendanceStatus { Id = 2, Name = "Excused" },
                 new AttendanceStatus { Id = 3, Name = "Late" }
             );
-            
+
         });
 
         modelBuilder.Entity<Child>(e =>
@@ -171,7 +189,10 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
                 .HasMaxLength(50);
     
             e.Property(c => c.DateOfBirth)
-                .HasColumnType("date");
+                .HasColumnType("date")
+                .HasConversion(
+                    v => v.ToDateOnly(),
+                    v => LocalDate.FromDateOnly(v));
         });
         
         modelBuilder.Entity<Cohort>(e =>
@@ -277,8 +298,10 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
             b.Property(p => p.LastName).HasMaxLength(50);
             
             b.Property(p => p.CreatedAt)
-                .ValueGeneratedOnAdd()
-                .HasDefaultValueSql("now()");
+                .HasColumnType("timestamp with time zone")
+                .HasConversion(
+                    v => v.HasValue ? v.Value.ToDateTimeUtc() : (DateTime?)null,
+                    v => v.HasValue ? Instant.FromDateTimeUtc(v.Value) : null);
             
             b.HasMany(u => u.WriterAssignments)
                 .WithOne(alw => alw.User)

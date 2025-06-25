@@ -14,17 +14,16 @@ public class AddChildrenToGroupEndpoint(IGroupRepository repository)
 
     public override async Task HandleAsync(AddChildToGroupRequest request, CancellationToken ct)
     {
-        var groupId = Guid.Parse(request.GroupId);
-        var childIds = request.ChildIds.Split(',').Select(Guid.Parse);
+        var groupId = Route<Guid>("groupId");
 
-        await repository.AddChildrenToGroupAsync(groupId, childIds, ct);
+        await repository.AddChildrenToGroupAsync(groupId, request.ChildIds, ct);
 
         await SendAsync(new AddChildToGroupResponse(
-            $"Children {request.ChildIds} were successfully added to group {request.GroupId}"));
+                $"Children with IDs {string.Join(", ", request.ChildIds)} were successfully added to group {groupId}"));
     }
 }
 
 
-public record AddChildToGroupRequest(string ChildIds, string GroupId);
+public record AddChildToGroupRequest(List<Guid> ChildIds);
 
 public record AddChildToGroupResponse(string Message);
