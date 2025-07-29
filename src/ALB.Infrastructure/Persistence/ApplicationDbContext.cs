@@ -21,9 +21,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     public DbSet<AttendanceListEntry> Attendances { get; set; }
     public DbSet<AttendanceListWriter> AttendanceListWriters { get; set; }
     public DbSet<Child> Children { get; set; }
-    public DbSet<Cohort> Grades { get; set; }
+    public DbSet<Cohort> Cohorts { get; set; }
     public DbSet<Group> Groups { get; set; }
-    public DbSet<Grade> Levels { get; set; }
+    public DbSet<Grade> Grades{ get; set; }
     public DbSet<UserChildRelationship> UserChildRelationships { get; set; }
     public DbSet<UserGroup> UserGroups { get; set; }
     
