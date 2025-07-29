@@ -9,10 +9,12 @@ using Microsoft.AspNetCore.Identity;
 using Scalar.AspNetCore;
 using ALB.Infrastructure.Persistence.Repositories;
 using ALB.Domain.Repositories;
+using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.AddNpgsqlDataSource(connectionName: "postgresdb");
+builder.AddNpgsqlDataSource(connectionName: "postgresdb",
+    configureDataSourceBuilder: sourceBuilder => sourceBuilder.UseNodaTime());
 // builder.AddNpgsqlDbContext<ApplicationDbContext>("postgresdb");
 
 builder.AddServiceDefaults();
