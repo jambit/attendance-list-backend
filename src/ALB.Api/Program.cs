@@ -48,16 +48,15 @@ builder.Services.AddAuthAndIdentityCore();
 
 var app = builder.Build();
 
-app.UseAuthentication();
-app.UseAuthorization();
-
 // Configure the HTTP request pipeline.
 app.UseExceptionHandler("/Error");
 app.UseForwardedHeaders();
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapOpenApi();
 app.MapScalarApiReference("/api-reference", options => 
 {
-    options.WithTitle("Saga Demo API")
+    options.WithTitle("ALB API")
         .WithTheme(ScalarTheme.Moon)
         .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient);
 });

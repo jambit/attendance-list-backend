@@ -18,12 +18,13 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     
     public DbSet<AbsenceDay> AbsenceDays { get; set; }
     public DbSet<AttendanceList> AttendanceLists { get; set; }
-    public DbSet<AttendanceListEntry> Attendances { get; set; }
+    public DbSet<AttendanceListEntry> AttendanceListEntries { get; set; }
     public DbSet<AttendanceListWriter> AttendanceListWriters { get; set; }
+    public DbSet<AttendanceStatus> AttendanceStatus { get; set; }
     public DbSet<Child> Children { get; set; }
     public DbSet<Cohort> Cohorts { get; set; }
     public DbSet<Group> Groups { get; set; }
-    public DbSet<Grade> Grades{ get; set; }
+    public DbSet<Grade> Grades { get; set; }
     public DbSet<UserChildRelationship> UserChildRelationships { get; set; }
     public DbSet<UserGroup> UserGroups { get; set; }
     
