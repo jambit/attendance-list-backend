@@ -7,22 +7,26 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Aspire.Npgsql" />
-        <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" />
-        <PackageReference Include="FastEndpoints" />
-        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
+        <PackageReference Include="Aspire.Npgsql"/>
+        <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL"/>
+        <PackageReference Include="FastEndpoints"/>
+        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore"/>
         <PackageReference Include="Microsoft.AspNetCore.OpenApi"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
-          <PrivateAssets>all</PrivateAssets>
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Scalar.AspNetCore" />
+        <PackageReference Include="Scalar.AspNetCore"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\aspire\ALB.ServiceDefaults\ALB.ServiceDefaults.csproj" />
-      <ProjectReference Include="..\ALB.Domain\ALB.Domain.csproj" />
-      <ProjectReference Include="..\ALB.Infrastructure\ALB.Infrastructure.csproj" />
+        <ProjectReference Include="..\..\aspire\ALB.ServiceDefaults\ALB.ServiceDefaults.csproj"/>
+        <ProjectReference Include="..\ALB.Domain\ALB.Domain.csproj"/>
+        <ProjectReference Include="..\ALB.Infrastructure\ALB.Infrastructure.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="ApiIntegrationTests"/>
     </ItemGroup>
 
 </Project>
