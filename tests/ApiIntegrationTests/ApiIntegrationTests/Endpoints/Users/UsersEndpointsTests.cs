@@ -58,6 +58,87 @@ public class UsersEndpointsTests(BaseIntegrationTest baseIntegrationTest, ITestO
     }
 
     [Fact]
+    public async Task Should_Get_User_Successfully()
+    {
+        var createUserRequest = _userRequestFaker.Generate();
+        var response =
+            await AdminClient.PostAsJsonAsync("api/users", createUserRequest, TestContext.Current.CancellationToken);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var createdUser =
+            await response.Content.ReadFromJsonAsync<CreateUserResponse>(TestContext.Current.CancellationToken);
+        Assert.NotNull(createdUser);
+        var userId = createdUser.Id;
+
+        response = await AdminClient.GetAsync(
+            $"api/users/{userId}",
+            TestContext.Current.CancellationToken
+        );
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Should_Update_User_Successfully()
+    {
+        var createUserRequest = _userRequestFaker.Generate();
+        var response =
+            await AdminClient.PostAsJsonAsync("api/users", createUserRequest, TestContext.Current.CancellationToken);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var createdUser =
+            await response.Content.ReadFromJsonAsync<CreateUserResponse>(TestContext.Current.CancellationToken);
+
+        Assert.NotNull(createdUser);
+        var userId = createdUser.Id;
+        var userEmail = "test@userEmail.com";
+        var userFirstName = "Max";
+        var userLastName = "Mustermann";
+
+        var updateUserRequest = new UpdateUserRequest(userId, userEmail, userFirstName, userLastName);
+
+        response = await AdminClient.PutAsJsonAsync($"api/users/{userId}", updateUserRequest,
+            TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        response = await AdminClient.GetAsync(
+            $"api/users/{userId}",
+            TestContext.Current.CancellationToken
+        );
+
+        var updatedUser =
+            await response.Content.ReadFromJsonAsync<CreateUserResponse>(TestContext.Current.CancellationToken);
+        Assert.NotNull(updatedUser);
+        Assert.Equal(userEmail, updatedUser.Email);
+        Assert.Equal(userFirstName, updatedUser.FirstName);
+        Assert.Equal(userLastName, updatedUser.LastName);
+    }
+
+    [Fact]
+    public async Task Should_Delete_User_Successfully()
+    {
+        var createUserRequest = _userRequestFaker.Generate();
+        var response =
+            await AdminClient.PostAsJsonAsync("api/users", createUserRequest, TestContext.Current.CancellationToken);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var createdUser =
+            await response.Content.ReadFromJsonAsync<CreateUserResponse>(TestContext.Current.CancellationToken);
+        Assert.NotNull(createdUser);
+        var userId = createdUser.Id;
+
+        var deleteResponse =
+            await AdminClient.DeleteAsync($"api/users/{userId}", TestContext.Current.CancellationToken);
+        Assert.Equal(HttpStatusCode.OK, deleteResponse.StatusCode);
+
+        var getResponse = await AdminClient.GetAsync(
+            $"api/users/{userId}",
+            TestContext.Current.CancellationToken
+        );
+        Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode);
+    }
+
+    [Fact]
     public async Task Should_Assign_Correct_Role_To_User()
     {
         var createUserRequest = _userRequestFaker.Generate();
