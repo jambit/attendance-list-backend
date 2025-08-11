@@ -2,10 +2,10 @@ using ALB.Domain.Identity;
 using ALB.Domain.Values;
 using FastEndpoints;
 using Microsoft.AspNetCore.Identity;
-using ALB.Domain.Repositories;
+
 namespace ALB.Api.UseCases.Endpoints.Users.Roles;
 
-public class RemoveUserRoleEndpoint(IUserRoleRepository userRoleRepository, RoleManager<ApplicationRole> roleManager)
+public class RemoveUserRoleEndpoint(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager)
     : Endpoint<RemoveUserRoleRequest, RemoveUserRoleResponse>
 {
     public override void Configure()
@@ -18,25 +18,32 @@ public class RemoveUserRoleEndpoint(IUserRoleRepository userRoleRepository, Role
     {
         var userId = Route<Guid>("userId");
 
-        try
+        var user = await userManager.FindByIdAsync(userId.ToString());
+        if (user is null)
         {
-            var role = await roleManager.FindByNameAsync(request.Role);
-            if (role is null)
-            {
-                AddError("Role not found.");
-                await SendErrorsAsync(404, ct);
-                return;
-            }
-
-            await userRoleRepository.RemoveRoleFromUserAsync(userId, role.Name);
-
-            await SendAsync(new RemoveUserRoleResponse("Removed user role successfully."), cancellation: ct);
+            await SendNotFoundAsync(ct);
+            return;
         }
-        catch (Exception ex)
+
+        var roleExists = await roleManager.RoleExistsAsync(request.Role);
+        if (!roleExists)
         {
-            AddError(ex.Message);
-            await SendErrorsAsync(500, ct);
+            await SendNotFoundAsync(ct);
+            return;
         }
+
+        if (!await userManager.IsInRoleAsync(user, request.Role))
+            await SendAsync(new RemoveUserRoleResponse($"User is not in role {request.Role}"),
+                StatusCodes.Status400BadRequest, ct);
+
+        var result = await userManager.RemoveFromRoleAsync(user, request.Role);
+        if (!result.Succeeded)
+        {
+            foreach (var error in result.Errors) AddError(error.Description);
+            ThrowIfAnyErrors();
+        }
+
+        await SendNoContentAsync(ct);
     }
 }
 

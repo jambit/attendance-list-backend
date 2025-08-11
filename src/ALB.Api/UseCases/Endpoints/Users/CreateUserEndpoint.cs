@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.Identity;
 
 namespace ALB.Api.UseCases.Endpoints.Users;
 
-public class CreateUserEndpoint(UserManager<ApplicationUser> userManager) : Endpoint<CreateUserRequest, CreateUserResponse>
+public class CreateUserEndpoint(UserManager<ApplicationUser> userManager)
+    : Endpoint<CreateUserRequest, CreateUserResponse>
 {
-
     public override void Configure()
     {
         Post("/api/users");
@@ -24,23 +24,18 @@ public class CreateUserEndpoint(UserManager<ApplicationUser> userManager) : Endp
             FirstName = request.FirstName,
             LastName = request.LastName
         };
-        
+
         var result = await userManager.CreateAsync(user, request.Password);
 
         if (!result.Succeeded)
         {
-            foreach (var error in result.Errors)
-            {
-                AddError(error.Description);
-            }
+            foreach (var error in result.Errors) AddError(error.Description);
             ThrowIfAnyErrors();
         }
 
-        await SendAsync(new CreateUserResponse(Id: user.Id, Email: user.Email, null, null),
+        await SendAsync(new CreateUserResponse(user.Id, user.Email, null, null),
             200, ct);
-
     }
-    
 }
 
 public class CreateUserRequestValidator : Validator<CreateUserRequest>

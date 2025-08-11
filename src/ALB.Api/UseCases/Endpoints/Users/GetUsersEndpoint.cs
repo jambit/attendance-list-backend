@@ -2,12 +2,13 @@ using ALB.Api.Extensions;
 using ALB.Api.Models;
 using ALB.Domain.Identity;
 using ALB.Domain.Values;
-using ALB.Domain.Repositories;
 using FastEndpoints;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace ALB.Api.UseCases.Endpoints.Users;
 
-public class GetUsersEndpoint(IUserRepository userRepository) : EndpointWithoutRequest<GetUsersResponse>
+public class GetUsersEndpoint(UserManager<ApplicationUser> userManager) : EndpointWithoutRequest<GetUsersResponse>
 {
     public override void Configure()
     {
@@ -17,9 +18,7 @@ public class GetUsersEndpoint(IUserRepository userRepository) : EndpointWithoutR
 
     public override async Task HandleAsync(CancellationToken ct)
     {
-        var users = await userRepository.GetAllAsync();
-
-        var userDtos = users.Select(user => user.ToDto());
+        var userDtos = await userManager.Users.Select(u => u.ToDto()).ToListAsync(ct);
 
         var response = new GetUsersResponse(userDtos);
 

@@ -1,12 +1,13 @@
 using ALB.Api.Extensions;
 using ALB.Api.Models;
+using ALB.Domain.Identity;
 using ALB.Domain.Values;
 using FastEndpoints;
-using ALB.Domain.Repositories;
+using Microsoft.AspNetCore.Identity;
 
 namespace ALB.Api.UseCases.Endpoints.Users;
 
-public class GetUserEndpoint(IUserRepository userRepository) : EndpointWithoutRequest<GetUserResponse>
+public class GetUserEndpoint(UserManager<ApplicationUser> userManager) : EndpointWithoutRequest<GetUserResponse>
 {
     public override void Configure()
     {
@@ -18,7 +19,7 @@ public class GetUserEndpoint(IUserRepository userRepository) : EndpointWithoutRe
     {
         var userId = Route<Guid>("userId");
 
-        var user = await userRepository.GetByIdAsync(userId);
+        var user = await userManager.FindByIdAsync(userId.ToString());
 
         if (user is null)
         {

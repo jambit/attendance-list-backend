@@ -8,7 +8,7 @@ using Xunit;
 
 namespace ApiIntegrationTests.Endpoints.Users;
 
-public class UsersEndpointsTests(BaseIntegrationTest baseIntegrationTest, ITestOutputHelper output)
+public class UsersEndpointsTests(BaseIntegrationTest baseIntegrationTest)
     : IClassFixture<BaseIntegrationTest>
 {
     private readonly Faker<CreateUserRequest> _userRequestFaker = new Faker<CreateUserRequest>()
@@ -89,27 +89,27 @@ public class UsersEndpointsTests(BaseIntegrationTest baseIntegrationTest, ITestO
             await response.Content.ReadFromJsonAsync<CreateUserResponse>(TestContext.Current.CancellationToken);
 
         Assert.NotNull(createdUser);
+
         var userId = createdUser.Id;
-        var userEmail = "test@userEmail.com";
         var userFirstName = "Max";
         var userLastName = "Mustermann";
 
-        var updateUserRequest = new UpdateUserRequest(userId, userEmail, userFirstName, userLastName);
+        var updateUserRequest = new UpdateUserRequest(userFirstName, userLastName);
 
         response = await AdminClient.PutAsJsonAsync($"api/users/{userId}", updateUserRequest,
             TestContext.Current.CancellationToken);
 
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
 
         response = await AdminClient.GetAsync(
             $"api/users/{userId}",
             TestContext.Current.CancellationToken
         );
 
-        var updatedUser =
-            await response.Content.ReadFromJsonAsync<CreateUserResponse>(TestContext.Current.CancellationToken);
+        var getUserResponse =
+            await response.Content.ReadFromJsonAsync<GetUserResponse>(TestContext.Current.CancellationToken);
+        var updatedUser = getUserResponse?.User;
         Assert.NotNull(updatedUser);
-        Assert.Equal(userEmail, updatedUser.Email);
         Assert.Equal(userFirstName, updatedUser.FirstName);
         Assert.Equal(userLastName, updatedUser.LastName);
     }
@@ -129,7 +129,7 @@ public class UsersEndpointsTests(BaseIntegrationTest baseIntegrationTest, ITestO
 
         var deleteResponse =
             await AdminClient.DeleteAsync($"api/users/{userId}", TestContext.Current.CancellationToken);
-        Assert.Equal(HttpStatusCode.OK, deleteResponse.StatusCode);
+        Assert.Equal(HttpStatusCode.NoContent, deleteResponse.StatusCode);
 
         var getResponse = await AdminClient.GetAsync(
             $"api/users/{userId}",
@@ -158,7 +158,7 @@ public class UsersEndpointsTests(BaseIntegrationTest baseIntegrationTest, ITestO
 
         response = await AdminClient.PostAsJsonAsync($"api/users/{userId}/roles", setRoleRequest,
             TestContext.Current.CancellationToken);
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
     }
 
     [Fact]

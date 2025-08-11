@@ -1,19 +1,19 @@
 using ALB.Api.Extensions;
 using ALB.Domain.Identity;
+using ALB.Domain.Repositories;
 using ALB.Infrastructure.Authentication;
 using ALB.Infrastructure.Extensions;
 using ALB.Infrastructure.Persistence;
+using ALB.Infrastructure.Persistence.Repositories;
 using FastEndpoints;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
-using Scalar.AspNetCore;
-using ALB.Infrastructure.Persistence.Repositories;
-using ALB.Domain.Repositories;
 using Npgsql;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.AddNpgsqlDataSource(connectionName: "postgresdb",
+builder.AddNpgsqlDataSource("postgresdb",
     configureDataSourceBuilder: sourceBuilder => sourceBuilder.UseNodaTime());
 // builder.AddNpgsqlDbContext<ApplicationDbContext>("postgresdb");
 
@@ -28,10 +28,8 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 
 builder.Services.AddInfrastructure(builder.Configuration);
 
-builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IChildRepository, ChildRepository>();
 builder.Services.AddScoped<IGroupRepository, GroupRepository>();
-builder.Services.AddScoped<IUserRoleRepository, UserRoleRepository>();
 builder.Services.AddScoped<IAttendanceRepository, AttendanceRepository>();
 builder.Services.AddScoped<IAbsenceDayRepository, AbsenceDayRepository>();
 builder.Services.AddScoped<ICohortRepository, CohortRepository>();
@@ -54,7 +52,7 @@ app.UseForwardedHeaders();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapOpenApi();
-app.MapScalarApiReference("/api-reference", options => 
+app.MapScalarApiReference("/api-reference", options =>
 {
     options.WithTitle("ALB API")
         .WithTheme(ScalarTheme.Moon)
@@ -62,7 +60,7 @@ app.MapScalarApiReference("/api-reference", options =>
 });
 
 app.UseFastEndpoints();
-app.MapIdentityApiFilterable<ApplicationUser>(new IdentityApiEndpointRouteBuilderOptions()
+app.MapIdentityApiFilterable<ApplicationUser>(new IdentityApiEndpointRouteBuilderOptions
 {
     ExcludeLoginPost = false,
     ExcludeRefreshPost = false,
@@ -75,7 +73,7 @@ app.MapIdentityApiFilterable<ApplicationUser>(new IdentityApiEndpointRouteBuilde
     ExcludeManageGroup = true,
     Exclude2FaPost = true,
     ExcludeInfoGet = true,
-    ExcludeInfoPost = true,
+    ExcludeInfoPost = true
 });
 
 // TODO: add migrations when out of dev cycle

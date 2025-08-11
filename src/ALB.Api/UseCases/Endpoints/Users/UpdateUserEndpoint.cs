@@ -1,10 +1,12 @@
+using ALB.Domain.Identity;
 using ALB.Domain.Values;
 using FastEndpoints;
-using ALB.Domain.Repositories;
+using Microsoft.AspNetCore.Identity;
 
 namespace ALB.Api.UseCases.Endpoints.Users;
 
-public class UpdateUserEndpoint(IUserRepository userRepository) : Endpoint<UpdateUserRequest, UpdateUserResponse>
+public class UpdateUserEndpoint(UserManager<ApplicationUser> userManager)
+    : Endpoint<UpdateUserRequest>
 {
     public override void Configure()
     {
@@ -14,26 +16,30 @@ public class UpdateUserEndpoint(IUserRepository userRepository) : Endpoint<Updat
 
     public override async Task HandleAsync(UpdateUserRequest request, CancellationToken cancellationToken)
     {
-        var user = await userRepository.GetByIdAsync(request.UserId);
+        var userId = Route<Guid>("userId");
+
+        var user = await userManager.FindByIdAsync(userId.ToString());
 
         if (user is null)
         {
             await SendNotFoundAsync(cancellationToken);
             return;
         }
-        user.Email = request.Email;
-        user.FirstName = request.FirstName;
-        user.LastName = request.LastName;
 
-        await userRepository.UpdateAsync(user);
-        
-        await SendAsync(
-            new UpdateUserResponse("User successfully updated"),
-            cancellation: cancellationToken
-        );
+        if (!string.IsNullOrWhiteSpace(request.FirstName)) user.FirstName = request.FirstName;
+
+        if (!string.IsNullOrWhiteSpace(request.LastName)) user.LastName = request.LastName;
+
+        var result = await userManager.UpdateAsync(user);
+
+        if (!result.Succeeded)
+        {
+            foreach (var error in result.Errors) AddError(error.Description);
+            ThrowIfAnyErrors();
+        }
+
+        await SendNoContentAsync(cancellationToken);
     }
 }
 
-public record UpdateUserRequest(Guid UserId, string? Email, string? FirstName, string? LastName);
-
-public record UpdateUserResponse(string Message);
+public record UpdateUserRequest(string? FirstName, string? LastName);
