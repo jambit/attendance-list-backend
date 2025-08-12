@@ -4,7 +4,7 @@ using FastEndpoints;
 
 namespace ALB.Api.Endpoints.Children;
 
-public class DeleteChildEndpoint(IChildRepository childRepository) : EndpointWithoutRequest<DeleteChildResponse>
+public class DeleteChildEndpoint(IChildRepository childRepository) : EndpointWithoutRequest
 {
     public override void Configure()
     {
@@ -26,8 +26,6 @@ public class DeleteChildEndpoint(IChildRepository childRepository) : EndpointWit
 
         await childRepository.DeleteAsync(childId);
 
-        await SendAsync(new DeleteChildResponse("Child successfully deleted"), cancellation: ct);
+        await SendNoContentAsync(ct);
     }
 }
-
-public record DeleteChildResponse(string Message);

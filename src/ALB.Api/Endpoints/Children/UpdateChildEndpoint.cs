@@ -1,10 +1,11 @@
 using ALB.Domain.Repositories;
 using ALB.Domain.Values;
 using FastEndpoints;
+using NodaTime;
 
 namespace ALB.Api.Endpoints.Children;
 
-public class UpdateChildEndpoint(IChildRepository childRepository) : Endpoint<UpdateChildRequest, UpdateChildResponse>
+public class UpdateChildEndpoint(IChildRepository childRepository) : Endpoint<UpdateChildRequest>
 {
     public override void Configure()
     {
@@ -19,19 +20,18 @@ public class UpdateChildEndpoint(IChildRepository childRepository) : Endpoint<Up
         var existingChild = await childRepository.GetByIdAsync(childId);
         if (existingChild == null)
         {
-            AddError($"Child with ID {childId} not found.");
-            ThrowIfAnyErrors();
+            await SendNotFoundAsync(cancellationToken);
+            return;
         }
 
         existingChild.FirstName = request.ChildFirstName;
+        existingChild.LastName = request.ChildLastName;
+        existingChild.DateOfBirth = request.ChildDateOfBirth;
 
         await childRepository.UpdateAsync(existingChild);
 
-        await SendAsync(new UpdateChildResponse($"Updated child with ID: {childId}"),
-            cancellation: cancellationToken);
+        await SendNoContentAsync(cancellationToken);
     }
 }
 
-public record UpdateChildRequest(string ChildFirstName, string ChildLastName, DateTime ChildDateOfBirth);
-
-public record UpdateChildResponse(string Message);
+public record UpdateChildRequest(string ChildFirstName, string ChildLastName, LocalDate ChildDateOfBirth);

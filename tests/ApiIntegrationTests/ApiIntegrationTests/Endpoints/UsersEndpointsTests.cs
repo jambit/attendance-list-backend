@@ -136,6 +136,10 @@ public class UsersEndpointsTests(BaseIntegrationTest baseIntegrationTest)
             TestContext.Current.CancellationToken
         );
         Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode);
+
+        deleteResponse =
+            await AdminClient.DeleteAsync($"api/users/{userId}", TestContext.Current.CancellationToken);
+        Assert.Equal(HttpStatusCode.NotFound, deleteResponse.StatusCode);
     }
 
     [Fact]

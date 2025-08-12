@@ -1,6 +1,7 @@
 using ALB.Domain.Repositories;
 using ALB.Domain.Values;
 using FastEndpoints;
+using NodaTime;
 
 namespace ALB.Api.Endpoints.Children;
 
@@ -28,11 +29,11 @@ public class GetChildEndpoint(IChildRepository childRepository) : EndpointWithou
             child.Id,
             child.FirstName,
             child.LastName,
-            child.DateOfBirth.ToDateTimeUnspecified()
+            child.DateOfBirth
         );
 
         await SendAsync(response, cancellation: ct);
     }
 }
 
-public record GetChildResponse(Guid Id, string FirstName, string LastName, DateTime DateOfBirth);
+public record GetChildResponse(Guid Id, string FirstName, string LastName, LocalDate DateOfBirth);

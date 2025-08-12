@@ -17,23 +17,23 @@ public class CreateChildEndpoint(IChildRepository childRepository) : Endpoint<Cr
 
     public override async Task HandleAsync(CreateChildRequest request, CancellationToken ct)
     {
+        Console.WriteLine(request.DateOfBirth);
+
         var child = new Child
         {
             FirstName = request.FirstName,
             LastName = request.LastName,
-            DateOfBirth = LocalDate.FromDateTime(request.ChildDateOfBirth),
-            GroupId = request.GroupId
+            DateOfBirth = request.DateOfBirth
         };
 
         var createdChild = await childRepository.CreateAsync(child);
 
-        var response = new CreateChildResponse(createdChild.Id,
-            $"Created child {createdChild.FirstName} {createdChild.LastName}");
-
-        await SendAsync(response, cancellation: ct);
+        await SendOkAsync(
+            new CreateChildResponse(createdChild.Id, createdChild.FirstName, createdChild.LastName,
+                createdChild.DateOfBirth), ct);
     }
 }
 
-public record CreateChildRequest(string FirstName, string LastName, DateTime ChildDateOfBirth, Guid GroupId);
+public record CreateChildRequest(string FirstName, string LastName, LocalDate DateOfBirth);
 
-public record CreateChildResponse(Guid Id, string Message);
+public record CreateChildResponse(Guid Id, string FirstName, string LastName, LocalDate DateOfBirth);
