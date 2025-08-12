@@ -17,8 +17,6 @@ public class CreateChildEndpoint(IChildRepository childRepository) : Endpoint<Cr
 
     public override async Task HandleAsync(CreateChildRequest request, CancellationToken ct)
     {
-        Console.WriteLine(request.DateOfBirth);
-
         var child = new Child
         {
             FirstName = request.FirstName,
