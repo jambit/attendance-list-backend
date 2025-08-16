@@ -18,7 +18,7 @@ public class UpdateChildEndpoint(IChildRepository childRepository) : Endpoint<Up
         var childId = Route<Guid>("childId");
 
         var existingChild = await childRepository.GetByIdAsync(childId);
-        if (existingChild == null)
+        if (existingChild is null)
         {
             await SendNotFoundAsync(cancellationToken);
             return;

@@ -12,13 +12,8 @@
         <PackageReference Include="Bogus"/>
         <PackageReference Include="FastEndpoints"/>
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing"/>
-        <PackageReference Include="Microsoft.NET.Test.Sdk"/>
         <PackageReference Include="Testcontainers.PostgreSql"/>
-        <PackageReference Include="xunit.runner.visualstudio">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-        <PackageReference Include="xunit.v3"/>
+        <PackageReference Include="TUnit"/>
     </ItemGroup>
 
     <ItemGroup>

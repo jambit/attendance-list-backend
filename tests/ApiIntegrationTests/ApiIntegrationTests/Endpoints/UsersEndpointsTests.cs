@@ -3,189 +3,173 @@ using System.Net.Http.Json;
 using ALB.Api.Endpoints.Users;
 using ALB.Api.Endpoints.Users.Roles;
 using ALB.Domain.Values;
-using Bogus;
-using Xunit;
 
 namespace ApiIntegrationTests.Endpoints;
 
+[ClassDataSource<BaseIntegrationTest>(Shared = SharedType.PerAssembly)]
 public class UsersEndpointsTests(BaseIntegrationTest baseIntegrationTest)
-    : IClassFixture<BaseIntegrationTest>
 {
-    private readonly Faker<CreateUserRequest> _userRequestFaker = new Faker<CreateUserRequest>()
-        .CustomInstantiator(f => new CreateUserRequest(
-            f.Internet.Email(),
-            "SoSuperSecureP4a55w0rd!",
-            f.Name.FirstName(),
-            f.Name.LastName()
-        ));
-
     private HttpClient ParentClient => baseIntegrationTest.GetParentClient();
     private HttpClient AdminClient => baseIntegrationTest.GetAdminClient();
 
-    [Fact]
+    [Test]
     public async Task Should_Create_User_Successfully()
     {
-        var createUserRequest = _userRequestFaker.Generate();
+        var createUserRequest = TestDataFaker.UserRequestFaker.Generate();
 
         var response =
-            await AdminClient.PostAsJsonAsync("api/users", createUserRequest, TestContext.Current.CancellationToken);
+            await AdminClient.PostAsJsonAsync("api/users", createUserRequest);
 
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
     }
 
-    [Fact]
+    [Test]
     public async Task Should_Return_BadRequest_When_User_Already_Exists()
     {
-        var createUserRequest = _userRequestFaker.Generate();
+        var createUserRequest = TestDataFaker.UserRequestFaker.Generate();
 
-        await AdminClient.PostAsJsonAsync("api/users", createUserRequest, TestContext.Current.CancellationToken);
+        await AdminClient.PostAsJsonAsync("api/users", createUserRequest);
 
         var response =
-            await AdminClient.PostAsJsonAsync("api/users", createUserRequest, TestContext.Current.CancellationToken);
+            await AdminClient.PostAsJsonAsync("api/users", createUserRequest);
 
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.BadRequest);
     }
 
-    [Fact]
+    [Test]
     public async Task Should_Return_Forbidden_When_Non_Admin_Is_Creating()
     {
-        var createUserRequest = _userRequestFaker.Generate();
+        var createUserRequest = TestDataFaker.UserRequestFaker.Generate();
 
         var response =
-            await ParentClient.PostAsJsonAsync("api/users", createUserRequest, TestContext.Current.CancellationToken);
+            await ParentClient.PostAsJsonAsync("api/users", createUserRequest);
 
-        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Forbidden);
     }
 
-    [Fact]
+    [Test]
     public async Task Should_Get_User_Successfully()
     {
-        var createUserRequest = _userRequestFaker.Generate();
+        var createUserRequest = TestDataFaker.UserRequestFaker.Generate();
         var response =
-            await AdminClient.PostAsJsonAsync("api/users", createUserRequest, TestContext.Current.CancellationToken);
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            await AdminClient.PostAsJsonAsync("api/users", createUserRequest);
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
 
         var createdUser =
-            await response.Content.ReadFromJsonAsync<CreateUserResponse>(TestContext.Current.CancellationToken);
-        Assert.NotNull(createdUser);
-        var userId = createdUser.Id;
+            await response.Content.ReadFromJsonAsync<CreateUserResponse>();
+        await Assert.That(createdUser).IsNotNull();
+        var userId = createdUser!.Id;
 
         response = await AdminClient.GetAsync(
-            $"api/users/{userId}",
-            TestContext.Current.CancellationToken
+            $"api/users/{userId}"
         );
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
     }
 
-    [Fact]
+    [Test]
     public async Task Should_Update_User_Successfully()
     {
-        var createUserRequest = _userRequestFaker.Generate();
+        var createUserRequest = TestDataFaker.UserRequestFaker.Generate();
         var response =
-            await AdminClient.PostAsJsonAsync("api/users", createUserRequest, TestContext.Current.CancellationToken);
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            await AdminClient.PostAsJsonAsync("api/users", createUserRequest);
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
 
         var createdUser =
-            await response.Content.ReadFromJsonAsync<CreateUserResponse>(TestContext.Current.CancellationToken);
+            await response.Content.ReadFromJsonAsync<CreateUserResponse>();
 
-        Assert.NotNull(createdUser);
+        await Assert.That(createdUser).IsNotNull();
 
-        var userId = createdUser.Id;
+        var userId = createdUser!.Id;
         var userFirstName = "Max";
         var userLastName = "Mustermann";
 
         var updateUserRequest = new UpdateUserRequest(userFirstName, userLastName);
 
-        response = await AdminClient.PutAsJsonAsync($"api/users/{userId}", updateUserRequest,
-            TestContext.Current.CancellationToken);
+        response = await AdminClient.PutAsJsonAsync($"api/users/{userId}", updateUserRequest);
 
-        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.NoContent);
 
         response = await AdminClient.GetAsync(
-            $"api/users/{userId}",
-            TestContext.Current.CancellationToken
+            $"api/users/{userId}"
         );
 
         var getUserResponse =
-            await response.Content.ReadFromJsonAsync<GetUserResponse>(TestContext.Current.CancellationToken);
+            await response.Content.ReadFromJsonAsync<GetUserResponse>();
         var updatedUser = getUserResponse?.User;
-        Assert.NotNull(updatedUser);
-        Assert.Equal(userFirstName, updatedUser.FirstName);
-        Assert.Equal(userLastName, updatedUser.LastName);
+        await Assert.That(updatedUser).IsNotNull();
+        await Assert.That(updatedUser!.FirstName).IsEqualTo(userFirstName);
+        await Assert.That(updatedUser.LastName).IsEqualTo(userLastName);
     }
 
-    [Fact]
+    [Test]
     public async Task Should_Delete_User_Successfully()
     {
-        var createUserRequest = _userRequestFaker.Generate();
+        var createUserRequest = TestDataFaker.UserRequestFaker.Generate();
         var response =
-            await AdminClient.PostAsJsonAsync("api/users", createUserRequest, TestContext.Current.CancellationToken);
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            await AdminClient.PostAsJsonAsync("api/users", createUserRequest);
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
 
         var createdUser =
-            await response.Content.ReadFromJsonAsync<CreateUserResponse>(TestContext.Current.CancellationToken);
-        Assert.NotNull(createdUser);
-        var userId = createdUser.Id;
+            await response.Content.ReadFromJsonAsync<CreateUserResponse>();
+        await Assert.That(createdUser).IsNotNull();
+        var userId = createdUser!.Id;
 
         var deleteResponse =
-            await AdminClient.DeleteAsync($"api/users/{userId}", TestContext.Current.CancellationToken);
-        Assert.Equal(HttpStatusCode.NoContent, deleteResponse.StatusCode);
+            await AdminClient.DeleteAsync($"api/users/{userId}");
+        await Assert.That(deleteResponse.StatusCode).IsEqualTo(HttpStatusCode.NoContent);
 
         var getResponse = await AdminClient.GetAsync(
-            $"api/users/{userId}",
-            TestContext.Current.CancellationToken
+            $"api/users/{userId}"
         );
-        Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode);
+        await Assert.That(getResponse.StatusCode).IsEqualTo(HttpStatusCode.NotFound);
 
         deleteResponse =
-            await AdminClient.DeleteAsync($"api/users/{userId}", TestContext.Current.CancellationToken);
-        Assert.Equal(HttpStatusCode.NotFound, deleteResponse.StatusCode);
+            await AdminClient.DeleteAsync($"api/users/{userId}");
+        await Assert.That(deleteResponse.StatusCode).IsEqualTo(HttpStatusCode.NotFound);
     }
 
-    [Fact]
+    [Test]
     public async Task Should_Assign_Correct_Role_To_User()
     {
-        var createUserRequest = _userRequestFaker.Generate();
+        var createUserRequest = TestDataFaker.UserRequestFaker.Generate();
         var response =
-            await AdminClient.PostAsJsonAsync("api/users", createUserRequest, TestContext.Current.CancellationToken);
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            await AdminClient.PostAsJsonAsync("api/users", createUserRequest);
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
 
         var createdUser =
-            await response.Content.ReadFromJsonAsync<CreateUserResponse>(TestContext.Current.CancellationToken);
-        if (createdUser == null) Assert.Fail("Expected a CreateUserResponse but got null.");
-        var userId = createdUser.Id;
+            await response.Content.ReadFromJsonAsync<CreateUserResponse>();
+        await Assert.That(createdUser).IsNotNull();
+        var userId = createdUser!.Id;
 
         var setRoleRequest = new AddUserRoleRequest
         (
             SystemRoles.Parent
         );
 
-        response = await AdminClient.PostAsJsonAsync($"api/users/{userId}/roles", setRoleRequest,
-            TestContext.Current.CancellationToken);
-        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+        response = await AdminClient.PostAsJsonAsync($"api/users/{userId}/roles", setRoleRequest);
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.NoContent);
     }
 
-    [Fact]
+    [Test]
     public async Task Should_Return_Forbidden_When_Non_Admin_Is_Assigning_Role()
     {
-        var createUserRequest = _userRequestFaker.Generate();
+        var createUserRequest = TestDataFaker.UserRequestFaker.Generate();
         var response =
-            await AdminClient.PostAsJsonAsync("api/users", createUserRequest, TestContext.Current.CancellationToken);
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            await AdminClient.PostAsJsonAsync("api/users", createUserRequest);
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
 
         var createdUser =
-            await response.Content.ReadFromJsonAsync<CreateUserResponse>(TestContext.Current.CancellationToken);
-        if (createdUser == null) Assert.Fail("Expected a CreateUserResponse but got null.");
-        var userId = createdUser.Id;
+            await response.Content.ReadFromJsonAsync<CreateUserResponse>();
+        await Assert.That(createdUser).IsNotNull();
+        var userId = createdUser!.Id;
 
         var setRoleRequest = new AddUserRoleRequest
         (
             SystemRoles.Parent
         );
 
-        response = await ParentClient.PostAsJsonAsync($"api/users/{userId}/roles", setRoleRequest,
-            TestContext.Current.CancellationToken);
+        response = await ParentClient.PostAsJsonAsync($"api/users/{userId}/roles", setRoleRequest);
 
-        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Forbidden);
     }
 }

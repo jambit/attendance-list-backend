@@ -21,7 +21,7 @@ public class GetAttendancePageEndpoint(
     {
         var attendanceList = await attendanceListRepo.GetAttendanceListByIdAsync(request.AttendanceListId);
 
-        if (attendanceList == null)
+        if (attendanceList is null)
         {
             await SendNotFoundAsync(ct);
             return;

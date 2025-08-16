@@ -32,7 +32,7 @@ public class ChildRepository(ApplicationDbContext dbContext) : IChildRepository
     public async Task DeleteAsync(Guid id)
     {
         var child = await dbContext.Children.FindAsync(id);
-        if (child != null)
+        if (child is not null)
         {
             dbContext.Children.Remove(child);
             await dbContext.SaveChangesAsync();

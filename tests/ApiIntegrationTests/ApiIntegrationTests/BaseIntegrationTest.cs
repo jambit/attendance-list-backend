@@ -11,11 +11,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Testcontainers.PostgreSql;
-using Xunit;
+using TUnit.Core.Interfaces;
 
 namespace ApiIntegrationTests;
 
-public class BaseIntegrationTest : IAsyncLifetime
+public class BaseIntegrationTest : IAsyncInitializer, IAsyncDisposable
 {
     public const string AdminEmail = "admin@attendance-list-backend.de";
     public const string AdminPassword = "SoSuperSecureP4a55w0rd!";
@@ -34,7 +34,7 @@ public class BaseIntegrationTest : IAsyncLifetime
         await _postgreSqlContainer.StopAsync();
     }
 
-    public async ValueTask InitializeAsync()
+    public async Task InitializeAsync()
     {
         await _postgreSqlContainer.StartAsync();
 
@@ -141,7 +141,7 @@ file sealed class TestWebApplicationFactory<TProgram>(string connectionString)
             var dbContextDescriptor =
                 services.SingleOrDefault(s => s.ServiceType == typeof(DbContextOptions<ApplicationDbContext>));
 
-            if (dbContextDescriptor != null)
+            if (dbContextDescriptor is not null)
                 services.Remove(dbContextDescriptor);
 
             services.AddDbContext<ApplicationDbContext>((container, options) =>
