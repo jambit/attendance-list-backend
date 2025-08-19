@@ -1,3 +1,4 @@
+using System.Text.Json;
 using ALB.Api.Extensions;
 using ALB.Domain.Identity;
 using ALB.Domain.Repositories;
@@ -8,8 +9,13 @@ using ALB.Infrastructure.Persistence.Repositories;
 using FastEndpoints;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
-using Npgsql;
 using Scalar.AspNetCore;
+using ALB.Infrastructure.Persistence.Repositories;
+using ALB.Domain.Repositories;
+using Microsoft.AspNetCore.Http.Json;
+using NodaTime;
+using NodaTime.Serialization.SystemTextJson;
+using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,6 +46,7 @@ builder.Services.AddOpenApi();
 builder.Services.AddTransient<IEmailSender<ApplicationUser>, DummyEmailSender>();
 
 builder.Services.AddFastEndpoints();
+builder.Services.AddNodaTimeJsonConverters();
 
 builder.Services.AddAuthAndIdentityCore();
 
