@@ -8,16 +8,15 @@ namespace ApiIntegrationTests.Endpoints;
 [ClassDataSource<BaseIntegrationTest>(Shared = SharedType.PerAssembly)]
 public class ChildrenEndpointsTests(BaseIntegrationTest baseIntegrationTest)
 {
-    private HttpClient ParentClient => baseIntegrationTest.GetParentClient();
-    private HttpClient AdminClient => baseIntegrationTest.GetAdminClient();
 
     [Test]
     public async Task Should_Create_Child_Successfully()
     {
+        var adminClient = baseIntegrationTest.GetAdminClient();
         var createChildRequest = TestDataFaker.ChildRequestFaker.Generate();
 
         var response =
-            await AdminClient.PostAsJsonAsync("api/children", createChildRequest);
+            await adminClient.PostAsJsonAsync("api/children", createChildRequest);
 
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
     }
@@ -25,9 +24,10 @@ public class ChildrenEndpointsTests(BaseIntegrationTest baseIntegrationTest)
     [Test]
     public async Task Should_Get_Child_Successfully()
     {
+        var adminClient = baseIntegrationTest.GetAdminClient();
         var createChildRequest = TestDataFaker.ChildRequestFaker.Generate();
         var response =
-            await AdminClient.PostAsJsonAsync("api/children", createChildRequest);
+            await adminClient.PostAsJsonAsync("api/children", createChildRequest);
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
 
         var createdChild =
@@ -35,7 +35,7 @@ public class ChildrenEndpointsTests(BaseIntegrationTest baseIntegrationTest)
         await Assert.That(createdChild).IsNotNull();
         var childId = createdChild!.Id;
 
-        response = await AdminClient.GetAsync(
+        response = await adminClient.GetAsync(
             $"api/children/{childId}"
         );
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
@@ -44,9 +44,10 @@ public class ChildrenEndpointsTests(BaseIntegrationTest baseIntegrationTest)
     [Test]
     public async Task Should_Delete_Child_Successfully()
     {
+        var adminClient = baseIntegrationTest.GetAdminClient();
         var createChildRequest = TestDataFaker.ChildRequestFaker.Generate();
         var response =
-            await AdminClient.PostAsJsonAsync("api/children", createChildRequest);
+            await adminClient.PostAsJsonAsync("api/children", createChildRequest);
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
 
         var createdChild =
@@ -55,15 +56,15 @@ public class ChildrenEndpointsTests(BaseIntegrationTest baseIntegrationTest)
         var childId = createdChild!.Id;
 
         var deleteResponse =
-            await AdminClient.DeleteAsync($"api/children/{childId}");
+            await adminClient.DeleteAsync($"api/children/{childId}");
         await Assert.That(deleteResponse.StatusCode).IsEqualTo(HttpStatusCode.NoContent);
 
-        var getResponse = await AdminClient.GetAsync(
+        var getResponse = await adminClient.GetAsync(
             $"api/children/{childId}"
         );
         await Assert.That(getResponse.StatusCode).IsEqualTo(HttpStatusCode.NotFound);
         deleteResponse =
-            await AdminClient.DeleteAsync($"api/children/{childId}");
+            await adminClient.DeleteAsync($"api/children/{childId}");
         await Assert.That(deleteResponse.StatusCode).IsEqualTo(HttpStatusCode.NotFound);
     }
 
@@ -71,10 +72,11 @@ public class ChildrenEndpointsTests(BaseIntegrationTest baseIntegrationTest)
     [Skip("Bug with deserialization of LocalDate")]
     public async Task Should_Update_Child_Successfully()
     {
+        var adminClient = baseIntegrationTest.GetAdminClient();
         var createChildRequest = TestDataFaker.ChildRequestFaker.Generate();
 
         var response =
-            await AdminClient.PostAsJsonAsync("api/children", createChildRequest);
+            await adminClient.PostAsJsonAsync("api/children", createChildRequest);
 
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
 
@@ -90,11 +92,11 @@ public class ChildrenEndpointsTests(BaseIntegrationTest baseIntegrationTest)
 
         var updateChildRequest = new UpdateChildRequest(childFirstName, childLastName, childDateOfBirth);
 
-        response = await AdminClient.PutAsJsonAsync($"api/children/{childId}", updateChildRequest);
+        response = await adminClient.PutAsJsonAsync($"api/children/{childId}", updateChildRequest);
 
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.NoContent);
 
-        response = await AdminClient.GetAsync(
+        response = await adminClient.GetAsync(
             $"api/children/{childId}"
         );
 
