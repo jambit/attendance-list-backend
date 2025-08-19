@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using System.Text.Encodings.Web;
+using ALB.Api;
 using ALB.Domain.Values;
 using ALB.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authentication;
@@ -26,7 +27,7 @@ public class BaseIntegrationTest : IAsyncInitializer, IAsyncDisposable
         .WithDatabase("postgres")
         .Build();
 
-    private WebApplicationFactory<Program> _webApplicationFactory = null!;
+    private WebApplicationFactory<IApiAssemblyMarker> _webApplicationFactory = null!;
 
     public async ValueTask DisposeAsync()
     {
@@ -38,7 +39,7 @@ public class BaseIntegrationTest : IAsyncInitializer, IAsyncDisposable
     {
         await _postgreSqlContainer.StartAsync();
 
-        _webApplicationFactory = new TestWebApplicationFactory<Program>(_postgreSqlContainer.GetConnectionString());
+        _webApplicationFactory = new TestWebApplicationFactory<IApiAssemblyMarker>(_postgreSqlContainer.GetConnectionString());
 
         _ = _webApplicationFactory.Server;
 
