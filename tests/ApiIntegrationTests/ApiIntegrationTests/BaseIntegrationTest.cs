@@ -1,16 +1,14 @@
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 using ALB.Api;
-using ALB.Domain.Identity;
 using ALB.Domain.Values;
 using ALB.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Testcontainers.PostgreSql;
@@ -22,7 +20,7 @@ public class BaseIntegrationTest : IAsyncInitializer, IAsyncDisposable
 {
     public const string AdminEmail = "admin@attendance-list-backend.de";
     public const string AdminPassword = "SoSuperSecureP4a55w0rd!";
-    
+
     private readonly PostgreSqlContainer _postgreSqlContainer = new PostgreSqlBuilder()
         .WithUsername("postgres")
         .WithPassword("postgres")
@@ -31,9 +29,27 @@ public class BaseIntegrationTest : IAsyncInitializer, IAsyncDisposable
 
     private WebApplicationFactory<IApiAssemblyMarker> _webApplicationFactory = null!;
 
-    private RoleManager<ApplicationRole> _roleManager = null!;
-    private UserManager<ApplicationUser> _userManager = null!;
-    
+    public async ValueTask DisposeAsync()
+    {
+        await _webApplicationFactory.DisposeAsync();
+        await _postgreSqlContainer.StopAsync();
+    }
+
+    public async Task InitializeAsync()
+    {
+        await _postgreSqlContainer.StartAsync();
+
+        _webApplicationFactory = new TestWebApplicationFactory<IApiAssemblyMarker>(_postgreSqlContainer.GetConnectionString());
+
+        _ = _webApplicationFactory.Server;
+
+        using var serviceScope = _webApplicationFactory.Services.CreateScope();
+
+        var context = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        // await context.Database.MigrateAsync();
+        await context.Database.EnsureCreatedAsync();
+    }
+
     private HttpClient GetHttpClient(string token)
     {
         var client = _webApplicationFactory.CreateClient();
@@ -52,49 +68,32 @@ public class BaseIntegrationTest : IAsyncInitializer, IAsyncDisposable
     }
 
     public HttpClient GetAdminClient()
-        => GetHttpClient(SystemRoles.Admin);
-    
-    public HttpClient GetCoAdminClient()
-        => GetHttpClient(SystemRoles.CoAdmin);
-    
-    public HttpClient GetTeamClient()
-        => GetHttpClient(SystemRoles.Team);
-    
-    public HttpClient GetParentClient()
-        => GetHttpClient(SystemRoles.Parent);
-    
-    public async Task InitializeAsync()
     {
-        await _postgreSqlContainer.StartAsync();
-
-        _webApplicationFactory = new TestWebApplicationFactory(_postgreSqlContainer.GetConnectionString());
-        
-        _ = _webApplicationFactory.Server;
-        
-        using var serviceScope = _webApplicationFactory.Services.CreateScope();
-
-        var context = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        // await context.Database.MigrateAsync();
-        await context.Database.EnsureCreatedAsync();
-        
-        _roleManager = serviceScope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
-        _userManager = serviceScope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+        return GetHttpClient(SystemRoles.Admin);
     }
-    
-    public async ValueTask DisposeAsync()
+
+    public HttpClient GetCoAdminClient()
     {
-        await _webApplicationFactory.DisposeAsync();
-        await _postgreSqlContainer.StopAsync();
+        return GetHttpClient(SystemRoles.CoAdmin);
+    }
+
+    public HttpClient GetTeamClient()
+    {
+        return GetHttpClient(SystemRoles.Team);
+    }
+
+    public HttpClient GetParentClient()
+    {
+        return GetHttpClient(SystemRoles.Parent);
     }
 }
 
-public class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
+internal class TestAuthHandler(
+    IOptionsMonitor<AuthenticationSchemeOptions> options,
+    ILoggerFactory logger,
+    UrlEncoder encoder)
+    : AuthenticationHandler<AuthenticationSchemeOptions>(options, logger, encoder)
 {
-    public TestAuthHandler(IOptionsMonitor<AuthenticationSchemeOptions> options,
-        ILoggerFactory logger, UrlEncoder encoder)
-        : base(options, logger, encoder)
-    {}
-
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
         var apiKey = Request.Headers["X-Api-Key"].ToString();
@@ -113,7 +112,7 @@ public class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions
             },
             _ => throw new InvalidOperationException("Unknown API Key")
         };
-        
+
         var identity = new ClaimsIdentity(claims, "Test");
         var principal = new ClaimsPrincipal(identity);
         var ticket = new AuthenticationTicket(principal, "TestScheme");
@@ -124,38 +123,33 @@ public class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions
     }
 }
 
-file sealed class TestWebApplicationFactory(string connectionString) : WebApplicationFactory<IApiAssemblyMarker>
+file sealed class TestWebApplicationFactory<TProgram>(string connectionString)
+    : WebApplicationFactory<TProgram> where TProgram : class
 {
-    protected override IHost CreateHost(IHostBuilder builder)
+    protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        _ = builder.UseEnvironment("Testing");
-
-        _ = builder.ConfigureHostConfiguration(
-            cb => cb.AddInMemoryCollection(
-                new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase)
-                {
-                    // ["UseSecretsJson"] = bool.FalseString,
-                    // ["UseAuth0"] = bool.FalseString,
-                    // ["ProcessFeatureJob:Enabled"] = bool.FalseString,
-                    [$"ConnectionStrings:postgresdb"] = connectionString
-                }
-            )
-        );
+        builder.ConfigureAppConfiguration((context, configBuilder) =>
+        {
+            var inMemorySettings = new Dictionary<string, string?>
+            {
+                { "ConnectionStrings:DefaultConnection", connectionString }
+            };
+            configBuilder.AddInMemoryCollection(inMemorySettings);
+        });
 
         builder.ConfigureServices(services =>
         {
-            var desc = services.SingleOrDefault(s => s.ServiceType == typeof(DbContextOptions<ApplicationDbContext>));
+            var dbContextDescriptor =
+                services.SingleOrDefault(s => s.ServiceType == typeof(DbContextOptions<ApplicationDbContext>));
 
-            if (desc is not null)
-            {
-                services.Remove(desc);
-            }
+            if (dbContextDescriptor is not null)
+                services.Remove(dbContextDescriptor);
 
-            services.AddDbContext<ApplicationDbContext>(opts =>
+            services.AddDbContext<ApplicationDbContext>((container, options) =>
             {
-                opts.UseNpgsql(connectionString, x => x.UseNodaTime());
+                options.UseNpgsql(connectionString, npgsqlOptions => npgsqlOptions.UseNodaTime());
             });
-            
+
             services.AddAuthentication("TestScheme")
                 .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("TestScheme", options => { });
 
@@ -165,8 +159,6 @@ file sealed class TestWebApplicationFactory(string connectionString) : WebApplic
                 .AddPolicy(SystemRoles.TeamPolicy, x => x.RequireRole(SystemRoles.Team))
                 .AddPolicy(SystemRoles.ParentPolicy, x => x.RequireRole(SystemRoles.Parent));
         });
-
-        return base.CreateHost(builder);
+        builder.UseEnvironment("Testing");
     }
-
 }

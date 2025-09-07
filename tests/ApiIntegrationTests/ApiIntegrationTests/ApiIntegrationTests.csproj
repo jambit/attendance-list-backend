@@ -5,17 +5,19 @@
         <Nullable>enable</Nullable>
         <OutputType>Exe</OutputType>
         <TargetFramework>net9.0</TargetFramework>
+        <IsTestProject>true</IsTestProject>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="FastEndpoints" />
+        <PackageReference Include="Bogus"/>
+        <PackageReference Include="FastEndpoints"/>
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing"/>
-        <PackageReference Include="Testcontainers.PostgreSql" />
+        <PackageReference Include="Testcontainers.PostgreSql"/>
         <PackageReference Include="TUnit"/>
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\..\src\ALB.Api\ALB.Api.csproj" />
+        <ProjectReference Include="..\..\..\src\ALB.Api\ALB.Api.csproj"/>
     </ItemGroup>
 
 </Project>

@@ -12,18 +12,18 @@
 
     <ItemGroup>
         <PackageReference Include="Aspire.Hosting.AppHost"/>
-        <PackageReference Include="Aspire.Hosting.PostgreSQL" />
-        <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" />
-        <PackageReference Include="FastEndpoints" />
-        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
+        <PackageReference Include="Aspire.Hosting.PostgreSQL"/>
+        <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL"/>
+        <PackageReference Include="FastEndpoints"/>
+        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
-          <PrivateAssets>all</PrivateAssets>
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\src\ALB.Api\ALB.Api.csproj" />
+        <ProjectReference Include="..\..\src\ALB.Api\ALB.Api.csproj"/>
     </ItemGroup>
 
 </Project>

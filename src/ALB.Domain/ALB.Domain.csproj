@@ -7,19 +7,19 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Content Include="obj\Debug\net9.0\ALB.Domain.csproj.AssemblyReference.cache" />
+        <Content Include="obj\Debug\net9.0\ALB.Domain.csproj.AssemblyReference.cache"/>
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" />
-      <PackageReference Include="FastEndpoints" />
-      <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
-      <PackageReference Include="Microsoft.AspNetCore.Identity.UI" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
-        <PrivateAssets>all</PrivateAssets>
-        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      </PackageReference>
-      <PackageReference Include="NodaTime" />
+        <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL"/>
+        <PackageReference Include="FastEndpoints"/>
+        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore"/>
+        <PackageReference Include="Microsoft.AspNetCore.Identity.UI"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="NodaTime"/>
     </ItemGroup>
 
 </Project>

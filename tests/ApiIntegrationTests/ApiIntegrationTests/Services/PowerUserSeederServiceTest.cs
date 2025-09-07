@@ -5,11 +5,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace ApiIntegrationTests.Services;
 
-
 [ClassDataSource<BaseIntegrationTest>(Shared = SharedType.PerAssembly)]
 public class PowerUserSeederServiceTest(BaseIntegrationTest baseIntegrationTest)
 {
-
     [Test]
     public async Task Should_Create_Power_User_On_Startup()
     {
@@ -17,8 +15,8 @@ public class PowerUserSeederServiceTest(BaseIntegrationTest baseIntegrationTest)
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
         var powerUser = await userManager.FindByEmailAsync("admin@attendance-list-backend.de");
-        var isAdmin = powerUser != null && await userManager.IsInRoleAsync(powerUser, SystemRoles.Admin);
-        
+        var isAdmin = powerUser is not null && await userManager.IsInRoleAsync(powerUser, SystemRoles.Admin);
+
         await Assert.That(powerUser).IsNotNull();
         await Assert.That(isAdmin).IsTrue();
     }

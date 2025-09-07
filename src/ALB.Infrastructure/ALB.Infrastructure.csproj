@@ -7,20 +7,20 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\ALB.Domain\ALB.Domain.csproj" />
+        <ProjectReference Include="..\ALB.Domain\ALB.Domain.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" />
-      <PackageReference Include="FastEndpoints" />
-      <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
-        <PrivateAssets>all</PrivateAssets>
-        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      </PackageReference>
-      <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
-      <PackageReference Include="NodaTime" />
-      <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.NodaTime" />
+        <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL"/>
+        <PackageReference Include="FastEndpoints"/>
+        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection"/>
+        <PackageReference Include="NodaTime"/>
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.NodaTime"/>
     </ItemGroup>
 
 </Project>

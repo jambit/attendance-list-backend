@@ -9,13 +9,15 @@ public class Child
     public required string FirstName { get; set; }
     public required string LastName { get; set; }
     public LocalDate DateOfBirth { get; set; }
-    public Guid GroupId { get; set; }
-    
-    public Group Group { get; set; } = null!;
+    public Guid? GroupId { get; set; }
+
+    public Group? Group { get; set; } = null!;
+
     [JsonIgnore]
     public ICollection<AttendanceListEntry> AttendanceListEntries { get; set; } = new List<AttendanceListEntry>();
+
     [JsonIgnore]
     public ICollection<UserChildRelationship> UserChildRelationships { get; set; } = new List<UserChildRelationship>();
-    [JsonIgnore]
-    public ICollection<AbsenceDay> AbsenceDays { get; set; } = new List<AbsenceDay>();
+
+    [JsonIgnore] public ICollection<AbsenceDay> AbsenceDays { get; set; } = new List<AbsenceDay>();
 }

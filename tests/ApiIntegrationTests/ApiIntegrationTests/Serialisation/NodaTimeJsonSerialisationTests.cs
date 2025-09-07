@@ -7,7 +7,7 @@ namespace ApiIntegrationTests.Serialisation;
 public class NodaTimeJsonSerialisationTests
 {
     [Test]
-    private async Task Should_Serialize_LocalDate_Correctly()
+    public async Task Should_Serialize_LocalDate_Correctly()
     {
         var explicitOptions = new JsonSerializerOptions
         {
@@ -21,7 +21,7 @@ public class NodaTimeJsonSerialisationTests
         var localDate = new LocalDate(2023, 10, 1);
         var json = JsonSerializer.Serialize(localDate, explicitOptions);
 
-        var deserializedLocalDate = JsonSerializer.Deserialize<LocalDate>(json);
+        var deserializedLocalDate = JsonSerializer.Deserialize<LocalDate>(json, explicitOptions);
 
         await Assert.That(deserializedLocalDate).IsEqualTo(localDate);
     }
