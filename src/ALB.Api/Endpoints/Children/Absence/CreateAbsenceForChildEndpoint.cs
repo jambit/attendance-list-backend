@@ -4,7 +4,7 @@ using ALB.Domain.Repositories;
 using FastEndpoints;
 using NodaTime;
 
-namespace ALB.Api.UseCases.Endpoints.Children.Absence;
+namespace ALB.Api.Endpoints.Children.Absence;
 
 public class CreateAbsenceForChildEndpoint(IAbsenceDayRepository absenceRepo) : Endpoint<CreateAbsenceRequest, CreateAbsenceResponse>
 {
@@ -23,7 +23,7 @@ public class CreateAbsenceForChildEndpoint(IAbsenceDayRepository absenceRepo) : 
 
         if (startDate > endDate)
         {
-            await SendAsync(new CreateAbsenceResponse(null, "Start date cannot be after end date."), 400, ct);
+            await SendAsync(new CreateAbsenceResponse("Start date cannot be after end date."), 400, ct);
             return;
         }
 
@@ -31,7 +31,7 @@ public class CreateAbsenceForChildEndpoint(IAbsenceDayRepository absenceRepo) : 
         
         if (alreadyExists)
         {
-            await SendAsync(new CreateAbsenceResponse(null, "An absence already exists for one or more days in this date range."), 409, ct); // 409 Conflict is better here
+            await SendAsync(new CreateAbsenceResponse("An absence already exists for one or more days in this date range."), 409, ct); // 409 Conflict is better here
             return;
         }
 
@@ -53,12 +53,12 @@ public class CreateAbsenceForChildEndpoint(IAbsenceDayRepository absenceRepo) : 
         {
             await absenceRepo.AddRangeAsync(absencesToCreate, ct);
         }
-        await SendAsync(new CreateAbsenceResponse(null, $"Absence registered successfully for {absencesToCreate.Count} day(s)."), cancellation: ct);
+        await SendAsync(new CreateAbsenceResponse($"Absence registered successfully for {absencesToCreate.Count} day(s)."), cancellation: ct);
     }
 }
 
 public record CreateAbsenceRequest(DateTime StartDate, DateTime EndDate, int AbsenceStatusId);
 
-public record CreateAbsenceResponse(Guid? AbsenceId, string Message); //muss wahrscheinlich noch angepasst werden, weil AbsenceId: null wenn range operation
+public record CreateAbsenceResponse(string Message);
 
 
