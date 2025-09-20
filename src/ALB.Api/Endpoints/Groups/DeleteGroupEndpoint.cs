@@ -12,12 +12,12 @@ public class DeleteGroupEndpoint(IGroupRepository groupRepository) : Endpoint<De
         Policies(SystemRoles.AdminPolicy);
     }
 
-    public override async Task HandleAsync(DeleteGroupRequest request, CancellationToken cancellationToken)
+    public override async Task HandleAsync(DeleteGroupRequest request, CancellationToken ct)
     {
-        await groupRepository.DeleteAsync(request.GroupId);
+        await groupRepository.DeleteAsync(request.GroupId, ct);
 
         await SendAsync(new DeleteGroupResponse($"Deleted Group with Id: {request.GroupId}"),
-            cancellation: cancellationToken);
+            cancellation: ct);
     }
 }
 

@@ -18,7 +18,7 @@ public class CreateAbsenceForChildEndpoint(IAbsenceDayRepository absenceRepo)
     {
         var childId = Route<Guid>("ChildId");
 
-        var alreadyExists = await absenceRepo.ExistsAsync(childId, LocalDate.FromDateTime(request.Date));
+        var alreadyExists = await absenceRepo.ExistsAsync(childId, LocalDate.FromDateTime(request.Date), ct);
 
         if (alreadyExists)
         {
@@ -34,7 +34,7 @@ public class CreateAbsenceForChildEndpoint(IAbsenceDayRepository absenceRepo)
             AbsenceStatusId = request.AbsenceStatusId
         };
 
-        await absenceRepo.AddAsync(absence);
+        await absenceRepo.AddAsync(absence, ct);
 
         await SendAsync(new CreateAbsenceResponse(absence.Id, "Absence registered successfully."), cancellation: ct);
     }

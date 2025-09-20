@@ -13,7 +13,7 @@ public class CreateGroupEndpoint(IGroupRepository groupRepository) : Endpoint<Cr
         Policies(SystemRoles.AdminPolicy);
     }
 
-    public override async Task HandleAsync(CreateGroupRequest request, CancellationToken cancellationToken)
+    public override async Task HandleAsync(CreateGroupRequest request, CancellationToken ct)
     {
         var group = new Group
         {
@@ -22,11 +22,11 @@ public class CreateGroupEndpoint(IGroupRepository groupRepository) : Endpoint<Cr
             ResponsibleUserId = request.ResponsibleUserId
         };
 
-        var createdGroup = await groupRepository.CreateAsync(group);
+        var createdGroup = await groupRepository.CreateAsync(group, ct);
 
         await SendAsync(
             new CreateGroupResponse(createdGroup.Id, "Group created successfully."),
-            cancellation: cancellationToken
+            cancellation: ct
         );
     }
 }

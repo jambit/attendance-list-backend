@@ -13,14 +13,14 @@ public class UpdateChildEndpoint(IChildRepository childRepository) : Endpoint<Up
         Policies(SystemRoles.AdminPolicy);
     }
 
-    public override async Task HandleAsync(UpdateChildRequest request, CancellationToken cancellationToken)
+    public override async Task HandleAsync(UpdateChildRequest request, CancellationToken ct)
     {
         var childId = Route<Guid>("childId");
 
-        var existingChild = await childRepository.GetByIdAsync(childId);
+        var existingChild = await childRepository.GetByIdAsync(childId, ct);
         if (existingChild is null)
         {
-            await SendNotFoundAsync(cancellationToken);
+            await SendNotFoundAsync(ct);
             return;
         }
 
@@ -28,9 +28,9 @@ public class UpdateChildEndpoint(IChildRepository childRepository) : Endpoint<Up
         existingChild.LastName = request.ChildLastName;
         existingChild.DateOfBirth = request.ChildDateOfBirth;
 
-        await childRepository.UpdateAsync(existingChild);
+        await childRepository.UpdateAsync(existingChild, ct);
 
-        await SendNoContentAsync(cancellationToken);
+        await SendNoContentAsync(ct);
     }
 }
 

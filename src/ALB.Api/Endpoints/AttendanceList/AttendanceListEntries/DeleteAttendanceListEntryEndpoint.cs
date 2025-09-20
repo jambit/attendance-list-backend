@@ -9,16 +9,27 @@ public class DeleteAttendanceListEntryEndpoint(IAttendanceRepository repository)
 {
     public override void Configure()
     {
-        Delete("/api/attendance-lists/entries");
+        Delete("/api/attendance-lists/{attendanceListId:guid}/entries");
         AllowAnonymous();
     }
 
     public override async Task HandleAsync(DeleteAttendanceListEntryRequest request, CancellationToken ct)
     {
-        await repository.DeleteAsync(request.ChildId, LocalDate.FromDateTime(request.Date), ct);
+        var attendanceListId = Route<Guid>("attendanceListId");
+        var date = LocalDate.FromDateTime(request.Date);
+        
+        var attendanceListEntry = await repository.GetByListChildAndDateAsync(attendanceListId, request.ChildId, date, ct);
+
+        if (attendanceListEntry is null)
+        {
+            await SendNotFoundAsync(ct);
+            return;
+        }
+        
+        await repository.DeleteAsync(attendanceListEntry.Id, ct);
 
         await SendAsync(new DeleteAttendanceListEntryResponse(
-            $"Attendance for {request.ChildId} at {request.Date} was successfully deleted."));
+            $"Attendance for {request.ChildId} at {request.Date} was successfully deleted."), cancellation: ct);
     }
 }
 
