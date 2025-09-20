@@ -34,6 +34,7 @@ public class CreateAbsenceForChildEndpoint(IAbsenceDayRepository absenceRepo) : 
         if (alreadyExists)
         {
             await SendAsync(new CreateAbsenceResponse("An absence already exists for one or more days in this date range."), 409, ct);
+
             return;
         }
 
@@ -61,8 +62,4 @@ public class CreateAbsenceForChildEndpoint(IAbsenceDayRepository absenceRepo) : 
 public record CreateAbsenceRequest(DateTime StartDate, DateTime EndDate, int AbsenceStatusId);
 
 public record CreateAbsenceResponse(string Message);
-
-
-
-
 
