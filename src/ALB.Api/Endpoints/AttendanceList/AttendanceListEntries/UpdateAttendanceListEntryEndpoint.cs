@@ -1,6 +1,7 @@
 using ALB.Api.Extensions;
 using ALB.Domain.Enum;
 using ALB.Domain.Repositories;
+using ALB.Domain.Values;
 using FastEndpoints;
 using NodaTime;
 
@@ -12,7 +13,7 @@ public class UpdateAttendanceListEntryEndpoint(IAttendanceRepository repository)
     public override void Configure()
     {
         Put("/api/attendance-lists/entries");
-        AllowAnonymous();
+        Policies(SystemRoles.AdminPolicy);
     }
 
     public override async Task HandleAsync(UpdateAttendanceListEntryRequest request, CancellationToken ct)

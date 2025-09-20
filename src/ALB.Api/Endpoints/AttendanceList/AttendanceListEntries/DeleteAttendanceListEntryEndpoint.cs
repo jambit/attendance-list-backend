@@ -1,4 +1,5 @@
 using ALB.Domain.Repositories;
+using ALB.Domain.Values;
 using FastEndpoints;
 using NodaTime;
 
@@ -10,7 +11,7 @@ public class DeleteAttendanceListEntryEndpoint(IAttendanceRepository repository)
     public override void Configure()
     {
         Delete("/api/attendance-lists/{attendanceListId:guid}/entries");
-        AllowAnonymous();
+        Policies(SystemRoles.AdminPolicy);
     }
 
     public override async Task HandleAsync(DeleteAttendanceListEntryRequest request, CancellationToken ct)

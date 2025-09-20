@@ -1,45 +1,68 @@
+using System.Runtime.InteropServices.JavaScript;
 using ALB.Domain.Entities;
 using ALB.Domain.Repositories;
+using ALB.Domain.Values;
 using FastEndpoints;
 using NodaTime;
 
 namespace ALB.Api.Endpoints.Children.Absence;
 
-public class CreateAbsenceForChildEndpoint(IAbsenceDayRepository absenceRepo)
-    : Endpoint<CreateAbsenceRequest, CreateAbsenceResponse>
+public class CreateAbsenceForChildEndpoint(IAbsenceDayRepository absenceRepo) : Endpoint<CreateAbsenceRequest, CreateAbsenceResponse>
 {
     public override void Configure()
     {
         Post("/api/children/{childId:guid}/absence");
-        Policies("ParentPolicy");
+        Policies(SystemRoles.AdminPolicy);
+        Policies(SystemRoles.ParentPolicy);
     }
 
     public override async Task HandleAsync(CreateAbsenceRequest request, CancellationToken ct)
     {
         var childId = Route<Guid>("ChildId");
+        
+        var startDate = LocalDate.FromDateTime(request.StartDate);
+        var endDate = LocalDate.FromDateTime(request.EndDate);
 
-        var alreadyExists = await absenceRepo.ExistsAsync(childId, LocalDate.FromDateTime(request.Date), ct);
-
-        if (alreadyExists)
+        if (startDate > endDate)
         {
-            await SendAsync(new CreateAbsenceResponse(null, "Absence already exists for this date."), 400, ct);
+            await SendAsync(new CreateAbsenceResponse("Start date cannot be after end date."), 400, ct);
             return;
         }
 
-        var absence = new AbsenceDay
+        var alreadyExists = await absenceRepo.ExistsInRangeAsync(childId, startDate, endDate, ct);
+        
+        if (alreadyExists)
         {
-            Id = Guid.NewGuid(),
-            ChildId = childId,
-            Date = LocalDate.FromDateTime(request.Date),
-            AbsenceStatusId = request.AbsenceStatusId
-        };
+            await SendAsync(new CreateAbsenceResponse("An absence already exists for one or more days in this date range."), 409, ct);
+            return;
+        }
 
-        await absenceRepo.AddAsync(absence, ct);
-
-        await SendAsync(new CreateAbsenceResponse(absence.Id, "Absence registered successfully."), cancellation: ct);
+        var absencesToCreate = new List<AbsenceDay>();
+        for (var date = startDate; date <= endDate; date = date.PlusDays(1))
+        {
+            var absence = new AbsenceDay
+            {
+               
+                ChildId = childId,
+                Date = date,
+                AbsenceStatusId = request.AbsenceStatusId,
+            };
+            absencesToCreate.Add(absence);
+        }
+       
+        if (absencesToCreate.Any())
+        {
+            await absenceRepo.AddRangeAsync(absencesToCreate, ct);
+        }
+        await SendAsync(new CreateAbsenceResponse($"Absence registered successfully for {absencesToCreate.Count} day(s)."), cancellation: ct);
     }
 }
 
-public record CreateAbsenceRequest(DateTime Date, int AbsenceStatusId);
+public record CreateAbsenceRequest(DateTime StartDate, DateTime EndDate, int AbsenceStatusId);
 
-public record CreateAbsenceResponse(Guid? AbsenceId, string Message);
+public record CreateAbsenceResponse(string Message);
+
+
+
+
+
