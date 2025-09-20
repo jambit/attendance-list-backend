@@ -4,11 +4,11 @@ namespace ALB.Domain.Repositories;
 
 public interface IChildRepository
 {
-    Task<Child>CreateAsync(Child child);
-    Task<Child?> GetByIdAsync(Guid id);
-    Task<IEnumerable<Child>> GetAllAsync();
-    Task UpdateAsync(Child child);
-    Task DeleteAsync(Guid id);
-    Task<IEnumerable<Child>> GetByCohortAsync(Guid cohortId);
+    Task<Child>CreateAsync(Child child, CancellationToken ct);
+    Task<Child?> GetByIdAsync(Guid id, CancellationToken ct);
+    Task<IEnumerable<Child>> GetAllAsync(CancellationToken ct);
+    Task UpdateAsync(Child child, CancellationToken ct);
+    Task DeleteAsync(Guid id, CancellationToken ct);
+    Task<IEnumerable<Child>> GetByCohortAsync(Guid cohortId, CancellationToken ct);
 
 }

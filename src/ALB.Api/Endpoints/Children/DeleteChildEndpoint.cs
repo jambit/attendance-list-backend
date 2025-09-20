@@ -16,7 +16,7 @@ public class DeleteChildEndpoint(IChildRepository childRepository) : EndpointWit
     {
         var childId = Route<Guid>("childId");
 
-        var child = await childRepository.GetByIdAsync(childId);
+        var child = await childRepository.GetByIdAsync(childId, ct);
 
         if (child is null)
         {
@@ -24,7 +24,7 @@ public class DeleteChildEndpoint(IChildRepository childRepository) : EndpointWit
             return;
         }
 
-        await childRepository.DeleteAsync(childId);
+        await childRepository.DeleteAsync(childId, ct);
 
         await SendNoContentAsync(ct);
     }

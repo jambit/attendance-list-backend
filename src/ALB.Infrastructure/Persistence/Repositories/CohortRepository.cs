@@ -4,28 +4,21 @@ using ALB.Domain.Repositories;
 
 namespace ALB.Infrastructure.Persistence.Repositories;
 
-public class CohortRepository : ICohortRepository
+public class CohortRepository(ApplicationDbContext db) : ICohortRepository
 {
-    private readonly ApplicationDbContext _db;
-
-    public CohortRepository(ApplicationDbContext db)
+    public async Task<Cohort> CreateAsync(Cohort cohort, CancellationToken ct)
     {
-        _db = db;
-    }
-
-    public async Task<Cohort> CreateAsync(Cohort cohort)
-    {
-        _db.Cohorts.Add(cohort);
-        await _db.SaveChangesAsync();
+        db.Cohorts.Add(cohort);
+        await db.SaveChangesAsync(ct);
         return cohort;
     }
 
-    public async Task<bool> ExistsAsync(int year, Guid groupId, Guid gradeId)
+    public async Task<bool> ExistsAsync(int year, Guid groupId, Guid gradeId, CancellationToken ct)
     {
-        return await _db.Cohorts.AnyAsync(c =>
+        return await db.Cohorts.AnyAsync(c =>
             c.CreationYear == year &&
             c.GroupId == groupId &&
-            c.GradeId == gradeId
+            c.GradeId == gradeId, ct
         );
     }
 }

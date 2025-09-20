@@ -6,32 +6,37 @@ namespace ALB.Infrastructure.Persistence.Repositories;
 
 public class GroupRepository(ApplicationDbContext dbContext) : IGroupRepository
 {
-    public async Task<Group> CreateAsync(Group group)
+    public async Task<Group> CreateAsync(Group group, CancellationToken ct)
     {
         dbContext.Groups.Add(group);
-        await dbContext.SaveChangesAsync();
+        await dbContext.SaveChangesAsync(ct);
         return group;
     }
 
-    public async Task<Group?> GetByIdAsync(Guid id)
+    public async Task<Group?> GetByIdAsync(Guid id, CancellationToken ct)
     {
-        return await dbContext.Groups.FindAsync(id);
+        return await dbContext.Groups.FindAsync([id], ct);
     }
 
-    public async Task UpdateAsync(Group group)
+    public async Task UpdateAsync(Group group, CancellationToken ct)
     {
         dbContext.Groups.Update(group);
-        await dbContext.SaveChangesAsync();
+        await dbContext.SaveChangesAsync(ct);
     }
 
-    public async Task DeleteAsync(Guid id)
+    public async Task DeleteAsync(Guid id, CancellationToken ct)
     {
-        var group = await dbContext.Groups.FindAsync(id);
+        var group = await dbContext.Groups.FindAsync([id], ct);
         if (group is not null)
         {
             dbContext.Groups.Remove(group);
-            await dbContext.SaveChangesAsync();
+            await dbContext.SaveChangesAsync(ct);
         }
+    }
+
+    public async Task<IEnumerable<Group>> GetAllAsync(CancellationToken ct)
+    {
+        return await dbContext.Groups.ToListAsync(ct);
     }
 
     public async Task AddChildrenToGroupAsync(Guid groupId, IEnumerable<Guid> childIds, CancellationToken ct)

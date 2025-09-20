@@ -24,7 +24,7 @@ public class CreateChildEndpoint(IChildRepository childRepository) : Endpoint<Cr
             DateOfBirth = request.DateOfBirth
         };
 
-        var createdChild = await childRepository.CreateAsync(child);
+        var createdChild = await childRepository.CreateAsync(child, ct);
 
         await SendOkAsync(
             new CreateChildResponse(createdChild.Id, createdChild.FirstName, createdChild.LastName,
