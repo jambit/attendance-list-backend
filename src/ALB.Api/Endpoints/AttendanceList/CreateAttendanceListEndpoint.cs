@@ -12,7 +12,6 @@ public class CreateAttendanceListEndpoint(IAttendanceListRepository attendanceLi
     {
         Post("/api/attendance-lists");
         Policies(SystemRoles.AdminPolicy);
-        Policies(SystemRoles.CoAdminPolicy);
     }
 
     public override async Task HandleAsync(CreateAttendanceListRequest request, CancellationToken ct)

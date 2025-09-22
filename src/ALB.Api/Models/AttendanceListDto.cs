@@ -4,6 +4,6 @@ public record AttendanceListDto(
     Guid Id,
     Guid CohortId,
     bool Open,
-    DateTime ValidationStart,
-    DateTime ValidationEnd
+    DateOnly ValidationStart,
+    DateOnly ValidationEnd
 );

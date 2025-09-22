@@ -11,8 +11,8 @@ public static class AttendanceListExtension
             al.Id,
             al.CohortId,
             al.Open,
-            al.ValidationPeriod.Start.ToDateTimeUnspecified(),
-            al.ValidationPeriod.End.ToDateTimeUnspecified()
+            al.ValidationPeriod.Start.ToDateOnly(),
+            al.ValidationPeriod.End.ToDateOnly()
         );
     }
 }

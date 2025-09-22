@@ -22,7 +22,6 @@ public class GetGroupsEndpoint(IGroupRepository groupRepository) : EndpointWitho
 
         await SendAsync(new GetGroupsResponse(groups), cancellation: ct);
     }
-
 }
 
 public record GetGroupsResponse(IEnumerable<GroupDto> Groups);

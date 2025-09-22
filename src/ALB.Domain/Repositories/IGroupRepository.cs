@@ -11,4 +11,5 @@ public interface IGroupRepository
     Task<IEnumerable<Group>> GetAllAsync(CancellationToken ct);
     Task AddChildrenToGroupAsync(Guid groupId, IEnumerable<Guid> childIds, CancellationToken ct);
     Task RemoveChildrenFromGroupAsync(Guid groupId, IEnumerable<Guid> childIds, CancellationToken ct);
+    Task<IEnumerable<Cohort>> GetAllCohortsOfGroupAsync(Guid groupId, CancellationToken ct);
 }

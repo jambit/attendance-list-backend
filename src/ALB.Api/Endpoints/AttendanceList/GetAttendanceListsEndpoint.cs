@@ -13,7 +13,6 @@ public class GetAttendanceListsEndpoint(IAttendanceListRepository attendanceList
     {
         Get("/api/attendance-lists");
         Policies(SystemRoles.AdminPolicy);
-        Policies(SystemRoles.CoAdminPolicy);
     }
 
     public override async Task HandleAsync(CancellationToken ct)

@@ -13,7 +13,6 @@ public class CreateAbsenceForChildEndpoint(IAbsenceDayRepository absenceRepo) : 
     {
         Post("/api/children/{childId:guid}/absence");
         Policies(SystemRoles.AdminPolicy);
-        Policies(SystemRoles.ParentPolicy);
     }
 
     public override async Task HandleAsync(CreateAbsenceRequest request, CancellationToken ct)

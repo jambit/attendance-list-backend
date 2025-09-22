@@ -12,7 +12,6 @@ public class GetAttendanceListEndpoint(IAttendanceListRepository attendanceListR
     {
         Get("/api/attendance-lists/{attendanceListId:guid}");
         Policies(SystemRoles.AdminPolicy);
-        Policies(SystemRoles.TeamPolicy);
     }
 
     public override async Task HandleAsync(CancellationToken ct)

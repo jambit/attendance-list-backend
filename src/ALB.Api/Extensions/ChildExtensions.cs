@@ -11,7 +11,7 @@ public static class ChildExtensions
             child.Id, 
             child.FirstName, 
             child.LastName, 
-            child.DateOfBirth, 
+            child.DateOfBirth.ToDateOnly(), 
             child.GroupId);
     }
 }

@@ -19,12 +19,6 @@ public class GetChildrenEndpoint(IChildRepository childRepository) : EndpointWit
     {
         var children = await childRepository.GetAllAsync(ct);
 
-        if (!children.Any())
-        {
-            await SendNotFoundAsync(ct);
-            return;
-        }
-
         var response = children.Select(c => c.ToDto()).ToList();
 
         await SendAsync(new GetChildrenResponse(response), cancellation: ct);

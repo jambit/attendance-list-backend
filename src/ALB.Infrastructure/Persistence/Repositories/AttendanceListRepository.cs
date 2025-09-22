@@ -42,4 +42,12 @@ public class AttendanceListRepository(ApplicationDbContext dbContext) : IAttenda
             await dbContext.SaveChangesAsync(ct);
         }
     }
+
+    public async Task<IEnumerable<AttendanceListEntry>> GetAttendancesOfAttendanceListAsync(Guid attendanceListId,
+        CancellationToken ct)
+    {
+        return await dbContext.AttendanceListEntries
+            .Where(c => c.AttendanceListId == attendanceListId)
+            .ToListAsync(ct);
+    }
 }

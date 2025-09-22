@@ -74,4 +74,11 @@ public class GroupRepository(ApplicationDbContext dbContext) : IGroupRepository
 
         await dbContext.SaveChangesAsync(ct);
     }
+
+    public async Task<IEnumerable<Cohort>> GetAllCohortsOfGroupAsync(Guid groupId, CancellationToken ct)
+    {
+        return await dbContext.Cohorts
+            .Where(c => c.GroupId == groupId)
+            .ToListAsync(ct);
+    }
 }
