@@ -1,4 +1,5 @@
 using ALB.Domain.Repositories;
+using ALB.Domain.Values;
 using FastEndpoints;
 
 namespace ALB.Api.Endpoints.Groups.Children;
@@ -9,7 +10,7 @@ public class RemoveChildrenFromGroupEndpoint(IGroupRepository repository)
     public override void Configure()
     {
         Delete("/api/groups/{groupId:guid}/children");
-        AllowAnonymous();
+        Policies(SystemRoles.AdminPolicy);
     }
 
     public override async Task HandleAsync(RemoveChildFromGroupRequest request, CancellationToken ct)

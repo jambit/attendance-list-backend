@@ -9,8 +9,8 @@ public class AbsenceDay
     public LocalDate Date { get; set; }
     public Guid ChildId { get; set; }
     public int AbsenceStatusId { get; set; }
-
+    public AbsenceStatus AbsenceStatus { get; set; } = null!;
     
     public Child Child { get; set; } = null!;
-    public AbsenceStatus AbsenceStatus { get; set; } = null!;
+
 }

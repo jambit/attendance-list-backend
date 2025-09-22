@@ -7,64 +7,45 @@ using NodaTime;
 namespace ALB.Infrastructure.Persistence.Repositories;
 
 public class AttendanceRepository(ApplicationDbContext dbContext) : IAttendanceRepository
-{
-    public async Task CreateAsync(Guid childId, LocalDate date, LocalTime? arrivalAt, LocalTime? departureAt,
-        AttendanceStatus status, CancellationToken ct)
+{ 
+    public async Task<AttendanceListEntry> CreateAsync(AttendanceListEntry entry, CancellationToken ct)
     {
-        var attendance = await dbContext.AttendanceListEntries
-            .FirstOrDefaultAsync(a => a.ChildId == childId && a.Date == date, ct);
-
-        if (attendance is null)
-        {
-            attendance = new AttendanceListEntry
-            {
-                Id = Guid.NewGuid(),
-                ChildId = childId,
-                Date = date,
-                ArrivalAt = arrivalAt,
-                DepartureAt = departureAt,
-                AttendanceStatus = status
-            };
-
-            dbContext.AttendanceListEntries.Add(attendance);
-            
-            await dbContext.SaveChangesAsync(ct);
-        }
+        dbContext.AttendanceListEntries.Add(entry);
+        await dbContext.SaveChangesAsync(ct);
+        return entry;
     }
-
-    public async Task UpdateAsync(Guid childId, LocalDate date, LocalTime? arrivalAt, LocalTime? departureAt,
-        AttendanceStatus status, CancellationToken ct)
+    
+    public async Task<bool> ExistsAsync(Guid attendanceListId, Guid childId, LocalDate date, CancellationToken ct)
     {
-        var attendance = await dbContext.AttendanceListEntries
-            .FirstOrDefaultAsync(a => a.ChildId == childId && a.Date == date, ct);
-
-        if (attendance is not null)
-        {
-            attendance.ArrivalAt = arrivalAt;
-            attendance.DepartureAt = departureAt;
-            attendance.AttendanceStatus = status;
-            dbContext.AttendanceListEntries.Update(attendance);
-            
-            await dbContext.SaveChangesAsync(ct);
-        }
+        return await dbContext.AttendanceListEntries
+            .AnyAsync(e => e.AttendanceListId == attendanceListId && 
+                          e.ChildId == childId && 
+                          e.Date == date, ct);
     }
-
-    public async Task DeleteAsync(Guid childId, LocalDate date, CancellationToken ct)
+    
+    public async Task UpdateAsync(AttendanceListEntry attendanceListEntry, CancellationToken ct)
     {
-        var attendance = await dbContext.AttendanceListEntries
-            .FirstOrDefaultAsync(a => a.ChildId == childId && a.Date == date, ct);
-
-        if (attendance is null)
-            throw new Exception("Attendance not found");
-
-        dbContext.AttendanceListEntries.Remove(attendance);
+        dbContext.AttendanceListEntries.Update(attendanceListEntry);
         await dbContext.SaveChangesAsync(ct);
     }
     
-    public async Task<AttendanceList> GetAttendanceListByIdAsync(Guid id)
+    public async Task DeleteAsync(Guid id, CancellationToken ct)
     {
-        return await dbContext.AttendanceLists
-            .Include(al => al.Cohort)
-            .FirstOrDefaultAsync(al => al.Id == id);
+        var entry = await dbContext.AttendanceListEntries.FindAsync([id], ct);
+
+        if (entry is not null)
+        {
+            dbContext.AttendanceListEntries.Remove(entry);
+            await dbContext.SaveChangesAsync(ct);
+        }
+    }
+    
+    public async Task<AttendanceListEntry?> GetByListChildAndDateAsync(Guid attendanceListId, Guid childId, LocalDate date, CancellationToken ct)
+    {
+        return await dbContext.AttendanceListEntries
+            .Include(e => e.Child)
+            .Include(e => e.AttendanceStatus)
+            .Where(e => e.AttendanceListId == attendanceListId && e.Date == date)
+            .FirstOrDefaultAsync(ct);
     }
 }

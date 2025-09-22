@@ -1,6 +1,7 @@
 using System.Runtime.InteropServices.JavaScript;
 using ALB.Domain.Entities;
 using ALB.Domain.Repositories;
+using ALB.Domain.Values;
 using FastEndpoints;
 using NodaTime;
 
@@ -11,7 +12,7 @@ public class CreateAbsenceForChildEndpoint(IAbsenceDayRepository absenceRepo) : 
     public override void Configure()
     {
         Post("/api/children/{childId:guid}/absence");
-        Policies("ParentPolicy");
+        Policies(SystemRoles.AdminPolicy);
     }
 
     public override async Task HandleAsync(CreateAbsenceRequest request, CancellationToken ct)
@@ -31,7 +32,8 @@ public class CreateAbsenceForChildEndpoint(IAbsenceDayRepository absenceRepo) : 
         
         if (alreadyExists)
         {
-            await SendAsync(new CreateAbsenceResponse("An absence already exists for one or more days in this date range."), 409, ct); // 409 Conflict is better here
+            await SendAsync(new CreateAbsenceResponse("An absence already exists for one or more days in this date range."), 409, ct);
+
             return;
         }
 
@@ -47,7 +49,6 @@ public class CreateAbsenceForChildEndpoint(IAbsenceDayRepository absenceRepo) : 
             };
             absencesToCreate.Add(absence);
         }
-
        
         if (absencesToCreate.Any())
         {
@@ -60,5 +61,4 @@ public class CreateAbsenceForChildEndpoint(IAbsenceDayRepository absenceRepo) : 
 public record CreateAbsenceRequest(DateTime StartDate, DateTime EndDate, int AbsenceStatusId);
 
 public record CreateAbsenceResponse(string Message);
-
 

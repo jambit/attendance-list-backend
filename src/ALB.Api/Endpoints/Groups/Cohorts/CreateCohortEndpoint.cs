@@ -17,7 +17,7 @@ public class CreateCohortEndpoint(ICohortRepository cohortRepo)
     {
         var groupId = Route<Guid>("groupId");
 
-        var exists = await cohortRepo.ExistsAsync(request.CreationYear, groupId, request.GradeId);
+        var exists = await cohortRepo.ExistsAsync(request.CreationYear, groupId, request.GradeId, ct);
         if (exists)
         {
             AddError("Cohort with the same year, group and grade already exists.");
@@ -33,7 +33,7 @@ public class CreateCohortEndpoint(ICohortRepository cohortRepo)
             GradeId = request.GradeId
         };
 
-        var created = await cohortRepo.CreateAsync(cohort);
+        var created = await cohortRepo.CreateAsync(cohort, ct);
         await SendAsync(new CreateCohortResponse(created.Id, "Cohort created successfully."), cancellation: ct);
     }
 }

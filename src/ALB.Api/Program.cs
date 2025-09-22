@@ -25,6 +25,18 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
         ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
 });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("DevPolicy",
+        builder =>
+        {
+            builder.WithOrigins("http://localhost:8080", "http://localhost:8000")
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials(); // Wichtig für Auth-Cookies
+        });
+});
+
 builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services.AddScoped<IChildRepository, ChildRepository>();
@@ -32,6 +44,7 @@ builder.Services.AddScoped<IGroupRepository, GroupRepository>();
 builder.Services.AddScoped<IAttendanceRepository, AttendanceRepository>();
 builder.Services.AddScoped<IAbsenceDayRepository, AbsenceDayRepository>();
 builder.Services.AddScoped<ICohortRepository, CohortRepository>();
+builder.Services.AddScoped<IAttendanceListRepository, AttendanceListRepository>();
 
 builder.Services.AddOpenApi();
 
@@ -47,6 +60,7 @@ builder.Services.AddAuthAndIdentityCore();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+app.UseCors("DevPolicy");
 app.UseExceptionHandler("/Error");
 app.UseForwardedHeaders();
 app.UseAuthentication();

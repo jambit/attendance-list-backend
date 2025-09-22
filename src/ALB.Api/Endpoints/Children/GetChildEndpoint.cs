@@ -17,7 +17,7 @@ public class GetChildEndpoint(IChildRepository childRepository) : EndpointWithou
     {
         var childId = Route<Guid>("childId");
 
-        var child = await childRepository.GetByIdAsync(childId);
+        var child = await childRepository.GetByIdAsync(childId, ct);
 
         if (child is null)
         {

@@ -1,6 +1,7 @@
 using ALB.Api.Extensions;
 using ALB.Domain.Enum;
 using ALB.Domain.Repositories;
+using ALB.Domain.Values;
 using FastEndpoints;
 using NodaTime;
 
@@ -12,16 +13,30 @@ public class UpdateAttendanceListEntryEndpoint(IAttendanceRepository repository)
     public override void Configure()
     {
         Put("/api/attendance-lists/entries");
-        AllowAnonymous();
+        Policies(SystemRoles.AdminPolicy);
     }
 
     public override async Task HandleAsync(UpdateAttendanceListEntryRequest request, CancellationToken ct)
     {
-        await repository.UpdateAsync(request.ChildId, LocalDate.FromDateTime(request.Date),
-            request.ArrivalAt.ToNodaLocalTime(), request.DepartureAt.ToNodaLocalTime(), request.Status, ct);
+        var attendanceListId = Route<Guid>("attendanceListId");
+        var date = LocalDate.FromDateTime(request.Date);
+        
+        var attendanceListEntry = await repository.GetByListChildAndDateAsync(attendanceListId, request.ChildId, date, ct);
+
+        if (attendanceListEntry is null)
+        {
+            await SendNotFoundAsync(ct);
+            return;
+        }
+        
+        attendanceListEntry.ArrivalAt = request.ArrivalAt.ToNodaLocalTime();
+        attendanceListEntry.DepartureAt = request.DepartureAt.ToNodaLocalTime();
+        attendanceListEntry.AttendanceStatus = request.Status;
+        
+        await repository.UpdateAsync(attendanceListEntry, ct);
 
         await SendAsync(new UpdateAttendanceListEntryResponse(
-            $"Attendance for {request.ChildId} at {LocalDate.FromDateTime(request.Date)} was successfully set to {request.Status}"));
+            $"Attendance for {request.ChildId} at {request.Date} was successfully updated."), cancellation: ct);
     }
 }
 

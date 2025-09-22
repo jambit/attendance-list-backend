@@ -18,11 +18,9 @@ public class GetUsersEndpoint(UserManager<ApplicationUser> userManager) : Endpoi
 
     public override async Task HandleAsync(CancellationToken ct)
     {
-        var userDtos = await userManager.Users.Select(u => u.ToDto()).ToListAsync(ct);
+        var users = await userManager.Users.Select(u => u.ToDto()).ToListAsync(ct);
 
-        var response = new GetUsersResponse(userDtos);
-
-        await SendAsync(response, cancellation: ct);
+        await SendAsync(new GetUsersResponse(users), cancellation: ct);
     }
 }
 
