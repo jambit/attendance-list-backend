@@ -1,43 +1,41 @@
+using ALB.Api.Endpoints.Mappers;
 using ALB.Domain.Identity;
 using ALB.Domain.Values;
-using FastEndpoints;
-using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 
 namespace ALB.Api.Endpoints.Users;
 
-public class CreateUserEndpoint(UserManager<ApplicationUser> userManager)
-    : Endpoint<CreateUserRequest, CreateUserResponse>
+internal static class CreateUserEndpoint
 {
-    public override void Configure()
+    internal static IEndpointRouteBuilder MapCreateUserEndpoint(this IEndpointRouteBuilder endpoints)
     {
-        Post("/api/users");
-        Policies(SystemRoles.AdminPolicy);
-    }
-
-    public override async Task HandleAsync(CreateUserRequest request, CancellationToken ct)
-    {
-        var user = new ApplicationUser
+        endpoints.MapPost("/", async (CreateUserRequest request, UserManager<ApplicationUser> userManager, CancellationToken ct) =>
         {
-            Email = request.Email,
-            UserName = request.Email,
-            FirstName = request.FirstName,
-            LastName = request.LastName
-        };
+            var user = new ApplicationUser
+            {
+                Email = request.Email,
+                UserName = request.Email,
+                FirstName = request.FirstName,
+                LastName = request.LastName
+            };
 
-        var result = await userManager.CreateAsync(user, request.Password);
+            var result = await userManager.CreateAsync(user, request.Password);
 
-        if (!result.Succeeded)
-        {
-            foreach (var error in result.Errors) AddError(error.Description);
-            ThrowIfAnyErrors();
-        }
+            if (!result.Succeeded)
+            {
+                return Results.InternalServerError(result.Errors.AsErrorString());
+            }
 
-        await SendAsync(new CreateUserResponse(user.Id, user.Email, null, null),
-            200, ct);
+            return Results.Ok(new CreateUserResponse(user.Id, user.Email, user.FirstName, user.LastName));
+        }).WithName("CreateUser")
+        .WithOpenApi()
+        .RequireAuthorization(SystemRoles.AdminPolicy);
+        
+        return endpoints;
     }
 }
 
+/*
 public class CreateUserRequestValidator : Validator<CreateUserRequest>
 {
     public CreateUserRequestValidator()
@@ -55,6 +53,7 @@ public class CreateUserRequestValidator : Validator<CreateUserRequest>
             .Matches("[^a-zA-Z0-9]").WithMessage("Password must contain at least one special character.");
     }
 }
+*/
 
 public record CreateUserRequest(string Email, string Password, string? FirstName, string? LastName);
 

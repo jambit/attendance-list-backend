@@ -1,28 +1,23 @@
 using ALB.Domain.Repositories;
-using FastEndpoints;
+using ALB.Domain.Values;
 
 namespace ALB.Api.Endpoints.Groups.Children;
 
-public class AddChildrenToGroupEndpoint(IGroupRepository repository)
-    : Endpoint<AddChildToGroupRequest, AddChildToGroupResponse>
+internal static class AddChildrenToGroupEndpoint
 {
-    public override void Configure()
+    internal static IEndpointRouteBuilder MapAddChildrenToGroupEndpoint(this IEndpointRouteBuilder endpoints)
     {
-        Post("/api/groups/{groupId:guid}/children");
-        AllowAnonymous();
-    }
+        endpoints.MapPost("/{groupId:guid}/children", async (Guid groupId, AddChildToGroupRequest request, IGroupRepository repository, CancellationToken cancellationToken) =>
+        {
+            await repository.AddChildrenToGroupAsync(groupId, request.ChildIds, cancellationToken);
 
-    public override async Task HandleAsync(AddChildToGroupRequest request, CancellationToken ct)
-    {
-        var groupId = Route<Guid>("groupId");
-
-        await repository.AddChildrenToGroupAsync(groupId, request.ChildIds, ct);
-
-        await SendAsync(new AddChildToGroupResponse(
-            $"Children with IDs {string.Join(", ", request.ChildIds)} were successfully added to group {groupId}"));
+            return Results.Ok();
+        }).WithName("Add children to group")
+        .WithOpenApi()
+        .RequireAuthorization(SystemRoles.AdminPolicy);
+        
+        return endpoints;
     }
 }
 
 public record AddChildToGroupRequest(List<Guid> ChildIds);
-
-public record AddChildToGroupResponse(string Message);

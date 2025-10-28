@@ -1,59 +1,53 @@
-using System.Runtime.InteropServices.JavaScript;
 using ALB.Domain.Entities;
 using ALB.Domain.Repositories;
-using FastEndpoints;
 using NodaTime;
 
 namespace ALB.Api.Endpoints.Children.Absence;
 
-public class CreateAbsenceForChildEndpoint(IAbsenceDayRepository absenceRepo) : Endpoint<CreateAbsenceRequest, CreateAbsenceResponse>
+internal static class CreateAbsenceForChildEndpoint
 {
-    public override void Configure()
+    internal static RouteGroupBuilder AddCreateAbsenceForChildEndpoint(this RouteGroupBuilder builder)
     {
-        Post("/api/children/{childId:guid}/absence");
-        Policies("ParentPolicy");
-    }
-
-    public override async Task HandleAsync(CreateAbsenceRequest request, CancellationToken ct)
-    {
-        var childId = Route<Guid>("ChildId");
-        
-        var startDate = LocalDate.FromDateTime(request.StartDate);
-        var endDate = LocalDate.FromDateTime(request.EndDate);
-
-        if (startDate > endDate)
+        builder.MapPost("/{childId:guid}/absence", async (Guid childId, CreateAbsenceRequest request, IAbsenceDayRepository absenceRepo) =>
         {
-            await SendAsync(new CreateAbsenceResponse("Start date cannot be after end date."), 400, ct);
-            return;
-        }
+            var startDate = LocalDate.FromDateTime(request.StartDate);
+            var endDate = LocalDate.FromDateTime(request.EndDate);
 
-        var alreadyExists = await absenceRepo.ExistsInRangeAsync(childId, startDate, endDate, ct);
-        
-        if (alreadyExists)
-        {
-            await SendAsync(new CreateAbsenceResponse("An absence already exists for one or more days in this date range."), 409, ct); // 409 Conflict is better here
-            return;
-        }
-
-        var absencesToCreate = new List<AbsenceDay>();
-        for (var date = startDate; date <= endDate; date = date.PlusDays(1))
-        {
-            var absence = new AbsenceDay
+            if (startDate > endDate)
             {
-               
-                ChildId = childId,
-                Date = date,
-                AbsenceStatusId = request.AbsenceStatusId,
-            };
-            absencesToCreate.Add(absence);
-        }
+                return Results.BadRequest(new CreateAbsenceResponse("Start date cannot be after end date."));
+            }
 
-       
-        if (absencesToCreate.Any())
-        {
-            await absenceRepo.AddRangeAsync(absencesToCreate, ct);
-        }
-        await SendAsync(new CreateAbsenceResponse($"Absence registered successfully for {absencesToCreate.Count} day(s)."), cancellation: ct);
+            var alreadyExists = await absenceRepo.ExistsInRangeAsync(childId, startDate, endDate, CancellationToken.None);
+            
+            if (alreadyExists)
+            {
+                return Results.Conflict(new CreateAbsenceResponse("An absence already exists for one or more days in this date range."));
+            }
+
+            var absencesToCreate = new List<AbsenceDay>();
+            for (var date = startDate; date <= endDate; date = date.PlusDays(1))
+            {
+                var absence = new AbsenceDay
+                {
+                    ChildId = childId,
+                    Date = date,
+                    AbsenceStatusId = request.AbsenceStatusId,
+                };
+                absencesToCreate.Add(absence);
+            }
+
+           
+            if (absencesToCreate.Any())
+            {
+                await absenceRepo.AddRangeAsync(absencesToCreate, CancellationToken.None);
+            }
+            return Results.Ok(new CreateAbsenceResponse($"Absence registered successfully for {absencesToCreate.Count} day(s)."));
+        }).WithName("CreateAbsenceForChild")
+            .WithOpenApi()
+            .RequireAuthorization("ParentPolicy");
+        
+        return builder;
     }
 }
 

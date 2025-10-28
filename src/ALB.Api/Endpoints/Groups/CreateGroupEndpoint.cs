@@ -1,36 +1,33 @@
 using ALB.Domain.Repositories;
 using ALB.Domain.Values;
-using FastEndpoints;
 using Group = ALB.Domain.Entities.Group;
 
 namespace ALB.Api.Endpoints.Groups;
 
-public class CreateGroupEndpoint(IGroupRepository groupRepository) : Endpoint<CreateGroupRequest, CreateGroupResponse>
+internal static class CreateGroupEndpoint
 {
-    public override void Configure()
+    internal static IEndpointRouteBuilder MapCreateGroupEndpoint(this IEndpointRouteBuilder routeBuilder)
     {
-        Post("/api/groups");
-        Policies(SystemRoles.AdminPolicy);
-    }
-
-    public override async Task HandleAsync(CreateGroupRequest request, CancellationToken cancellationToken)
-    {
-        var group = new Group
+        routeBuilder.MapPost("/", async (CreateGroupRequest request, IGroupRepository groupRepository, CancellationToken ct) =>
         {
-            Id = Guid.NewGuid(),
-            Name = request.GroupName,
-            ResponsibleUserId = request.ResponsibleUserId
-        };
+            var group = new Group
+            {
+                Id = Guid.NewGuid(),
+                Name = request.GroupName,
+                ResponsibleUserId = request.ResponsibleUserId
+            };
 
-        var createdGroup = await groupRepository.CreateAsync(group);
+            var createdGroup = await groupRepository.CreateAsync(group);
 
-        await SendAsync(
-            new CreateGroupResponse(createdGroup.Id, "Group created successfully."),
-            cancellation: cancellationToken
-        );
+            return Results.Created($"/groups/{createdGroup.Id}", new CreateGroupResponse(createdGroup.Id));
+        }).WithName("CreateGroup")
+            .WithGroupName("UsersManagement")
+            .RequireAuthorization(SystemRoles.AdminPolicy);
+
+        return routeBuilder;
     }
 }
 
 public record CreateGroupRequest(string GroupName, Guid ResponsibleUserId);
 
-public record CreateGroupResponse(Guid Id, string Message);
+public record CreateGroupResponse(Guid Id);

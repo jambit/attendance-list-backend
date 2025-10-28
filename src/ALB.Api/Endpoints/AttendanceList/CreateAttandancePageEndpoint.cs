@@ -1,44 +1,38 @@
 using ALB.Domain.Repositories;
 using ALB.Domain.Values;
-using FastEndpoints;
 using NodaTime;
 
 namespace ALB.Api.Endpoints.AttendanceList;
 
-public class GetAttendancePageEndpoint(
-    IAttendanceRepository attendanceListRepo,
-    IChildRepository childRepo,
-    IAbsenceDayRepository absenceRepo
-) : Endpoint<GetAttendancePageRequest, GetAttendancePageResponse>
+internal static class GetAttendancePageEndpoint
 {
-    public override void Configure()
+    internal static RouteGroupBuilder AddAttendancePageEndpoint(this RouteGroupBuilder builder)
     {
-        Get("/api/attendancelists/{AttendanceListId}/page");
-        Policies(SystemRoles.TeamPolicy);
-    }
-
-    public override async Task HandleAsync(GetAttendancePageRequest request, CancellationToken ct)
-    {
-        var attendanceList = await attendanceListRepo.GetAttendanceListByIdAsync(request.AttendanceListId);
-
-        if (attendanceList is null)
+        builder.MapGet("/attendancelists/{attendanceListId:guid}/page", async (Guid attendanceListId, LocalDate date, IAttendanceRepository attendanceListRepo, IChildRepository childRepo, IAbsenceDayRepository absenceRepo) =>
         {
-            await SendNotFoundAsync(ct);
-            return;
-        }
+            var attendanceList = await attendanceListRepo.GetAttendanceListByIdAsync(attendanceListId);
 
-        var children = await childRepo.GetByCohortAsync(attendanceList.CohortId);
+            if (attendanceList is null)
+            {
+                return Results.NotFound();
+            }
 
-        var absences = await absenceRepo.GetByDateAsync(request.date);
+            var children = await childRepo.GetByCohortAsync(attendanceList.CohortId);
 
-        var dtos = children.Select(child =>
-        {
-            var absence = absences.FirstOrDefault(a => a.ChildId == child.Id);
-            var status = absence?.AbsenceStatus.Name;
-            return new AttendancePageChildDto(child.Id, child.FirstName, child.LastName, status);
-        }).ToList();
+            var absences = await absenceRepo.GetByDateAsync(date);
 
-        await SendAsync(new GetAttendancePageResponse(dtos), cancellation: ct);
+            var dtos = children.Select(child =>
+            {
+                var absence = absences.FirstOrDefault(a => a.ChildId == child.Id);
+                var status = absence?.AbsenceStatus.Name;
+                return new AttendancePageChildDto(child.Id, child.FirstName, child.LastName, status);
+            }).ToList();
+
+            return Results.Ok(new GetAttendancePageResponse(dtos));
+        }).WithName("GetAttendancePage")
+            .WithOpenApi()
+            .RequireAuthorization(SystemRoles.TeamPolicy);
+        return builder;
     }
 }
 

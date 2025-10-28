@@ -1,34 +1,29 @@
 using ALB.Domain.Entities;
 using ALB.Domain.Repositories;
 using ALB.Domain.Values;
-using FastEndpoints;
 using NodaTime;
 
 namespace ALB.Api.Endpoints.Children;
 
-public class CreateChildEndpoint(IChildRepository childRepository) : Endpoint<CreateChildRequest, CreateChildResponse>
+internal static class CreateChildEndpoint
 {
-    public override void Configure()
+    internal static RouteGroupBuilder AddCreateChildEndpoint(this RouteGroupBuilder builder)
     {
-        Post("/api/children");
-        Policies(SystemRoles.AdminPolicy);
-    }
-
-
-    public override async Task HandleAsync(CreateChildRequest request, CancellationToken ct)
-    {
-        var child = new Child
+        builder.MapPost("/", async (CreateChildRequest request, IChildRepository childRepository) =>
         {
-            FirstName = request.FirstName,
-            LastName = request.LastName,
-            DateOfBirth = request.DateOfBirth
-        };
+            var child = new Child
+            {
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                DateOfBirth = request.DateOfBirth
+            };
 
-        var createdChild = await childRepository.CreateAsync(child);
+            var createdChild = await childRepository.CreateAsync(child);
 
-        await SendOkAsync(
-            new CreateChildResponse(createdChild.Id, createdChild.FirstName, createdChild.LastName,
-                createdChild.DateOfBirth), ct);
+            return Results.Ok(new CreateChildResponse(createdChild.Id, createdChild.FirstName,
+                createdChild.LastName, createdChild.DateOfBirth));
+        }).WithName("CreateChild").WithOpenApi().RequireAuthorization(SystemRoles.AdminPolicy);
+        return builder;
     }
 }
 

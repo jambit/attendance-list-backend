@@ -2,34 +2,31 @@ using ALB.Api.Extensions;
 using ALB.Api.Models;
 using ALB.Domain.Identity;
 using ALB.Domain.Values;
-using FastEndpoints;
 using Microsoft.AspNetCore.Identity;
 
 namespace ALB.Api.Endpoints.Users;
 
-public class GetUserEndpoint(UserManager<ApplicationUser> userManager) : EndpointWithoutRequest<GetUserResponse>
+internal static class GetUserEndpoint
 {
-    public override void Configure()
+    internal static IEndpointRouteBuilder MapGetUserEndpoint(this IEndpointRouteBuilder routeBuilder)
     {
-        Get("/api/users/{userId:guid}");
-        Policies(SystemRoles.AdminPolicy);
-    }
-
-    public override async Task HandleAsync(CancellationToken ct)
-    {
-        var userId = Route<Guid>("userId");
-
-        var user = await userManager.FindByIdAsync(userId.ToString());
-
-        if (user is null)
+        routeBuilder.MapGet("/{userId:guid}", async (Guid userId, UserManager<ApplicationUser> userManager, CancellationToken ct) =>
         {
-            await SendNotFoundAsync(ct);
-            return;
-        }
+            var user = await userManager.FindByIdAsync(userId.ToString());
 
-        var response = new GetUserResponse(user.ToDto());
+            if (user is null)
+            {
+                return Results.NotFound();
+            }
 
-        await SendAsync(response, cancellation: ct);
+            var response = new GetUserResponse(user.ToDto());
+
+            return Results.Ok(response);
+        }).WithName("GetUser")
+        .WithOpenApi()
+        .RequireAuthorization(SystemRoles.AdminPolicy);
+        
+        return routeBuilder;
     }
 }
 

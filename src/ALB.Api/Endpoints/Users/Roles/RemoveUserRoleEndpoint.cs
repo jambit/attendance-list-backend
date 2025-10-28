@@ -1,52 +1,44 @@
 using ALB.Domain.Identity;
 using ALB.Domain.Values;
-using FastEndpoints;
 using Microsoft.AspNetCore.Identity;
 
 namespace ALB.Api.Endpoints.Users.Roles;
 
-public class RemoveUserRoleEndpoint(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager)
-    : Endpoint<RemoveUserRoleRequest, RemoveUserRoleResponse>
+internal static class RemoveUserRoleEndpoint
 {
-    public override void Configure()
+    internal static IEndpointRouteBuilder MapRemoveUserRoleEndpoint(this IEndpointRouteBuilder endpoints)
     {
-        Delete("/api/users/{userId:guid}/roles");
-        Policies(SystemRoles.AdminPolicy);
-    }
+        endpoints.MapDelete("/{userId:guid}/roles",
+            async (Guid userId, RemoveUserRoleRequest request, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, CancellationToken ct) =>
+            {
+                var user = await userManager.FindByIdAsync(userId.ToString());
+                if (user is null)
+                {
+                    return Results.NotFound("User not found");
+                }
 
-    public override async Task HandleAsync(RemoveUserRoleRequest request, CancellationToken ct)
-    {
-        var userId = Route<Guid>("userId");
+                var roleExists = await roleManager.RoleExistsAsync(request.Role);
+                if (!roleExists)
+                {
+                    return Results.NotFound("Role not found");
+                }
 
-        var user = await userManager.FindByIdAsync(userId.ToString());
-        if (user is null)
-        {
-            await SendNotFoundAsync(ct);
-            return;
-        }
+                if (!await userManager.IsInRoleAsync(user, request.Role))
+                    return Results.BadRequest($"User is not in role {request.Role}");
 
-        var roleExists = await roleManager.RoleExistsAsync(request.Role);
-        if (!roleExists)
-        {
-            await SendNotFoundAsync(ct);
-            return;
-        }
+                var result = await userManager.RemoveFromRoleAsync(user, request.Role);
+                if (!result.Succeeded)
+                {
+                    return Results.InternalServerError(result.Errors);
+                }
 
-        if (!await userManager.IsInRoleAsync(user, request.Role))
-            await SendAsync(new RemoveUserRoleResponse($"User is not in role {request.Role}"),
-                StatusCodes.Status400BadRequest, ct);
-
-        var result = await userManager.RemoveFromRoleAsync(user, request.Role);
-        if (!result.Succeeded)
-        {
-            foreach (var error in result.Errors) AddError(error.Description);
-            ThrowIfAnyErrors();
-        }
-
-        await SendNoContentAsync(ct);
+                return Results.NoContent();
+            }).WithName("RemoveUserRole")
+            .WithOpenApi()
+            .RequireAuthorization(SystemRoles.AdminPolicy);
+        
+        return endpoints;
     }
 }
 
 public record RemoveUserRoleRequest(string Role);
-
-public record RemoveUserRoleResponse(string Message);

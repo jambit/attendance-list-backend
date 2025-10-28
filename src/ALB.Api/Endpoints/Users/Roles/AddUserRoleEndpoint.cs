@@ -1,47 +1,42 @@
+using ALB.Api.Endpoints.Mappers;
 using ALB.Domain.Identity;
 using ALB.Domain.Values;
-using FastEndpoints;
 using Microsoft.AspNetCore.Identity;
 
 namespace ALB.Api.Endpoints.Users.Roles;
 
-public class AddUserRoleEndpoint(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager)
-    : Endpoint<AddUserRoleRequest>
+internal static class AddUserRoleEndpoint
 {
-    public override void Configure()
+    internal static IEndpointRouteBuilder MapAddUserRoleEndpoint(this IEndpointRouteBuilder endpoints)
     {
-        Post("/api/users/{userId:guid}/roles");
-        Policies(SystemRoles.AdminPolicy);
-    }
-
-    public override async Task HandleAsync(AddUserRoleRequest request, CancellationToken ct)
-    {
-        var userId = Route<Guid>("userId");
-
-        var userToAssignRoleTo = await userManager.FindByIdAsync(userId.ToString());
-
-        if (userToAssignRoleTo is null)
+        endpoints.MapPost("/{userId:guid}/roles", async (Guid userId, AddUserRoleRequest request, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, CancellationToken ct) =>
         {
-            await SendNotFoundAsync(ct);
-            return;
-        }
+            var userToAssignRoleTo = await userManager.FindByIdAsync(userId.ToString());
 
-        var roleExists = await roleManager.RoleExistsAsync(request.Role);
-        if (!roleExists)
-        {
-            await SendNotFoundAsync(ct);
-            return;
-        }
+            if (userToAssignRoleTo is null)
+            {
+                return Results.NotFound("User not found");
+            }
 
-        var result = await userManager.AddToRoleAsync(userToAssignRoleTo, request.Role);
+            var roleExists = await roleManager.RoleExistsAsync(request.Role);
+            if (!roleExists)
+            {
+                return Results.NotFound("Role not found");
+            }
 
-        if (!result.Succeeded)
-        {
-            foreach (var error in result.Errors) AddError(error.Description);
-            ThrowIfAnyErrors();
-        }
+            var result = await userManager.AddToRoleAsync(userToAssignRoleTo, request.Role);
 
-        await SendNoContentAsync(ct);
+            if (!result.Succeeded)
+            {
+                return Results.InternalServerError(result.Errors.AsErrorString());
+            }
+
+            return Results.NoContent();
+        }).WithName("AddUserRole")
+        .WithOpenApi()
+        .RequireAuthorization(SystemRoles.AdminPolicy);
+        
+        return endpoints;
     }
 }
 

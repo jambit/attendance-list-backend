@@ -1,31 +1,26 @@
 using ALB.Domain.Repositories;
 using ALB.Domain.Values;
-using FastEndpoints;
 
 namespace ALB.Api.Endpoints.Children;
 
-public class DeleteChildEndpoint(IChildRepository childRepository) : EndpointWithoutRequest
+internal static class DeleteChildEndpoint
 {
-    public override void Configure()
+    internal static RouteGroupBuilder AddDeleteChildEndpoint(this RouteGroupBuilder builder)
     {
-        Delete("/api/children/{childId:guid}");
-        Policies(SystemRoles.AdminPolicy);
-    }
-
-    public override async Task HandleAsync(CancellationToken ct)
-    {
-        var childId = Route<Guid>("childId");
-
-        var child = await childRepository.GetByIdAsync(childId);
-
-        if (child is null)
+        builder.MapDelete("/{childId:guid}", async (Guid childId, IChildRepository childRepository) =>
         {
-            await SendNotFoundAsync(ct);
-            return;
-        }
+            var child = await childRepository.GetByIdAsync(childId);
 
-        await childRepository.DeleteAsync(childId);
+            if (child is null)
+            {
+                return Results.NotFound();
+            }
 
-        await SendNoContentAsync(ct);
+            await childRepository.DeleteAsync(childId);
+
+            return Results.NoContent();
+        }).WithName("DeleteChild").WithOpenApi().RequireAuthorization(SystemRoles.AdminPolicy);
+        
+        return builder;
     }
 }

@@ -1,44 +1,40 @@
 using ALB.Domain.Identity;
 using ALB.Domain.Values;
-using FastEndpoints;
 using Microsoft.AspNetCore.Identity;
 
 namespace ALB.Api.Endpoints.Users;
 
-public class UpdateUserEndpoint(UserManager<ApplicationUser> userManager)
-    : Endpoint<UpdateUserRequest>
+internal static class UpdateUserEndpoint
 {
-    public override void Configure()
+    internal static IEndpointRouteBuilder MapUpdateUserEndpoint(this IEndpointRouteBuilder routeBuilder)
     {
-        Put("/api/users/{userId:guid}");
-        Policies(SystemRoles.AdminPolicy);
-    }
-
-    public override async Task HandleAsync(UpdateUserRequest request, CancellationToken cancellationToken)
-    {
-        var userId = Route<Guid>("userId");
-
-        var user = await userManager.FindByIdAsync(userId.ToString());
-
-        if (user is null)
+        routeBuilder.MapPut("/{userId:guid}", async (Guid userId, UpdateUserRequest request, UserManager<ApplicationUser> userManager, CancellationToken ct) =>
         {
-            await SendNotFoundAsync(cancellationToken);
-            return;
-        }
+            var user = await userManager.FindByIdAsync(userId.ToString());
 
-        if (!string.IsNullOrWhiteSpace(request.FirstName)) user.FirstName = request.FirstName;
+            if (user is null)
+            {
+                return Results.NotFound();
+            }
 
-        if (!string.IsNullOrWhiteSpace(request.LastName)) user.LastName = request.LastName;
+            if (!string.IsNullOrWhiteSpace(request.FirstName)) user.FirstName = request.FirstName;
 
-        var result = await userManager.UpdateAsync(user);
+            if (!string.IsNullOrWhiteSpace(request.LastName)) user.LastName = request.LastName;
 
-        if (!result.Succeeded)
-        {
-            foreach (var error in result.Errors) AddError(error.Description);
-            ThrowIfAnyErrors();
-        }
+            var result = await userManager.UpdateAsync(user);
 
-        await SendNoContentAsync(cancellationToken);
+            if (!result.Succeeded)
+            {
+                var errors = result.Errors.Select(e => e.Description);
+                return Results.BadRequest(errors);
+            }
+
+            return Results.NoContent();
+        }).WithName("UpdateUser")
+            .WithOpenApi()
+            .RequireAuthorization(SystemRoles.AdminPolicy);
+        
+        return routeBuilder;
     }
 }
 

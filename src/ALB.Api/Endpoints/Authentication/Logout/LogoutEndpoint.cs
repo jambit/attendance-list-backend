@@ -1,29 +1,26 @@
-using ALB.Domain.Identity;
-using FastEndpoints;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ALB.Api.Endpoints.Authentication.Logout;
 
-public class LogoutEndpoint(SignInManager<ApplicationUser> signInManager) : EndpointWithoutRequest
+internal static class LogoutEndpoint
 {
-    public override void Configure()
+    internal static RouteGroupBuilder MapLogoutEndpoint(this RouteGroupBuilder routeBuilder)
     {
-        Delete("/logout");
-        AllowAnonymous();
-    }
-
-    public override async Task HandleAsync(CancellationToken ct)
-    {
-        if (User.Identity?.IsAuthenticated == true)
-        {
-            await signInManager.SignOutAsync();
-
-            await SendOkAsync(new LogoutResponse("Successfully logged out", DateTime.UtcNow), ct);
-        }
-        else
-        {
-            await SendOkAsync(new LogoutResponse("User was not logged in", DateTime.UtcNow), ct);
-        }
+        routeBuilder.MapPost("/logout", async (SignInManager<IdentityUser> signInManager,
+                [FromBody] object empty) =>
+            {
+                if (empty is not null)
+                {
+                    await signInManager.SignOutAsync();
+                    return Results.Ok(new LogoutResponse("Successfully logged out", DateTime.UtcNow));
+                }
+                return Results.Unauthorized();
+            })
+            .WithOpenApi()
+            .RequireAuthorization();
+        
+        return routeBuilder;
     }
 }
 
