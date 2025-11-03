@@ -23,7 +23,7 @@ internal static class CreateUserEndpoint
 
             if (!result.Succeeded)
             {
-                return Results.InternalServerError(result.Errors.AsErrorString());
+                return Results.BadRequest(result.Errors.AsErrorString());
             }
 
             return Results.Ok(new CreateUserResponse(user.Id, user.Email, user.FirstName, user.LastName));

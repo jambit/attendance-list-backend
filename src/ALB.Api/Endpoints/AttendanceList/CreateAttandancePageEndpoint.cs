@@ -8,7 +8,7 @@ internal static class GetAttendancePageEndpoint
 {
     internal static RouteGroupBuilder AddAttendancePageEndpoint(this RouteGroupBuilder builder)
     {
-        builder.MapGet("/attendancelists/{attendanceListId:guid}/page", async (Guid attendanceListId, LocalDate date, IAttendanceRepository attendanceListRepo, IChildRepository childRepo, IAbsenceDayRepository absenceRepo) =>
+        builder.MapPost("/attendancelists/{attendanceListId:guid}/page", async (Guid attendanceListId, GetAttendancePageRequest request, IAttendanceRepository attendanceListRepo, IChildRepository childRepo, IAbsenceDayRepository absenceRepo) =>
         {
             var attendanceList = await attendanceListRepo.GetAttendanceListByIdAsync(attendanceListId);
 
@@ -19,7 +19,7 @@ internal static class GetAttendancePageEndpoint
 
             var children = await childRepo.GetByCohortAsync(attendanceList.CohortId);
 
-            var absences = await absenceRepo.GetByDateAsync(date);
+            var absences = await absenceRepo.GetByDateAsync(request.date);
 
             var dtos = children.Select(child =>
             {
@@ -36,7 +36,7 @@ internal static class GetAttendancePageEndpoint
     }
 }
 
-public record GetAttendancePageRequest(Guid AttendanceListId, LocalDate date);
+public record GetAttendancePageRequest(LocalDate date);
 
 public record AttendancePageChildDto(Guid ChildId, string FirstName, string LastName, string Status);
 

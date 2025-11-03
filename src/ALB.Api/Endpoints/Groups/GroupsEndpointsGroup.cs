@@ -11,7 +11,7 @@ internal static class GroupsEndpointsGroup
             .WithTags("Groups Management")
             .WithGroupName("GroupsManagement")
             .MapAddChildrenToGroupEndpoint()
-            .MapRemoveChildrenFromGroupEndpoint()
+            //.MapRemoveChildrenFromGroupEndpoint()
             .MapCreateCohortEndpoint()
             .MapCreateGroupEndpoint()
             .MapDeleteGroupEndpoint()

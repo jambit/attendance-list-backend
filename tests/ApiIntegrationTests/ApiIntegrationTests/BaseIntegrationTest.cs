@@ -39,7 +39,7 @@ public class BaseIntegrationTest : IAsyncInitializer, IAsyncDisposable
     {
         await _postgreSqlContainer.StartAsync();
 
-        _webApplicationFactory = new TestWebApplicationFactory<IApiAssemblyMarker>(_postgreSqlContainer.GetConnectionString());
+        _webApplicationFactory = new TestWebApplicationFactory(_postgreSqlContainer.GetConnectionString());
 
         _ = _webApplicationFactory.Server;
 
@@ -123,8 +123,8 @@ internal class TestAuthHandler(
     }
 }
 
-file sealed class TestWebApplicationFactory<TProgram>(string connectionString)
-    : WebApplicationFactory<TProgram> where TProgram : class
+file sealed class TestWebApplicationFactory(string connectionString)
+    : WebApplicationFactory<IApiAssemblyMarker>
 {
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {

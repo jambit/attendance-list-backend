@@ -1,5 +1,6 @@
 using ALB.Domain.Entities;
 using ALB.Domain.Repositories;
+using ALB.Domain.Values;
 using NodaTime;
 
 namespace ALB.Api.Endpoints.Children.Absence;
@@ -45,7 +46,7 @@ internal static class CreateAbsenceForChildEndpoint
             return Results.Ok(new CreateAbsenceResponse($"Absence registered successfully for {absencesToCreate.Count} day(s)."));
         }).WithName("CreateAbsenceForChild")
             .WithOpenApi()
-            .RequireAuthorization("ParentPolicy");
+            .RequireAuthorization(SystemRoles.ParentPolicy);
         
         return builder;
     }

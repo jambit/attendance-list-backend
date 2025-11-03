@@ -1,3 +1,4 @@
+using ALB.Domain.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,7 +8,7 @@ internal static class LogoutEndpoint
 {
     internal static RouteGroupBuilder MapLogoutEndpoint(this RouteGroupBuilder routeBuilder)
     {
-        routeBuilder.MapPost("/logout", async (SignInManager<IdentityUser> signInManager,
+        routeBuilder.MapPost("/logout", async (SignInManager<ApplicationUser> signInManager,
                 [FromBody] object empty) =>
             {
                 if (empty is not null)

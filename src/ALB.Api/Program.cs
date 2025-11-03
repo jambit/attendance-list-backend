@@ -29,12 +29,6 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 
 builder.Services.AddInfrastructure(builder.Configuration);
 
-builder.Services.AddScoped<IChildRepository, ChildRepository>();
-builder.Services.AddScoped<IGroupRepository, GroupRepository>();
-builder.Services.AddScoped<IAttendanceRepository, AttendanceRepository>();
-builder.Services.AddScoped<IAbsenceDayRepository, AbsenceDayRepository>();
-builder.Services.AddScoped<ICohortRepository, CohortRepository>();
-
 builder.Services.AddProblemDetails(options =>
 {
     options.CustomizeProblemDetails = context =>

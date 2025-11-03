@@ -11,7 +11,7 @@ internal static class AttendanceListEndpointsGroup
             .WithGroupName("AttendanceLists")
             .AddAttendancePageEndpoint()
             .AddCreateAttendanceListEntryEndpoint()
-            .AddDeleteAttendanceListEntryEndpoint()
+            //.AddDeleteAttendanceListEntryEndpoint()
             .AddUpdateAttendanceListEntryEndpoint();
         
         return routeBuilder;
