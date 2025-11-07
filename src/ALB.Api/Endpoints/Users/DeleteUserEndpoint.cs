@@ -1,39 +1,35 @@
+using ALB.Api.Endpoints.Mappers;
 using ALB.Domain.Identity;
 using ALB.Domain.Values;
-using FastEndpoints;
 using Microsoft.AspNetCore.Identity;
 
 namespace ALB.Api.Endpoints.Users;
 
-public class DeleteUserEndpoint(UserManager<ApplicationUser> userManager) : EndpointWithoutRequest
+internal static class DeleteUserEndpoint
 {
-    public override void Configure()
+    internal static IEndpointRouteBuilder MapDeleteUserEndpoint(this IEndpointRouteBuilder routeBuilder)
     {
-        Delete("/api/users/{userId:guid}");
-        Policies(SystemRoles.AdminPolicy);
-    }
-
-    public override async Task HandleAsync(CancellationToken ct)
-    {
-        var userId = Route<Guid>("userId");
-
-        var user = await userManager.FindByIdAsync(userId.ToString());
-
-        if (user is null)
+        routeBuilder.MapDelete("/{userId:guid}", async (Guid userId, UserManager<ApplicationUser> userManager, CancellationToken ct) =>
         {
-            await SendNotFoundAsync(ct);
-            return;
-        }
+            var user = await userManager.FindByIdAsync(userId.ToString());
 
-        var result = await userManager.DeleteAsync(user);
+            if (user is null)
+            {
+                return Results.NotFound();
+            }
 
-        if (!result.Succeeded)
-        {
-            var errors = string.Join(", ", result.Errors.Select(e => e.Description));
-            await SendAsync(new { error = errors }, StatusCodes.Status400BadRequest, ct);
-            return;
-        }
+            var result = await userManager.DeleteAsync(user);
 
-        await SendNoContentAsync(ct);
+            if (!result.Succeeded)
+            {
+                return Results.BadRequest(result.Errors.AsErrorString());
+            }
+
+            return Results.NoContent();
+        }).WithName("DeleteUser")
+            .WithOpenApi()
+        .RequireAuthorization(SystemRoles.AdminPolicy);
+        
+        return routeBuilder;
     }
 }

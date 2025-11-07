@@ -1,27 +1,24 @@
 using ALB.Api.Extensions;
 using ALB.Domain.Enum;
 using ALB.Domain.Repositories;
-using FastEndpoints;
 using NodaTime;
 
 namespace ALB.Api.Endpoints.AttendanceList.AttendanceListEntries;
 
-public class CreateAttendanceListEntryEndpoint(IAttendanceRepository repository)
-    : Endpoint<CreateAttendanceListEntryRequest, CreateAttendanceListEntryResponse>
+internal static class CreateAttendanceListEntryEndpoint
 {
-    public override void Configure()
+    internal static RouteGroupBuilder AddCreateAttendanceListEntryEndpoint(this RouteGroupBuilder builder)
     {
-        Post("/api/attendance-lists/entries");
-        AllowAnonymous();
-    }
+        builder.MapPost("/entries", async (CreateAttendanceListEntryRequest request, IAttendanceRepository repository) =>
+        {
+            await repository.CreateAsync(request.ChildId, LocalDate.FromDateTime(request.Date),
+                request.ArrivalAt.ToNodaLocalTime(), request.DepartureAt.ToNodaLocalTime(), request.Status, CancellationToken.None);
 
-    public override async Task HandleAsync(CreateAttendanceListEntryRequest request, CancellationToken ct)
-    {
-        await repository.CreateAsync(request.ChildId, LocalDate.FromDateTime(request.Date),
-            request.ArrivalAt.ToNodaLocalTime(), request.DepartureAt.ToNodaLocalTime(), request.Status, ct);
-
-        await SendAsync(new CreateAttendanceListEntryResponse(
-            $"Attendance for {request.ChildId} at {LocalDate.FromDateTime(request.Date)} was successfully set to {request.Status}"));
+            return Results.Ok(new CreateAttendanceListEntryResponse(
+                $"Attendance for {request.ChildId} at {LocalDate.FromDateTime(request.Date)} was successfully set to {request.Status}"));
+        }).WithName("CreateAttendanceListEntry").WithOpenApi().AllowAnonymous();
+        
+        return builder;
     }
 }
 

@@ -1,27 +1,24 @@
 using ALB.Api.Extensions;
 using ALB.Domain.Enum;
 using ALB.Domain.Repositories;
-using FastEndpoints;
 using NodaTime;
 
 namespace ALB.Api.Endpoints.AttendanceList.AttendanceListEntries;
 
-public class UpdateAttendanceListEntryEndpoint(IAttendanceRepository repository)
-    : Endpoint<UpdateAttendanceListEntryRequest, UpdateAttendanceListEntryResponse>
+internal static class UpdateAttendanceListEntryEndpoint
 {
-    public override void Configure()
+    internal static RouteGroupBuilder AddUpdateAttendanceListEntryEndpoint(this RouteGroupBuilder builder)
     {
-        Put("/api/attendance-lists/entries");
-        AllowAnonymous();
-    }
+        builder.MapPut("/entries", async (UpdateAttendanceListEntryRequest request, IAttendanceRepository repository) =>
+        {
+            await repository.UpdateAsync(request.ChildId, LocalDate.FromDateTime(request.Date),
+                request.ArrivalAt.ToNodaLocalTime(), request.DepartureAt.ToNodaLocalTime(), request.Status, CancellationToken.None);
 
-    public override async Task HandleAsync(UpdateAttendanceListEntryRequest request, CancellationToken ct)
-    {
-        await repository.UpdateAsync(request.ChildId, LocalDate.FromDateTime(request.Date),
-            request.ArrivalAt.ToNodaLocalTime(), request.DepartureAt.ToNodaLocalTime(), request.Status, ct);
-
-        await SendAsync(new UpdateAttendanceListEntryResponse(
-            $"Attendance for {request.ChildId} at {LocalDate.FromDateTime(request.Date)} was successfully set to {request.Status}"));
+            return Results.Ok(new UpdateAttendanceListEntryResponse(
+                $"Attendance for {request.ChildId} at {LocalDate.FromDateTime(request.Date)} was successfully set to {request.Status}"));
+        }).WithName("UpdateAttendanceListEntry").WithOpenApi().AllowAnonymous();
+        
+        return builder;
     }
 }
 

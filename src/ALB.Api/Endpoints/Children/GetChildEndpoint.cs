@@ -1,38 +1,35 @@
 using ALB.Domain.Repositories;
 using ALB.Domain.Values;
-using FastEndpoints;
 using NodaTime;
 
 namespace ALB.Api.Endpoints.Children;
 
-public class GetChildEndpoint(IChildRepository childRepository) : EndpointWithoutRequest<GetChildResponse>
+internal static class GetChildEndpoint
 {
-    public override void Configure()
+    internal static RouteGroupBuilder AddGetChildEndpoint(this RouteGroupBuilder builder)
     {
-        Get("/api/children/{childId:guid}");
-        Policies(SystemRoles.AdminPolicy);
-    }
-
-    public override async Task HandleAsync(CancellationToken ct)
-    {
-        var childId = Route<Guid>("childId");
-
-        var child = await childRepository.GetByIdAsync(childId);
-
-        if (child is null)
+        builder.MapGet("/{childId:guid}", async (Guid childId, IChildRepository childRepository) =>
         {
-            await SendNotFoundAsync(ct);
-            return;
-        }
+            var child = await childRepository.GetByIdAsync(childId);
 
-        var response = new GetChildResponse(
-            child.Id,
-            child.FirstName,
-            child.LastName,
-            child.DateOfBirth
-        );
+            if (child is null)
+            {
+                return Results.NotFound();
+            }
 
-        await SendAsync(response, cancellation: ct);
+            var response = new GetChildResponse(
+                child.Id,
+                child.FirstName,
+                child.LastName,
+                child.DateOfBirth
+            );
+
+            return Results.Ok(response);
+        }).WithName("GetChild")
+            .WithOpenApi()
+            .RequireAuthorization(SystemRoles.AdminPolicy);
+        
+        return builder;
     }
 }
 

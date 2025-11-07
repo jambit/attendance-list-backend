@@ -1,29 +1,28 @@
+using ALB.Api.Endpoints.Users.Mappers;
 using ALB.Api.Extensions;
 using ALB.Api.Models;
 using ALB.Domain.Identity;
 using ALB.Domain.Values;
-using FastEndpoints;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace ALB.Api.Endpoints.Users;
 
-public class GetUsersEndpoint(UserManager<ApplicationUser> userManager) : EndpointWithoutRequest<GetUsersResponse>
+internal static class GetUsersEndpoint
 {
-    public override void Configure()
+    internal static IEndpointRouteBuilder MapGetUsersEndpoint(this IEndpointRouteBuilder routeBuilder)
     {
-        Get("/api/users");
-        Policies(SystemRoles.AdminPolicy);
-    }
+        routeBuilder.MapGet("/", async (UserManager<ApplicationUser> userManager, CancellationToken ct) =>
+        {
+            var userDtos = await userManager.Users.Select(u => u.ToDto()).ToListAsync(ct);
 
-    public override async Task HandleAsync(CancellationToken ct)
-    {
-        var userDtos = await userManager.Users.Select(u => u.ToDto()).ToListAsync(ct);
-
-        var response = new GetUsersResponse(userDtos);
-
-        await SendAsync(response, cancellation: ct);
+            return Results.Ok(userDtos.ToResponse());
+        }).WithName("GetUsers")
+            .WithOpenApi()
+            .RequireAuthorization(SystemRoles.AdminPolicy);
+        
+        return routeBuilder;
     }
 }
 
-public record GetUsersResponse(IEnumerable<UserDto> Users);
+public record GetUsersResponse(List<UserDto> Users);

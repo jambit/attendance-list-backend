@@ -1,26 +1,19 @@
 using ALB.Domain.Repositories;
 using ALB.Domain.Values;
-using FastEndpoints;
 
 namespace ALB.Api.Endpoints.Groups;
 
-public class DeleteGroupEndpoint(IGroupRepository groupRepository) : Endpoint<DeleteGroupRequest, DeleteGroupResponse>
+internal static class DeleteGroupEndpoint
 {
-    public override void Configure()
+    internal static IEndpointRouteBuilder MapDeleteGroupEndpoint(this IEndpointRouteBuilder routeBuilder)
     {
-        Delete("/api/groups/{GroupId:guid}");
-        Policies(SystemRoles.AdminPolicy);
-    }
+        routeBuilder.MapDelete("/{groupId:guid}",
+            async (Guid groupId, IGroupRepository groupRepository, CancellationToken ct) =>
+                await groupRepository.DeleteAsync(groupId)
+        ).WithName("DeleteGroup")
+        .WithOpenApi()
+        .RequireAuthorization(SystemRoles.AdminPolicy);
 
-    public override async Task HandleAsync(DeleteGroupRequest request, CancellationToken cancellationToken)
-    {
-        await groupRepository.DeleteAsync(request.GroupId);
-
-        await SendAsync(new DeleteGroupResponse($"Deleted Group with Id: {request.GroupId}"),
-            cancellation: cancellationToken);
-    }
+        return routeBuilder;
+    } 
 }
-
-public record DeleteGroupRequest(Guid GroupId);
-
-public record DeleteGroupResponse(string Message);

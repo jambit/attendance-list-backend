@@ -1,28 +1,23 @@
 using ALB.Domain.Repositories;
-using FastEndpoints;
+using ALB.Domain.Values;
 
 namespace ALB.Api.Endpoints.Groups.Children;
 
-public class RemoveChildrenFromGroupEndpoint(IGroupRepository repository)
-    : Endpoint<RemoveChildFromGroupRequest, RemoveChildFromGroupResponse>
+internal static class RemoveChildrenFromGroupEndpoint
 {
-    public override void Configure()
+    internal static IEndpointRouteBuilder MapRemoveChildrenFromGroupEndpoint(this IEndpointRouteBuilder endpoints)
     {
-        Delete("/api/groups/{groupId:guid}/children");
-        AllowAnonymous();
-    }
-
-    public override async Task HandleAsync(RemoveChildFromGroupRequest request, CancellationToken ct)
-    {
-        var groupId = Route<Guid>("groupId");
-        var childIds = request.ChildIds.Split(',').Select(Guid.Parse);
-
-        await repository.RemoveChildrenFromGroupAsync(groupId, childIds, ct);
-
-        await SendAsync(new RemoveChildFromGroupResponse("Removed Children from Group"));
+        endpoints.MapDelete("/{groupId:guid}/children", async (Guid groupId, RemoveChildFromGroupRequest request, IGroupRepository repository, CancellationToken ct) =>
+        {
+            await repository.RemoveChildrenFromGroupAsync(groupId, request.ChildIds, ct);
+            
+            return Results.NoContent();
+        }).WithName("RemoveChildrenFromGroup")
+        .WithOpenApi()
+        .RequireAuthorization(SystemRoles.AdminPolicy);
+        
+        return endpoints;
     }
 }
 
-public record RemoveChildFromGroupRequest(string ChildIds);
-
-public record RemoveChildFromGroupResponse(string Message);
+public record RemoveChildFromGroupRequest(List<Guid> ChildIds);

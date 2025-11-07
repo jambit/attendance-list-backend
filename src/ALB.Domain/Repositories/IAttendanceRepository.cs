@@ -9,5 +9,5 @@ public interface IAttendanceRepository
         Task CreateAsync(Guid childId, LocalDate date, LocalTime? arrivalAt, LocalTime? departureAt, AttendanceStatus status, CancellationToken ct);
         Task UpdateAsync(Guid childId, LocalDate date, LocalTime? arrivalAt, LocalTime? departureAt, AttendanceStatus status, CancellationToken ct);
         Task DeleteAsync(Guid childId, LocalDate date, CancellationToken ct);
-        Task<AttendanceList> GetAttendanceListByIdAsync(Guid id);
+        Task<AttendanceList?> GetAttendanceListByIdAsync(Guid id);
 }

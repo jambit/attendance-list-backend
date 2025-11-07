@@ -1,24 +1,21 @@
 using ALB.Domain.Repositories;
-using FastEndpoints;
 using NodaTime;
 
 namespace ALB.Api.Endpoints.AttendanceList.AttendanceListEntries;
 
-public class DeleteAttendanceListEntryEndpoint(IAttendanceRepository repository)
-    : Endpoint<DeleteAttendanceListEntryRequest, DeleteAttendanceListEntryResponse>
+internal static class DeleteAttendanceListEntryEndpoint
 {
-    public override void Configure()
+    internal static RouteGroupBuilder AddDeleteAttendanceListEntryEndpoint(this RouteGroupBuilder builder)
     {
-        Delete("/api/attendance-lists/entries");
-        AllowAnonymous();
-    }
+        builder.MapDelete("/entries", async (DeleteAttendanceListEntryRequest request, IAttendanceRepository repository) =>
+        {
+            await repository.DeleteAsync(request.ChildId, LocalDate.FromDateTime(request.Date), CancellationToken.None);
 
-    public override async Task HandleAsync(DeleteAttendanceListEntryRequest request, CancellationToken ct)
-    {
-        await repository.DeleteAsync(request.ChildId, LocalDate.FromDateTime(request.Date), ct);
-
-        await SendAsync(new DeleteAttendanceListEntryResponse(
-            $"Attendance for {request.ChildId} at {request.Date} was successfully deleted."));
+            return Results.Ok(new DeleteAttendanceListEntryResponse(
+                $"Attendance for {request.ChildId} at {request.Date} was successfully deleted."));
+        }).WithName("DeleteAttendanceListEntry").WithOpenApi().AllowAnonymous();
+        
+        return builder;
     }
 }
 

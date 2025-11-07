@@ -1,40 +1,22 @@
 using ALB.Domain.Repositories;
 using ALB.Domain.Values;
-using FastEndpoints;
 
 namespace ALB.Api.Endpoints.Groups;
 
-public class UpdateGroupEndpoint(IGroupRepository groupRepository) : Endpoint<UpdateGroupRequest, UpdateGroupResponse>
+internal static class UpdateGroupEndpoint
 {
-    public override void Configure()
+    internal static IEndpointRouteBuilder MapUpdateGroupEndpoint(this IEndpointRouteBuilder routeBuilder)
     {
-        Put("/api/groups/{groupId:guid}");
-        Policies(SystemRoles.AdminPolicy);
-    }
-
-    public override async Task HandleAsync(UpdateGroupRequest request, CancellationToken cancellationToken)
-    {
-        var groupId = Route<Guid>("groupId");
-
-        var existingGroup = await groupRepository.GetByIdAsync(groupId);
-
-        if (existingGroup is null)
-        {
-            await SendNotFoundAsync(cancellationToken);
-            return;
-        }
-
-        existingGroup.Name = request.GroupName;
-
-        await groupRepository.UpdateAsync(existingGroup);
-
-        await SendAsync(
-            new UpdateGroupResponse($"Updated group '{existingGroup.Name}' with ID: {existingGroup.Id}"),
-            cancellation: cancellationToken
-        );
+        routeBuilder.MapPut("/", async (UpdateGroupRequest request, IGroupRepository groupRepository, CancellationToken cancellationToken) =>
+                {
+                    throw new NotImplementedException();
+                }
+            ).WithName("UpdateGroup")
+            .WithOpenApi()
+            .RequireAuthorization(SystemRoles.AdminPolicy);
+        
+        return routeBuilder;
     }
 }
 
 public record UpdateGroupRequest(Guid groupId, string GroupName);
-
-public record UpdateGroupResponse(string Message);

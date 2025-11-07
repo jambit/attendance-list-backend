@@ -61,7 +61,7 @@ public class AttendanceRepository(ApplicationDbContext dbContext) : IAttendanceR
         await dbContext.SaveChangesAsync(ct);
     }
     
-    public async Task<AttendanceList> GetAttendanceListByIdAsync(Guid id)
+    public async Task<AttendanceList?> GetAttendanceListByIdAsync(Guid id)
     {
         return await dbContext.AttendanceLists
             .Include(al => al.Cohort)

@@ -1,3 +1,5 @@
+using ALB.Api.Endpoints;
+using ALB.Api.Exceptions;
 using ALB.Api.Extensions;
 using ALB.Domain.Identity;
 using ALB.Domain.Repositories;
@@ -5,7 +7,7 @@ using ALB.Infrastructure.Authentication;
 using ALB.Infrastructure.Extensions;
 using ALB.Infrastructure.Persistence;
 using ALB.Infrastructure.Persistence.Repositories;
-using FastEndpoints;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Scalar.AspNetCore;
@@ -27,18 +29,27 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 
 builder.Services.AddInfrastructure(builder.Configuration);
 
-builder.Services.AddScoped<IChildRepository, ChildRepository>();
-builder.Services.AddScoped<IGroupRepository, GroupRepository>();
-builder.Services.AddScoped<IAttendanceRepository, AttendanceRepository>();
-builder.Services.AddScoped<IAbsenceDayRepository, AbsenceDayRepository>();
-builder.Services.AddScoped<ICohortRepository, CohortRepository>();
+builder.Services.AddProblemDetails(options =>
+{
+    options.CustomizeProblemDetails = context =>
+    {
+        context.ProblemDetails.Instance = 
+            $"{context.HttpContext.Request.Method}{context.HttpContext.Request.Path}";
+
+        context.ProblemDetails.Extensions.TryAdd("requestId", context.HttpContext.TraceIdentifier);
+        
+        var activity = context.HttpContext.Features.Get<IHttpActivityFeature>()?.Activity;
+        context.ProblemDetails.Extensions.TryAdd("traceId", activity?.TraceId);
+    };
+});
+
+builder.Services.AddExceptionHandler<ProblemExceptionHandler>();
 
 builder.Services.AddOpenApi();
 
 //TODO: Implement new EmailSender and remove DummyEmailSender
 builder.Services.AddTransient<IEmailSender<ApplicationUser>, DummyEmailSender>();
 
-builder.Services.AddFastEndpoints();
 builder.Services.AddNodaTimeJsonConverters();
 
 builder.Services.AddAuthAndIdentityCore();
@@ -59,7 +70,7 @@ app.MapScalarApiReference("/api-reference", options =>
         .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient);
 });
 
-app.UseFastEndpoints();
+app.MapEndpoints();
 app.MapIdentityApiFilterable<ApplicationUser>(new IdentityApiEndpointRouteBuilderOptions
 {
     ExcludeLoginPost = false,
