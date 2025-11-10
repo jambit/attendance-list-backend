@@ -5,11 +5,10 @@ namespace ALB.Api.Endpoints.Groups;
 
 internal static class GroupsEndpointsGroup
 {
-    internal static IEndpointRouteBuilder MapGroupsEndpointsGroup(this IEndpointRouteBuilder routeBuilder)
+    internal static void MapGroupsEndpointsGroup(this IEndpointRouteBuilder routeBuilder)
     {
-        return routeBuilder.MapGroup("/api/groups")
+        routeBuilder.MapGroup("/api/groups")
             .WithTags("Groups Management")
-            .WithGroupName("GroupsManagement")
             .MapAddChildrenToGroupEndpoint()
             //.MapRemoveChildrenFromGroupEndpoint()
             .MapCreateCohortEndpoint()

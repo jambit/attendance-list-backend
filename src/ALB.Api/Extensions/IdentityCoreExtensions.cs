@@ -1,26 +1,44 @@
+using System.Text;
+using ALB.Api.Endpoints;
 using ALB.Domain.Identity;
 using ALB.Domain.Values;
 using ALB.Infrastructure.Persistence;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
 
 namespace ALB.Api.Extensions;
 
 public static class IdentityCoreExtensions
 {
-    public static IServiceCollection AddAuthAndIdentityCore(this IServiceCollection services)
+    public static IServiceCollection AddAuthAndIdentityCore(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddTransient<TokenProvider>();
+        
         services.AddAuthorizationBuilder()
             .AddPolicy(SystemRoles.AdminPolicy, x => x.RequireRole(SystemRoles.Admin))
             .AddPolicy(SystemRoles.CoAdminPolicy, x => x.RequireRole(SystemRoles.CoAdmin))
             .AddPolicy(SystemRoles.TeamPolicy, x => x.RequireRole(SystemRoles.Team))
             .AddPolicy(SystemRoles.ParentPolicy, x => x.RequireRole(SystemRoles.Parent));
 
+        var option = configuration.GetRequiredSection(JwtOptions.SectionName).Get<JwtOptions>();
         services.AddAuthentication(options =>
             {
                 options.DefaultScheme = IdentityConstants.BearerScheme;
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters.ValidIssuer = option.Issuer;
+                options.TokenValidationParameters.ValidAudience = option.Audience;
+                options.TokenValidationParameters.IssuerSigningKey =
+                    new SymmetricSecurityKey(Encoding.UTF8.GetBytes(option.Secret));
             })
             .AddCookie(IdentityConstants.ApplicationScheme)
             .AddBearerToken(IdentityConstants.BearerScheme);
+        
+        services.AddAuthorization();
         
         services.AddIdentityCore<ApplicationUser>(options =>
             {

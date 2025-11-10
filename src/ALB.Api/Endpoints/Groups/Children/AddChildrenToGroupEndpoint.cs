@@ -14,7 +14,7 @@ internal static class AddChildrenToGroupEndpoint
             return Results.Ok();
         }).WithName("Add children to group")
         .WithOpenApi()
-        .RequireAuthorization(SystemRoles.AdminPolicy);
+        .RequireAuthorization(policy => policy.RequireRole(SystemRoles.Admin));
         
         return endpoints;
     }

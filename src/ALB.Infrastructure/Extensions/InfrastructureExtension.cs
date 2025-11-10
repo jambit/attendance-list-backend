@@ -20,6 +20,7 @@ public static class InfrastructureExtension
         services.AddScoped<IAttendanceRepository, AttendanceRepository>();
         services.AddScoped<IAbsenceDayRepository, AbsenceDayRepository>();
         services.AddScoped<ICohortRepository, CohortRepository>();
+        services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 
         services.AddDbContextPool<ApplicationDbContext>((serviceProvider, options) =>
         {

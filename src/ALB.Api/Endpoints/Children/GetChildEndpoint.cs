@@ -27,7 +27,7 @@ internal static class GetChildEndpoint
             return Results.Ok(response);
         }).WithName("GetChild")
             .WithOpenApi()
-            .RequireAuthorization(SystemRoles.AdminPolicy);
+            .RequireAuthorization(policy => policy.RequireRole(SystemRoles.Admin));
         
         return builder;
     }

@@ -26,7 +26,7 @@ internal static class UpdateChildEndpoint
             return Results.NoContent();
         }).WithName("UpdateChild")
             .WithOpenApi()
-            .RequireAuthorization(SystemRoles.AdminPolicy);
+            .RequireAuthorization(policy => policy.RequireRole(SystemRoles.Admin));
         return builder;
     }
 }

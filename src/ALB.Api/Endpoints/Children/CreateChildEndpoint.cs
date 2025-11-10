@@ -22,7 +22,9 @@ internal static class CreateChildEndpoint
 
             return Results.Ok(new CreateChildResponse(createdChild.Id, createdChild.FirstName,
                 createdChild.LastName, createdChild.DateOfBirth));
-        }).WithName("CreateChild").WithOpenApi().RequireAuthorization(SystemRoles.AdminPolicy);
+        }).WithName("CreateChild")
+            .WithOpenApi()
+            .RequireAuthorization(policy => policy.RequireRole(SystemRoles.Admin));
         return builder;
     }
 }

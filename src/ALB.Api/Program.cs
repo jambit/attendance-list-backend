@@ -1,8 +1,10 @@
+using System.Security.Claims;
 using ALB.Api.Endpoints;
 using ALB.Api.Exceptions;
 using ALB.Api.Extensions;
 using ALB.Domain.Identity;
 using ALB.Domain.Repositories;
+using ALB.Domain.Values;
 using ALB.Infrastructure.Authentication;
 using ALB.Infrastructure.Extensions;
 using ALB.Infrastructure.Persistence;
@@ -26,6 +28,13 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
     options.ForwardedHeaders =
         ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
 });
+
+// TODO: secret to azure fault
+builder.Services
+    .AddOptions<JwtOptions>()
+    .Bind(builder.Configuration.GetSection(JwtOptions.SectionName))
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
 
 builder.Services.AddInfrastructure(builder.Configuration);
 
@@ -52,7 +61,7 @@ builder.Services.AddTransient<IEmailSender<ApplicationUser>, DummyEmailSender>()
 
 builder.Services.AddNodaTimeJsonConverters();
 
-builder.Services.AddAuthAndIdentityCore();
+builder.Services.AddAuthAndIdentityCore(builder.Configuration);
 
 
 var app = builder.Build();
@@ -71,10 +80,14 @@ app.MapScalarApiReference("/api-reference", options =>
 });
 
 app.MapEndpoints();
+app.MapGet("/me", (ClaimsPrincipal claims) => Results.Ok(claims.Claims.ToDictionary(c => c.Type, c => c.Value)))
+    .WithOpenApi()
+    .RequireAuthorization(policy => policy.RequireRole(SystemRoles.Admin));
+
 app.MapIdentityApiFilterable<ApplicationUser>(new IdentityApiEndpointRouteBuilderOptions
 {
-    ExcludeLoginPost = false,
-    ExcludeRefreshPost = false,
+    ExcludeLoginPost = true,
+    ExcludeRefreshPost = true,
     ExcludeConfirmEmailGet = false,
     ExcludeResendConfirmationEmailPost = false,
     ExcludeForgotPasswordPost = false,

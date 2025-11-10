@@ -19,7 +19,8 @@ internal static class DeleteChildEndpoint
             await childRepository.DeleteAsync(childId);
 
             return Results.NoContent();
-        }).WithName("DeleteChild").WithOpenApi().RequireAuthorization(SystemRoles.AdminPolicy);
+        }).WithName("DeleteChild").WithOpenApi()
+            .RequireAuthorization(policy => policy.RequireRole(SystemRoles.Admin));
         
         return builder;
     }

@@ -27,6 +27,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     public DbSet<Grade> Grades { get; set; }
     public DbSet<UserChildRelationship> UserChildRelationships { get; set; }
     public DbSet<UserGroup> UserGroups { get; set; }
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -336,6 +337,19 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
         modelBuilder.Entity<ApplicationRoleClaim>(b =>
         {
             b.Property(p => p.Id).ValueGeneratedOnAdd().HasValueGenerator<UuiDv7Generator>();
+        });
+
+        modelBuilder.Entity<RefreshToken>(b =>
+        {
+            b.HasKey(p => p.UserId);
+            b.Property(p => p.Id).ValueGeneratedOnAdd().HasValueGenerator<UuiDv7Generator>();
+            b.HasOne(ut => ut.User)
+                .WithMany(t => t.RefreshTokens)
+                .HasForeignKey(ut => ut.UserId);
+            
+            b.Property(p => p.ExpiresOnUtc).IsRequired();
+            b.Property(p => p.Value).HasMaxLength(200).IsRequired();
+            b.HasIndex(ut => ut.Value).IsUnique();
         });
     }
 }
