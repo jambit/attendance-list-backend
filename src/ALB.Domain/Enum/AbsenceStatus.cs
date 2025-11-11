@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+
 using ALB.Domain.Entities;
 
 namespace ALB.Domain.Enum;

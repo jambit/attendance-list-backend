@@ -1,4 +1,5 @@
 using System.Text.Json;
+
 using NodaTime;
 using NodaTime.Serialization.SystemTextJson;
 
@@ -8,7 +9,7 @@ public static class DateTimeExtensions
 {
     public static LocalTime ToNodaLocalTime(this DateTime dateTime)
         => LocalTime.FromTimeOnly(TimeOnly.FromDateTime(dateTime));
-    
+
     public static LocalTime? ToNodaLocalTime(this DateTime? dateTime)
         => dateTime.HasValue ? LocalTime.FromTimeOnly(TimeOnly.FromDateTime(dateTime.Value)) : null;
 
@@ -23,7 +24,7 @@ public static class DateTimeExtensions
             opts.Converters.Add(NodaConverters.LocalDateTimeConverter);
             opts.Converters.Add(NodaConverters.LocalTimeConverter);
         });
-        
+
         return serviceCollection;
     }
 }

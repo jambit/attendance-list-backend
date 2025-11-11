@@ -1,6 +1,7 @@
 using ALB.Api.Endpoints.Mappers;
 using ALB.Domain.Identity;
 using ALB.Domain.Values;
+
 using Microsoft.AspNetCore.Identity;
 
 namespace ALB.Api.Endpoints.Users.Roles;
@@ -35,7 +36,7 @@ internal static class AddUserRoleEndpoint
         }).WithName("AddUserRole")
         .WithOpenApi()
         .RequireAuthorization(SystemRoles.AdminPolicy);
-        
+
         return endpoints;
     }
 }

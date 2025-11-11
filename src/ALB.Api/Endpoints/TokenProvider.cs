@@ -1,9 +1,10 @@
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Text;
+
 using ALB.Api.Extensions;
 using ALB.Domain.Identity;
 using ALB.Domain.Repositories;
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
@@ -16,7 +17,7 @@ internal sealed class TokenProvider(UserManager<ApplicationUser> userManager, IR
     public async Task<string> Create(ApplicationUser user)
     {
         var roles = await userManager.GetRolesAsync(user);
-        
+
         var signingKey = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(options.Value.Secret));
         var credentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
@@ -36,9 +37,9 @@ internal sealed class TokenProvider(UserManager<ApplicationUser> userManager, IR
             Issuer = options.Value.Issuer,
             Audience = options.Value.Audience,
         };
-            
+
         var tokenHandler = new JsonWebTokenHandler();
-            
+
         return tokenHandler.CreateToken(rokenDesc);
     }
 

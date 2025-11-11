@@ -1,7 +1,4 @@
-using System.Security.Claims;
-using ALB.Domain.Identity;
 using ALB.Domain.Repositories;
-using Microsoft.AspNetCore.Identity;
 
 namespace ALB.Api.Endpoints.Authentication.Login;
 
@@ -17,7 +14,7 @@ internal static class RefreshEndpoint
             {
                 return Results.BadRequest("The refresh token has expired.");
             }
-            
+
             return Results.Ok(
                 new
                 {
@@ -26,7 +23,7 @@ internal static class RefreshEndpoint
                 });
         }).WithOpenApi()
         .RequireAuthorization();
-        
+
         return endpoints;
     }
 }

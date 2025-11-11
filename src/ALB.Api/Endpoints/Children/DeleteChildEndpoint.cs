@@ -21,7 +21,7 @@ internal static class DeleteChildEndpoint
             return Results.NoContent();
         }).WithName("DeleteChild").WithOpenApi()
             .RequireAuthorization(policy => policy.RequireRole(SystemRoles.Admin));
-        
+
         return builder;
     }
 }

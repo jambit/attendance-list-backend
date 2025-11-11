@@ -1,19 +1,21 @@
 using System.Security.Claims;
+
 using ALB.Api.Endpoints;
 using ALB.Api.Exceptions;
 using ALB.Api.Extensions;
 using ALB.Domain.Identity;
-using ALB.Domain.Repositories;
 using ALB.Domain.Values;
 using ALB.Infrastructure.Authentication;
 using ALB.Infrastructure.Extensions;
 using ALB.Infrastructure.Persistence;
-using ALB.Infrastructure.Persistence.Repositories;
+
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
-using Scalar.AspNetCore;
+
 using Npgsql;
+
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,11 +44,11 @@ builder.Services.AddProblemDetails(options =>
 {
     options.CustomizeProblemDetails = context =>
     {
-        context.ProblemDetails.Instance = 
+        context.ProblemDetails.Instance =
             $"{context.HttpContext.Request.Method}{context.HttpContext.Request.Path}";
 
         context.ProblemDetails.Extensions.TryAdd("requestId", context.HttpContext.TraceIdentifier);
-        
+
         var activity = context.HttpContext.Features.Get<IHttpActivityFeature>()?.Activity;
         context.ProblemDetails.Extensions.TryAdd("traceId", activity?.TraceId);
     };

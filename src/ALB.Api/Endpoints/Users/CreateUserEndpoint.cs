@@ -1,6 +1,7 @@
 using ALB.Api.Endpoints.Mappers;
 using ALB.Domain.Identity;
 using ALB.Domain.Values;
+
 using Microsoft.AspNetCore.Identity;
 
 namespace ALB.Api.Endpoints.Users;
@@ -30,7 +31,7 @@ internal static class CreateUserEndpoint
         }).WithName("CreateUser")
         .WithOpenApi()
         .RequireAuthorization(SystemRoles.AdminPolicy);
-        
+
         return endpoints;
     }
 }

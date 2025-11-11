@@ -1,7 +1,9 @@
 using ALB.Domain.Entities;
 using ALB.Domain.Enum;
-using Microsoft.EntityFrameworkCore;
 using ALB.Domain.Repositories;
+
+using Microsoft.EntityFrameworkCore;
+
 using NodaTime;
 
 namespace ALB.Infrastructure.Persistence.Repositories;
@@ -27,7 +29,7 @@ public class AttendanceRepository(ApplicationDbContext dbContext) : IAttendanceR
             };
 
             dbContext.AttendanceListEntries.Add(attendance);
-            
+
             await dbContext.SaveChangesAsync(ct);
         }
     }
@@ -44,7 +46,7 @@ public class AttendanceRepository(ApplicationDbContext dbContext) : IAttendanceR
             attendance.DepartureAt = departureAt;
             attendance.AttendanceStatus = status;
             dbContext.AttendanceListEntries.Update(attendance);
-            
+
             await dbContext.SaveChangesAsync(ct);
         }
     }
@@ -60,7 +62,7 @@ public class AttendanceRepository(ApplicationDbContext dbContext) : IAttendanceR
         dbContext.AttendanceListEntries.Remove(attendance);
         await dbContext.SaveChangesAsync(ct);
     }
-    
+
     public async Task<AttendanceList?> GetAttendanceListByIdAsync(Guid id)
     {
         return await dbContext.AttendanceLists

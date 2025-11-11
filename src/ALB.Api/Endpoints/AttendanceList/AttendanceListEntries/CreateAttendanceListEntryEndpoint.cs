@@ -1,6 +1,7 @@
 using ALB.Api.Extensions;
 using ALB.Domain.Enum;
 using ALB.Domain.Repositories;
+
 using NodaTime;
 
 namespace ALB.Api.Endpoints.AttendanceList.AttendanceListEntries;
@@ -17,7 +18,7 @@ internal static class CreateAttendanceListEntryEndpoint
             return Results.Ok(new CreateAttendanceListEntryResponse(
                 $"Attendance for {request.ChildId} at {LocalDate.FromDateTime(request.Date)} was successfully set to {request.Status}"));
         }).WithName("CreateAttendanceListEntry").WithOpenApi().AllowAnonymous();
-        
+
         return builder;
     }
 }

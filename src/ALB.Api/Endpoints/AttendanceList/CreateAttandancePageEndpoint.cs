@@ -1,5 +1,6 @@
 using ALB.Domain.Repositories;
 using ALB.Domain.Values;
+
 using NodaTime;
 
 namespace ALB.Api.Endpoints.AttendanceList;

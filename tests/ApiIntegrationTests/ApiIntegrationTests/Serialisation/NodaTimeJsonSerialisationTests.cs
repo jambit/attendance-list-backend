@@ -1,4 +1,5 @@
 using System.Text.Json;
+
 using NodaTime;
 using NodaTime.Serialization.SystemTextJson;
 
@@ -11,13 +12,13 @@ public class NodaTimeJsonSerialisationTests
     {
         var explicitOptions = new JsonSerializerOptions
         {
-            Converters = { NodaConverters.IntervalConverter, 
+            Converters = { NodaConverters.IntervalConverter,
                 NodaConverters.InstantConverter,
                 NodaConverters.LocalDateConverter,
-                NodaConverters.LocalDateTimeConverter, 
+                NodaConverters.LocalDateTimeConverter,
                 NodaConverters.LocalTimeConverter }
         };
-        
+
         var localDate = new LocalDate(2023, 10, 1);
         var json = JsonSerializer.Serialize(localDate, explicitOptions);
 

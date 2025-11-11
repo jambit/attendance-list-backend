@@ -1,8 +1,10 @@
 using System.Text;
+
 using ALB.Api.Endpoints;
 using ALB.Domain.Identity;
 using ALB.Domain.Values;
 using ALB.Infrastructure.Persistence;
+
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
@@ -14,7 +16,7 @@ public static class IdentityCoreExtensions
     public static IServiceCollection AddAuthAndIdentityCore(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddTransient<TokenProvider>();
-        
+
         services.AddAuthorizationBuilder()
             .AddPolicy(SystemRoles.AdminPolicy, x => x.RequireRole(SystemRoles.Admin))
             .AddPolicy(SystemRoles.CoAdminPolicy, x => x.RequireRole(SystemRoles.CoAdmin))
@@ -37,9 +39,9 @@ public static class IdentityCoreExtensions
             })
             .AddCookie(IdentityConstants.ApplicationScheme)
             .AddBearerToken(IdentityConstants.BearerScheme);
-        
+
         services.AddAuthorization();
-        
+
         services.AddIdentityCore<ApplicationUser>(options =>
             {
                 options.Password.RequireDigit = true;
@@ -51,7 +53,7 @@ public static class IdentityCoreExtensions
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
                 options.Lockout.MaxFailedAccessAttempts = 5;
                 options.Lockout.AllowedForNewUsers = true;
-                options.User.AllowedUserNameCharacters = 
+                options.User.AllowedUserNameCharacters =
                     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
                 options.User.RequireUniqueEmail = true;
                 options.SignIn.RequireConfirmedEmail = false;
@@ -62,7 +64,7 @@ public static class IdentityCoreExtensions
             .AddSignInManager<SignInManager<ApplicationUser>>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
-        
+
         return services;
     }
 }

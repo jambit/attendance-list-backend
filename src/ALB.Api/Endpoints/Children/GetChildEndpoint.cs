@@ -1,5 +1,6 @@
 using ALB.Domain.Repositories;
 using ALB.Domain.Values;
+
 using NodaTime;
 
 namespace ALB.Api.Endpoints.Children;
@@ -28,7 +29,7 @@ internal static class GetChildEndpoint
         }).WithName("GetChild")
             .WithOpenApi()
             .RequireAuthorization(policy => policy.RequireRole(SystemRoles.Admin));
-        
+
         return builder;
     }
 }

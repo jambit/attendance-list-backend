@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+
 using NodaTime;
 
 namespace ALB.Domain.Entities;

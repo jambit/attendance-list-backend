@@ -14,7 +14,7 @@ internal static class UpdateGroupEndpoint
             ).WithName("UpdateGroup")
             .WithOpenApi()
             .RequireAuthorization(SystemRoles.AdminPolicy);
-        
+
         return routeBuilder;
     }
 }

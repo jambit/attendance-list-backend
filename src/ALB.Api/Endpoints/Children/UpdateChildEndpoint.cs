@@ -1,5 +1,6 @@
 using ALB.Domain.Repositories;
 using ALB.Domain.Values;
+
 using NodaTime;
 
 namespace ALB.Api.Endpoints.Children;
@@ -8,7 +9,7 @@ internal static class UpdateChildEndpoint
 {
     internal static RouteGroupBuilder AddUpdateChildEndpoint(this RouteGroupBuilder builder)
     {
-        
+
         builder.MapPut("/{childId:guid}", async (Guid childId, UpdateChildRequest request, IChildRepository childRepository) =>
         {
             var existingChild = await childRepository.GetByIdAsync(childId);

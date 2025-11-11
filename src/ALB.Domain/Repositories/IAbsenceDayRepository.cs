@@ -1,4 +1,5 @@
 using ALB.Domain.Entities;
+
 using NodaTime;
 
 namespace ALB.Domain.Repositories;

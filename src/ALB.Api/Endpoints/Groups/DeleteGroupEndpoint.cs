@@ -15,5 +15,5 @@ internal static class DeleteGroupEndpoint
         .RequireAuthorization(SystemRoles.AdminPolicy);
 
         return routeBuilder;
-    } 
+    }
 }

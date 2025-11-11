@@ -11,7 +11,7 @@ internal static class RevokeRefreshTokenEndpoint
                 var identies = claims.Identities;
             }).WithOpenApi()
         .RequireAuthorization();
-        
+
         return endpoints;
     }
 }

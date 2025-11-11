@@ -6,6 +6,6 @@ public class RefreshToken
     public required Guid UserId { get; set; }
     public required string Value { get; set; }
     public required DateTime ExpiresOnUtc { get; set; }
-    
+
     public ApplicationUser User { get; set; } = null!;
 }

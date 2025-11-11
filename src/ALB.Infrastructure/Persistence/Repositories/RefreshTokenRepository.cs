@@ -1,11 +1,13 @@
 using System.Security.Cryptography;
+
 using ALB.Domain.Identity;
 using ALB.Domain.Repositories;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace ALB.Infrastructure.Persistence.Repositories;
 
-public class RefreshTokenRepository(ApplicationDbContext context): IRefreshTokenRepository
+public class RefreshTokenRepository(ApplicationDbContext context) : IRefreshTokenRepository
 {
     public async Task<string> CreateAsync(ApplicationUser user, int expiresInMinutes, CancellationToken cancellationToken = default)
     {
@@ -16,7 +18,7 @@ public class RefreshTokenRepository(ApplicationDbContext context): IRefreshToken
             Value = tokenValue,
             ExpiresOnUtc = DateTime.UtcNow.AddMinutes(Convert.ToDouble(expiresInMinutes))
         };
-        
+
         await context.RefreshTokens.AddAsync(newToken, cancellationToken);
         await context.SaveChangesAsync(cancellationToken);
         return tokenValue;
@@ -31,12 +33,12 @@ public class RefreshTokenRepository(ApplicationDbContext context): IRefreshToken
     {
         var newTokenValue = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
         await context.RefreshTokens
-            .Where(t  => t.Id == refreshTokenId)
+            .Where(t => t.Id == refreshTokenId)
             .ExecuteUpdateAsync(setters => setters
                 .SetProperty(p => p.ExpiresOnUtc, DateTime.UtcNow.AddMinutes(Convert.ToDouble(expiresInMinutes)))
                 .SetProperty(p => p.Value, newTokenValue),
                 cancellationToken);
-        
+
         return newTokenValue;
     }
 }

@@ -6,7 +6,7 @@ public static class SystemRoles
     public const string CoAdmin = "CoAdmin";
     public const string Team = "Team";
     public const string Parent = "Parent";
-    
+
     public const string AdminPolicy = "AdminOnly";
     public const string CoAdminPolicy = "CoAdminOnly";
     public const string TeamPolicy = "TeamOnly";

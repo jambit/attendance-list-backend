@@ -8,7 +8,7 @@ public interface IGroupRepository
     Task<Group?> GetByIdAsync(Guid id);
     Task UpdateAsync(Group group);
     Task DeleteAsync(Guid id);
-    
+
     Task AddChildrenToGroupAsync(Guid groupId, IEnumerable<Guid> childIds, CancellationToken ct);
     Task RemoveChildrenFromGroupAsync(Guid groupId, IEnumerable<Guid> childIds, CancellationToken ct);
 

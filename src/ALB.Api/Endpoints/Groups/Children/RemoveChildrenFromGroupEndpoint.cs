@@ -10,12 +10,12 @@ internal static class RemoveChildrenFromGroupEndpoint
         endpoints.MapDelete("/{groupId:guid}/children", async (Guid groupId, RemoveChildFromGroupRequest request, IGroupRepository repository, CancellationToken ct) =>
         {
             await repository.RemoveChildrenFromGroupAsync(groupId, request.ChildIds, ct);
-            
+
             return Results.NoContent();
         }).WithName("RemoveChildrenFromGroup")
         .WithOpenApi()
         .RequireAuthorization(SystemRoles.AdminPolicy);
-        
+
         return endpoints;
     }
 }

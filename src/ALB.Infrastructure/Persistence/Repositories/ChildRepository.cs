@@ -1,5 +1,6 @@
 using ALB.Domain.Entities;
 using ALB.Domain.Repositories;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace ALB.Infrastructure.Persistence.Repositories;

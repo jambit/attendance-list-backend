@@ -1,6 +1,7 @@
 using ALB.Domain.Entities;
 using ALB.Domain.Repositories;
 using ALB.Domain.Values;
+
 using NodaTime;
 
 namespace ALB.Api.Endpoints.Children.Absence;
@@ -20,7 +21,7 @@ internal static class CreateAbsenceForChildEndpoint
             }
 
             var alreadyExists = await absenceRepo.ExistsInRangeAsync(childId, startDate, endDate, CancellationToken.None);
-            
+
             if (alreadyExists)
             {
                 return Results.Conflict(new CreateAbsenceResponse("An absence already exists for one or more days in this date range."));
@@ -38,7 +39,7 @@ internal static class CreateAbsenceForChildEndpoint
                 absencesToCreate.Add(absence);
             }
 
-           
+
             if (absencesToCreate.Any())
             {
                 await absenceRepo.AddRangeAsync(absencesToCreate, CancellationToken.None);
@@ -47,7 +48,7 @@ internal static class CreateAbsenceForChildEndpoint
         }).WithName("CreateAbsenceForChild")
             .WithOpenApi()
             .RequireAuthorization(SystemRoles.ParentPolicy);
-        
+
         return builder;
     }
 }
@@ -55,5 +56,3 @@ internal static class CreateAbsenceForChildEndpoint
 public record CreateAbsenceRequest(DateTime StartDate, DateTime EndDate, int AbsenceStatusId);
 
 public record CreateAbsenceResponse(string Message);
-
-

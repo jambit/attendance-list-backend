@@ -8,7 +8,7 @@ public class Cohort
     public int CreationYear { get; set; }
     public Guid GroupId { get; set; }
     public Guid GradeId { get; set; }
-    
+
     public Grade Grade { get; set; } = null!;
     public Group Group { get; set; } = null!;
     [JsonIgnore]

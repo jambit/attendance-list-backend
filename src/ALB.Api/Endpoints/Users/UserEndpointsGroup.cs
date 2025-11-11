@@ -14,6 +14,6 @@ internal static class UserEndpointsGroup
             .MapGetUserEndpoint()
             .MapUpdateUserEndpoint()
             .MapAddUserRoleEndpoint();
-            //.MapRemoveUserRoleEndpoint();
+        //.MapRemoveUserRoleEndpoint();
     }
 }

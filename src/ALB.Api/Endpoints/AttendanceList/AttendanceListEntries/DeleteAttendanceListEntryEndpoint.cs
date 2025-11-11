@@ -1,4 +1,5 @@
 using ALB.Domain.Repositories;
+
 using NodaTime;
 
 namespace ALB.Api.Endpoints.AttendanceList.AttendanceListEntries;
@@ -14,7 +15,7 @@ internal static class DeleteAttendanceListEntryEndpoint
             return Results.Ok(new DeleteAttendanceListEntryResponse(
                 $"Attendance for {request.ChildId} at {request.Date} was successfully deleted."));
         }).WithName("DeleteAttendanceListEntry").WithOpenApi().AllowAnonymous();
-        
+
         return builder;
     }
 }

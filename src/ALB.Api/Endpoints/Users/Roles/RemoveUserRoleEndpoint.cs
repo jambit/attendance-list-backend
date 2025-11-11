@@ -1,5 +1,6 @@
 using ALB.Domain.Identity;
 using ALB.Domain.Values;
+
 using Microsoft.AspNetCore.Identity;
 
 namespace ALB.Api.Endpoints.Users.Roles;
@@ -36,7 +37,7 @@ internal static class RemoveUserRoleEndpoint
             }).WithName("RemoveUserRole")
             .WithOpenApi()
             .RequireAuthorization(SystemRoles.AdminPolicy);
-        
+
         return endpoints;
     }
 }

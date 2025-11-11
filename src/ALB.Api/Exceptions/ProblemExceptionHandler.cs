@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ALB.Api.Exceptions;
 
-public class ProblemExceptionHandler: IExceptionHandler
+public class ProblemExceptionHandler : IExceptionHandler
 {
     private readonly IProblemDetailsService _problemDetailsService;
 

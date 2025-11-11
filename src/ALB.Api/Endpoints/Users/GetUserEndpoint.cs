@@ -2,6 +2,7 @@ using ALB.Api.Extensions;
 using ALB.Api.Models;
 using ALB.Domain.Identity;
 using ALB.Domain.Values;
+
 using Microsoft.AspNetCore.Identity;
 
 namespace ALB.Api.Endpoints.Users;
@@ -25,7 +26,7 @@ internal static class GetUserEndpoint
         }).WithName("GetUser")
         .WithOpenApi()
         .RequireAuthorization(SystemRoles.AdminPolicy);
-        
+
         return routeBuilder;
     }
 }

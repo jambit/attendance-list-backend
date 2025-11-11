@@ -25,12 +25,12 @@ internal static class CreateCohortEndpoint
             };
 
             var created = await cohortRepo.CreateAsync(cohort);
-            
+
             return Results.Ok(new CreateCohortResponse(created.Id));
         }).WithName("CreateCohort")
         .WithOpenApi()
         .RequireAuthorization(SystemRoles.AdminPolicy);
-        
+
         return routeBuilder;
     }
 }

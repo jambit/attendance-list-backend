@@ -9,7 +9,7 @@ internal static class AuthEndpointsGroup
     {
         var group = routeBuilder.MapGroup("/api/auth")
             .WithTags("Authentication");
-            
+
         group.MapLogoutEndpoint()
             .MapLoginEndpoint()
             .MapRefreshEndpoint();

@@ -1,4 +1,5 @@
 using ALB.Domain.Identity;
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,7 +21,7 @@ internal static class LogoutEndpoint
             })
             .WithOpenApi()
             .RequireAuthorization();
-        
+
         return routeBuilder;
     }
 }
