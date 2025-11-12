@@ -17,6 +17,8 @@ using Npgsql;
 
 using Scalar.AspNetCore;
 
+using TickerQ.DependencyInjection;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddNpgsqlDataSource("postgresdb",
@@ -63,7 +65,9 @@ builder.Services.AddTransient<IEmailSender<ApplicationUser>, DummyEmailSender>()
 
 builder.Services.AddNodaTimeJsonConverters();
 
-builder.Services.AddAuthAndIdentityCore(builder.Configuration);
+builder.Services
+    .AddCronJobs()
+    .AddAuthAndIdentityCore(builder.Configuration);
 
 
 var app = builder.Build();
@@ -101,6 +105,8 @@ app.MapIdentityApiFilterable<ApplicationUser>(new IdentityApiEndpointRouteBuilde
     ExcludeInfoGet = true,
     ExcludeInfoPost = true
 });
+
+app.UseTickerQ();
 
 // TODO: add migrations when out of dev cycle
 using var serviceScope = app.Services.CreateScope();
