@@ -21,6 +21,7 @@ public static class InfrastructureExtension
     {
         services.AddTickerQ(options =>
         {
+            /*
             options.AddOperationalStore<ApplicationDbContext>(efOptions =>
             {
                 efOptions.UseModelCustomizerForMigrations();
@@ -34,6 +35,7 @@ public static class InfrastructureExtension
                 dashboardOptions.EnableBuiltInAuth = true;
                 dashboardOptions.EnableBasicAuth = true;
             });
+            */
         });
 
         return services;

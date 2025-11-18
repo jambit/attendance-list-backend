@@ -7,9 +7,10 @@ using TickerQ.Utilities.Base;
 
 namespace ALB.Infrastructure.Jobs;
 
+/*
 public class RefreshTokensCleanup(ILogger<RefreshTokensCleanup> logger, ApplicationDbContext dbContext)
 {
-    [TickerFunction("CleanupExpiredRefreshTokens", "* 0/1 * * *")]
+    TickerFunction("CleanupExpiredRefreshTokens", "* 0/1 * * *")]
     public async ValueTask CleanupExpiredRefreshTokens(CancellationToken ct)
     {
         var deletedRows = await dbContext.RefreshTokens
@@ -18,3 +19,4 @@ public class RefreshTokensCleanup(ILogger<RefreshTokensCleanup> logger, Applicat
         logger.LogTrace("{deletedRowCount} refresh tokens deleted.", deletedRows);
     }
 }
+*/

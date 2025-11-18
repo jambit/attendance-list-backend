@@ -35,9 +35,11 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     {
         base.OnModelCreating(modelBuilder);
 
+        /*
         modelBuilder.ApplyConfiguration(new TimeTickerConfigurations());
         modelBuilder.ApplyConfiguration(new CronTickerConfigurations());
         modelBuilder.ApplyConfiguration(new CronTickerOccurrenceConfigurations());
+        */
 
         modelBuilder.Entity<AbsenceDay>(e =>
         {
