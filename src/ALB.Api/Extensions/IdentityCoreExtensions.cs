@@ -9,11 +9,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 
-using TickerQ.Dashboard.DependencyInjection;
-using TickerQ.DependencyInjection;
-using TickerQ.EntityFrameworkCore.DependencyInjection;
-using TickerQ.Utilities.Enums;
-
 namespace ALB.Api.Extensions;
 
 public static class IdentityCoreExtensions
@@ -28,7 +23,7 @@ public static class IdentityCoreExtensions
             .AddPolicy(SystemRoles.TeamPolicy, x => x.RequireRole(SystemRoles.Team))
             .AddPolicy(SystemRoles.ParentPolicy, x => x.RequireRole(SystemRoles.Parent));
 
-        var option = configuration.GetRequiredSection(JwtOptions.SectionName).Get<JwtOptions>();
+        var option = configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>();
         services.AddAuthentication(options =>
             {
                 options.DefaultScheme = IdentityConstants.BearerScheme;

@@ -12,7 +12,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace ALB.Api.Endpoints;
 
-internal sealed class TokenProvider(UserManager<ApplicationUser> userManager, IRefreshTokenRepository refreshTokenRepository, IOptions<JwtOptions> options)
+public sealed class TokenProvider(UserManager<ApplicationUser> userManager, IRefreshTokenRepository refreshTokenRepository, IOptions<JwtOptions> options)
 {
     public async Task<string> Create(ApplicationUser user)
     {

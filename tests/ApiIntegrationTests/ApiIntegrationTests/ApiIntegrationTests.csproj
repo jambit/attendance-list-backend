@@ -6,6 +6,8 @@
         <OutputType>Exe</OutputType>
         <TargetFramework>net9.0</TargetFramework>
         <IsTestProject>true</IsTestProject>
+        <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
+        <TestingPlatformShowTestsFailure>true</TestingPlatformShowTestsFailure>
     </PropertyGroup>
 
     <ItemGroup>
@@ -17,6 +19,12 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\..\src\ALB.Api\ALB.Api.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="appsettings.Test.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>

@@ -8,7 +8,7 @@ internal static class LoginEndpoint
 {
     internal static IEndpointRouteBuilder MapLoginEndpoint(this IEndpointRouteBuilder endpoints)
     {
-        endpoints.MapPost("/login/jwt", async (LoginRequest request, UserManager<ApplicationUser> userManager, TokenProvider tokenProver, CancellationToken ct) =>
+        endpoints.MapPost("/login", async (LoginRequest request, UserManager<ApplicationUser> userManager, TokenProvider tokenProver, CancellationToken ct) =>
         {
             var user = await userManager.FindByEmailAsync(request.Email);
 
@@ -18,16 +18,14 @@ internal static class LoginEndpoint
             }
 
             return Results.Ok(
-                new
-                {
-                    AccessToken = await tokenProver.Create(user),
-                    RefreshToken = await tokenProver.GenerateRefreshToken(user, ct)
-                });
+                new LoginResponse(await tokenProver.Create(user),
+                    await tokenProver.GenerateRefreshToken(user, ct)));
 
         }).WithOpenApi().AllowAnonymous();
 
         return endpoints;
     }
-
-    public record LoginRequest(string Email, string Password);
 }
+
+public record LoginRequest(string Email, string Password);
+public record LoginResponse(string AccessToken, string RefreshToken);

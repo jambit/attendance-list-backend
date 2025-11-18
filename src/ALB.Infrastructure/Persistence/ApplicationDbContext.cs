@@ -5,7 +5,7 @@ using ALB.Domain.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-using NodaTime;
+using TickerQ.EntityFrameworkCore.Configurations;
 
 namespace ALB.Infrastructure.Persistence;
 
@@ -34,6 +34,10 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        modelBuilder.ApplyConfiguration(new TimeTickerConfigurations());
+        modelBuilder.ApplyConfiguration(new CronTickerConfigurations());
+        modelBuilder.ApplyConfiguration(new CronTickerOccurrenceConfigurations());
 
         modelBuilder.Entity<AbsenceDay>(e =>
         {
@@ -79,11 +83,13 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
                 .WithMany(g => g.AttendanceLists)
                 .HasForeignKey(al => al.CohortId);
 
+            /*
             e.Property(al => al.ValidationPeriod)
                 .HasConversion(
                     v => new { Start = v.Start, End = v.End },
                     v => new DateInterval(v.Start, v.End))
                 .HasColumnType("jsonb");
+                */
         });
 
         modelBuilder.Entity<AttendanceListWriter>(e =>

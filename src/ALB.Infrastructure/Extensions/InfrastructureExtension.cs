@@ -1,5 +1,4 @@
 using ALB.Domain.Repositories;
-using ALB.Domain.Values;
 using ALB.Infrastructure.Persistence;
 using ALB.Infrastructure.Persistence.Repositories;
 using ALB.Infrastructure.Services;
@@ -36,10 +35,10 @@ public static class InfrastructureExtension
                 dashboardOptions.EnableBasicAuth = true;
             });
         });
-        
+
         return services;
     }
-    
+
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddHostedService<PowerUserSeederService>();
