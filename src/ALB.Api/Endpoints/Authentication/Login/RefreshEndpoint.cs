@@ -1,3 +1,4 @@
+using ALB.Application.UseCases.Auths;
 using ALB.Domain.Repositories;
 
 namespace ALB.Api.Endpoints.Authentication.Login;

@@ -1,8 +1,8 @@
 using System.Security.Claims;
 using System.Text;
 
-using ALB.Api.Extensions;
 using ALB.Domain.Identity;
+using ALB.Domain.Options;
 using ALB.Domain.Repositories;
 
 using Microsoft.AspNetCore.Identity;
@@ -10,7 +10,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 
-namespace ALB.Api.Endpoints;
+namespace ALB.Application.UseCases.Auths;
 
 public sealed class TokenProvider(UserManager<ApplicationUser> userManager, IRefreshTokenRepository refreshTokenRepository, IOptions<JwtOptions> options)
 {

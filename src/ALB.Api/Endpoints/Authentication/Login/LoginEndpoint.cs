@@ -1,3 +1,4 @@
+using ALB.Application.UseCases.Auths;
 using ALB.Domain.Identity;
 
 using Microsoft.AspNetCore.Identity;

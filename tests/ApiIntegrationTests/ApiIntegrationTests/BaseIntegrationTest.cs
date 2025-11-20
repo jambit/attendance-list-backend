@@ -3,7 +3,7 @@ using System.Security.Claims;
 using System.Text.Encodings.Web;
 
 using ALB.Api;
-using ALB.Api.Endpoints;
+using ALB.Application.UseCases.Auths;
 using ALB.Domain.Identity;
 using ALB.Domain.Values;
 using ALB.Infrastructure.Persistence;

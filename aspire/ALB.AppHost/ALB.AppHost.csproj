@@ -24,6 +24,8 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\src\ALB.Api\ALB.Api.csproj" />
+        <ProjectReference Include="..\..\src\ALB.Ui\ALB.Ui.csproj" />
+        <ProjectReference Include="..\ALB.MigrationService\ALB.MigrationService.csproj" />
     </ItemGroup>
 
 </Project>

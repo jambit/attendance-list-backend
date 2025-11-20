@@ -1,9 +1,11 @@
 using System.Text.Json;
 
+using Microsoft.Extensions.DependencyInjection;
+
 using NodaTime;
 using NodaTime.Serialization.SystemTextJson;
 
-namespace ALB.Api.Extensions;
+namespace ALB.Application;
 
 public static class DateTimeExtensions
 {

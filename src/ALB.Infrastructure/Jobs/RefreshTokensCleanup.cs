@@ -1,10 +1,3 @@
-using ALB.Infrastructure.Persistence;
-
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-
-using TickerQ.Utilities.Base;
-
 namespace ALB.Infrastructure.Jobs;
 
 /*

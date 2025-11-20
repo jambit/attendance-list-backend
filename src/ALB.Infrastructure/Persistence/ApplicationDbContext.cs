@@ -5,8 +5,6 @@ using ALB.Domain.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-using TickerQ.EntityFrameworkCore.Configurations;
-
 namespace ALB.Infrastructure.Persistence;
 
 public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid,

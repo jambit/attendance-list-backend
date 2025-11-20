@@ -1,4 +1,4 @@
-namespace ALB.Api.Extensions;
+namespace ALB.Domain.Options;
 
 public class JwtOptions
 {

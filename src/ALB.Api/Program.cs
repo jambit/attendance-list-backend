@@ -2,12 +2,11 @@ using System.Security.Claims;
 
 using ALB.Api.Endpoints;
 using ALB.Api.Exceptions;
-using ALB.Api.Extensions;
+using ALB.Application;
 using ALB.Domain.Identity;
 using ALB.Domain.Values;
 using ALB.Infrastructure.Authentication;
 using ALB.Infrastructure.Extensions;
-using ALB.Infrastructure.Persistence;
 
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -31,12 +30,6 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
         ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
 });
 
-// TODO: secret to azure fault
-builder.Services
-    .AddOptions<JwtOptions>()
-    .Bind(builder.Configuration.GetSection(JwtOptions.SectionName))
-    .ValidateDataAnnotations()
-    .ValidateOnStart();
 
 builder.Services.AddInfrastructure(builder.Configuration);
 
@@ -64,7 +57,7 @@ builder.Services.AddTransient<IEmailSender<ApplicationUser>, DummyEmailSender>()
 builder.Services.AddNodaTimeJsonConverters();
 
 builder.Services
-    //.AddCronJobs()
+    .AddApplicationServices()
     .AddAuthAndIdentityCore(builder.Configuration);
 
 
@@ -107,8 +100,8 @@ app.MapIdentityApiFilterable<ApplicationUser>(new IdentityApiEndpointRouteBuilde
 //app.UseTickerQ();
 
 // TODO: add migrations when out of dev cycle
-using var serviceScope = app.Services.CreateScope();
-var context = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-await context.Database.EnsureCreatedAsync();
+//using var serviceScope = app.Services.CreateScope();
+//var context = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+//await context.Database.EnsureCreatedAsync();
 
 app.Run();

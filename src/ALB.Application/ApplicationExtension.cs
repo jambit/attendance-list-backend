@@ -1,21 +1,36 @@
 using System.Text;
 
-using ALB.Api.Endpoints;
+using ALB.Application.UseCases.Auths;
 using ALB.Domain.Identity;
+using ALB.Domain.Options;
 using ALB.Domain.Values;
 using ALB.Infrastructure.Persistence;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 
-namespace ALB.Api.Extensions;
+namespace ALB.Application;
 
-public static class IdentityCoreExtensions
+public static class ApplicationExtension
 {
+    public static IServiceCollection AddApplicationServices(this IServiceCollection services)
+    {
+        services.AddScoped<TokenProvider>();
+
+        return services;
+    }
+
     public static IServiceCollection AddAuthAndIdentityCore(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddTransient<TokenProvider>();
+        // TODO: secret to azure fault
+        services
+            .AddOptions<JwtOptions>()
+            .Bind(configuration.GetSection(JwtOptions.SectionName))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
 
         services.AddAuthorizationBuilder()
             .AddPolicy(SystemRoles.AdminPolicy, x => x.RequireRole(SystemRoles.Admin))
@@ -29,6 +44,7 @@ public static class IdentityCoreExtensions
                 options.DefaultScheme = IdentityConstants.BearerScheme;
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
             })
             .AddJwtBearer(options =>
             {
@@ -38,6 +54,7 @@ public static class IdentityCoreExtensions
                     new SymmetricSecurityKey(Encoding.UTF8.GetBytes(option.Secret));
             })
             .AddCookie(IdentityConstants.ApplicationScheme)
+            .AddCookie(IdentityConstants.ExternalScheme)
             .AddBearerToken(IdentityConstants.BearerScheme);
 
         services.AddAuthorization();
