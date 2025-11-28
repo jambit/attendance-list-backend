@@ -1,5 +1,9 @@
-﻿@implements IDisposable
+﻿@using ALB.Domain.Values
+@using ALB.Ui.Components.Account
+@using Microsoft.AspNetCore.Identity
+@implements IDisposable
 
+@inject UserManager<ApplicationUser> UserManager
 @inject NavigationManager NavigationManager
 
 <div class="top-row ps-3 navbar navbar-dark">
@@ -18,6 +22,7 @@
             </NavLink>
         </div>
 
+    <!--
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="counter">
                 <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
@@ -29,6 +34,7 @@
                 <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
             </NavLink>
         </div>
+        -->
 
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="auth">
@@ -38,6 +44,31 @@
 
         <AuthorizeView>
             <Authorized>
+                @if (_roles.Contains(SystemRoles.Admin))
+                {
+                    <div class="nav-item px-3">
+                        <span aria-hidden="true"></span> Admin View
+                    </div>
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link" href= "UsersManagement">
+                            <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Nutzerverwalter
+                        </NavLink>
+                    </div>
+                }
+                @if (_roles.Contains(SystemRoles.Team))
+                {
+                    <div class="nav-item px-3">
+                        <span aria-hidden="true"></span> Team View
+                    </div>
+                }
+                @if (_roles.Contains(SystemRoles.Parent))
+                {
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link" href= @($"ParentsChildren/{_user.Id}")>
+                            <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Kinder
+                        </NavLink>
+                    </div>
+                }
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="Account/Manage">
                         <span class="bi bi-person-fill-nav-menu" aria-hidden="true"></span> @context.User.Identity?.Name
@@ -72,8 +103,21 @@
 @code {
     private string? currentUrl;
 
-    protected override void OnInitialized()
+    ApplicationUser? _user;
+    readonly List<string> _roles = new();
+    
+    [CascadingParameter] private HttpContext HttpContext { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
     {
+        var user = await UserManager.GetUserAsync(HttpContext.User);
+
+        if (user is not null)
+        {
+            _user = user;
+            _roles.AddRange(await UserManager.GetRolesAsync(user));
+        }
+        
         currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
         NavigationManager.LocationChanged += OnLocationChanged;
     }

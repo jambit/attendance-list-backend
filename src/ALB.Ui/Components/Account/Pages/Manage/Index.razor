@@ -22,6 +22,23 @@
                 <label for="username" class="form-label">Username</label>
             </div>
             <div class="form-floating mb-3">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Role-Name</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var role in roles)
+                    {
+                        <tr>
+                            <td>@role</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+            <div class="form-floating mb-3">
                 <InputText @bind-Value="Input.PhoneNumber" id="Input.PhoneNumber" class="form-control" placeholder="Enter your phone number"/>
                 <label for="Input.PhoneNumber" class="form-label">Phone number</label>
                 <ValidationMessage For="() => Input.PhoneNumber" class="text-danger"/>
@@ -35,6 +52,7 @@
     private ApplicationUser? user;
     private string? username;
     private string? phoneNumber;
+    private List<string> roles = new();
 
     [CascadingParameter] private HttpContext HttpContext { get; set; } = default!;
 
@@ -53,6 +71,7 @@
 
         username = await UserManager.GetUserNameAsync(user);
         phoneNumber = await UserManager.GetPhoneNumberAsync(user);
+        roles.AddRange(await UserManager.GetRolesAsync(user));
 
         Input.PhoneNumber ??= phoneNumber;
     }

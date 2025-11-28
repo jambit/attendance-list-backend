@@ -23,7 +23,7 @@ public static class ApplicationExtension
         return services;
     }
 
-    public static IServiceCollection AddAuthAndIdentityCore(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddAuthAndIdentityCore(this IServiceCollection services, IConfiguration configuration, bool configureJwt = true)
     {
         // TODO: secret to azure fault
         services
@@ -39,23 +39,36 @@ public static class ApplicationExtension
             .AddPolicy(SystemRoles.ParentPolicy, x => x.RequireRole(SystemRoles.Parent));
 
         var option = configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>();
-        services.AddAuthentication(options =>
-            {
-                options.DefaultScheme = IdentityConstants.BearerScheme;
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
-            })
-            .AddJwtBearer(options =>
-            {
-                options.TokenValidationParameters.ValidIssuer = option.Issuer;
-                options.TokenValidationParameters.ValidAudience = option.Audience;
-                options.TokenValidationParameters.IssuerSigningKey =
-                    new SymmetricSecurityKey(Encoding.UTF8.GetBytes(option.Secret));
-            })
-            .AddCookie(IdentityConstants.ApplicationScheme)
-            .AddCookie(IdentityConstants.ExternalScheme)
-            .AddBearerToken(IdentityConstants.BearerScheme);
+
+        if (configureJwt)
+        {
+            services.AddAuthentication(options =>
+                {
+                    options.DefaultScheme = IdentityConstants.BearerScheme;
+                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters.ValidIssuer = option.Issuer;
+                    options.TokenValidationParameters.ValidAudience = option.Audience;
+                    options.TokenValidationParameters.IssuerSigningKey =
+                        new SymmetricSecurityKey(Encoding.UTF8.GetBytes(option.Secret));
+                })
+                .AddCookie(IdentityConstants.ApplicationScheme)
+                .AddBearerToken(IdentityConstants.BearerScheme);
+        }
+        else
+        {
+            services.AddAuthentication(options =>
+                {
+                    options.DefaultScheme = IdentityConstants.ApplicationScheme;
+                    options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+                })
+                .AddIdentityCookies();
+        }
+        
+        
 
         services.AddAuthorization();
 
@@ -76,6 +89,7 @@ public static class ApplicationExtension
                 options.SignIn.RequireConfirmedEmail = false;
                 options.SignIn.RequireConfirmedPhoneNumber = false;
                 options.SignIn.RequireConfirmedAccount = false;
+                options.Stores.SchemaVersion = IdentitySchemaVersions.Version2;
             })
             .AddRoles<ApplicationRole>()
             .AddSignInManager<SignInManager<ApplicationUser>>()

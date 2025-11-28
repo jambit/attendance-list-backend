@@ -1,5 +1,7 @@
 using System.Text.Json.Serialization;
 
+using ALB.Domain.Identity;
+
 using NodaTime;
 
 namespace ALB.Domain.Entities;
@@ -11,14 +13,11 @@ public class Child
     public required string LastName { get; set; }
     public LocalDate DateOfBirth { get; set; }
     public Guid? GroupId { get; set; }
+    public ICollection<ApplicationUser> Guardians { get; set; } = new List<ApplicationUser>();
 
     public Group? Group { get; set; } = null!;
 
-    [JsonIgnore]
     public ICollection<AttendanceListEntry> AttendanceListEntries { get; set; } = new List<AttendanceListEntry>();
 
-    [JsonIgnore]
-    public ICollection<UserChildRelationship> UserChildRelationships { get; set; } = new List<UserChildRelationship>();
-
-    [JsonIgnore] public ICollection<AbsenceDay> AbsenceDays { get; set; } = new List<AbsenceDay>();
+    public ICollection<AbsenceDay> AbsenceDays { get; set; } = new List<AbsenceDay>();
 }

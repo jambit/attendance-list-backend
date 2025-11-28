@@ -14,7 +14,7 @@ public class ApplicationUser : IdentityUser<Guid>
     public bool IsActive { get; set; } = true;
 
     public ICollection<Group> ResponsibleGroups { get; set; } = new List<Group>();
-    public ICollection<UserChildRelationship> UserChildRelationships { get; set; } = new List<UserChildRelationship>();
+    public ICollection<Child> Children { get; set; } = new List<Child>();
     public ICollection<UserGroup> UserGroups { get; set; } = new List<UserGroup>();
     public ICollection<ApplicationUserClaim> Claims { get; set; } = new List<ApplicationUserClaim>();
     public ICollection<ApplicationUserLogin> Logins { get; set; } = new List<ApplicationUserLogin>();

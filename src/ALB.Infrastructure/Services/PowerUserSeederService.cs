@@ -14,6 +14,8 @@ public class PowerUserSeederService(IServiceProvider serviceProvider) : IHostedS
 
     private const string AdminEmail = "admin@attendance-list-backend.de";
     private const string AdminPassword = "SoSuperSecureP4a55w0rd!";
+    private const string DummyTeamMemberEmail = "tm@attendance-list-backend.de";
+    private const string DummyParentEmail = "parent@attendance-list-backend.de";
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
@@ -37,25 +39,44 @@ public class PowerUserSeederService(IServiceProvider serviceProvider) : IHostedS
             }
         }
 
-        var user = await userManager.FindByEmailAsync(AdminEmail);
+        var adminUser = await userManager.FindByEmailAsync(AdminEmail);
 
-        if (user is null)
+        if (adminUser is null)
         {
-            var systemUser = new ApplicationUser
-            {
-                Email = AdminEmail,
-                UserName = AdminEmail,
-                FirstName = "Admin",
-                LastName = "Admin",
-                EmailConfirmed = true,
-                CreatedAt = SystemClock.Instance.GetCurrentInstant()
-            };
-
-            var createdUser = await userManager.CreateAsync(systemUser, AdminPassword);
-
-            if (createdUser.Succeeded)
-                await userManager.AddToRoleAsync(systemUser, SystemRoles.Admin);
+            await CreateUser(userManager, AdminEmail,"Admin",SystemRoles.Admin);
         }
+        
+        var teamUser = await userManager.FindByEmailAsync(DummyTeamMemberEmail);
+
+        if (teamUser is null)
+        {
+            await CreateUser(userManager, DummyTeamMemberEmail,"Team-Member",SystemRoles.Team);
+        }
+        
+        var parentUser = await userManager.FindByEmailAsync(DummyParentEmail);
+
+        if (parentUser is null)
+        {
+            await CreateUser(userManager, DummyParentEmail,"Parent",SystemRoles.Parent);
+        }
+    }
+
+    private async Task CreateUser(UserManager<ApplicationUser> userManager, string email, string name, string role)
+    {
+        var systemUser = new ApplicationUser
+        {
+            Email = email,
+            UserName = email,
+            FirstName = name,
+            LastName = name,
+            EmailConfirmed = true,
+            CreatedAt = SystemClock.Instance.GetCurrentInstant()
+        };
+
+        var createdUser = await userManager.CreateAsync(systemUser, AdminPassword);
+
+        if (createdUser.Succeeded)
+            await userManager.AddToRoleAsync(systemUser, role);
     }
 
     public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;

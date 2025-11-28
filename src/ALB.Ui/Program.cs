@@ -7,6 +7,8 @@ using ALB.Ui.Components.Account;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 
+using MudBlazor.Services;
+
 using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -34,7 +36,9 @@ builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services
     .AddApplicationServices()
-    .AddAuthAndIdentityCore(builder.Configuration);
+    .AddAuthAndIdentityCore(builder.Configuration, false);
+
+builder.Services.AddMudServices();
 
 var app = builder.Build();
 

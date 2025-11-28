@@ -10,5 +10,6 @@ public interface IChildRepository
     Task UpdateAsync(Child child);
     Task DeleteAsync(Guid id);
     Task<IEnumerable<Child>> GetByCohortAsync(Guid cohortId);
+    Task<List<Child>> GetByParentId(Guid parentId);
 
 }

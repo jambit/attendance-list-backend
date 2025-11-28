@@ -46,4 +46,12 @@ public class ChildRepository(ApplicationDbContext dbContext) : IChildRepository
             .Where(child => child.Group.Cohorts.Any(c => c.Id == cohortId))
             .ToListAsync();
     }
+
+    public async Task<List<Child>> GetByParentId(Guid parentId)
+    {
+        return await dbContext.Children
+            .Include(c => c.Guardians)
+            .Where(child => child.Guardians.Any(p => p.Id == parentId))
+            .ToListAsync();
+    }
 }

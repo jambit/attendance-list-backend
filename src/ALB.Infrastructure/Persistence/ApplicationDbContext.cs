@@ -25,7 +25,6 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     public DbSet<Cohort> Cohorts { get; set; }
     public DbSet<Group> Groups { get; set; }
     public DbSet<Grade> Grades { get; set; }
-    public DbSet<UserChildRelationship> UserChildRelationships { get; set; }
     public DbSet<UserGroup> UserGroups { get; set; }
     public DbSet<RefreshToken> RefreshTokens { get; set; }
 
@@ -164,9 +163,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
                 .WithOne(ale => ale.Child)
                 .HasForeignKey(ale => ale.ChildId);
 
-            e.HasMany(c => c.UserChildRelationships)
-                .WithOne(ucr => ucr.Child)
-                .HasForeignKey(ucr => ucr.ChildId);
+            e.HasMany(c => c.Guardians)
+                .WithMany(u => u.Children);
 
             e.HasMany(c => c.AbsenceDays)
                 .WithOne(ad => ad.Child)
@@ -259,23 +257,6 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
                 .HasDefaultValue(false);
 
             e.HasIndex(ug => ug.GroupId);
-        });
-
-        modelBuilder.Entity<UserChildRelationship>(e =>
-        {
-            e.HasKey(ucr => new { ucr.UserId, ucr.ChildId });
-
-            e.HasOne(ucr => ucr.User)
-                .WithMany(u => u.UserChildRelationships)
-                .HasForeignKey(ucr => ucr.UserId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            e.HasOne(ucr => ucr.Child)
-                .WithMany(c => c.UserChildRelationships)
-                .HasForeignKey(ucr => ucr.ChildId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            e.HasIndex(ucr => ucr.ChildId);
         });
 
         //Configuration of ApplicationUser

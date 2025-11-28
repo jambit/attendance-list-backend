@@ -3,6 +3,8 @@
 @using System.ComponentModel.DataAnnotations
 @using System.Text
 @using System.Text.Encodings.Web
+@using ALB.Domain.Values
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.WebUtilities
 
@@ -13,6 +15,8 @@
 @inject ILogger<Register> Logger
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
+
+@attribute [Authorize(Roles = SystemRoles.Admin)]
 
 <PageTitle>Register</PageTitle>
 
