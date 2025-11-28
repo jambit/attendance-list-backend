@@ -42,6 +42,6 @@
     <PackageVersion Include="TickerQ" Version="10.0.0-beta.17" />
     <PackageVersion Include="TickerQ.Dashboard" Version="10.0.0-beta.17" />
     <PackageVersion Include="TickerQ.EntityFrameworkCore" Version="10.0.0-beta.17" />
-    <PackageVersion Include="TUnit" Version="1.2.3" />
+    <PackageVersion Include="TUnit" Version="1.2.11" />
   </ItemGroup>
 </Project>
